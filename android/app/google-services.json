@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "471028534662",
+    "project_id": "myboard-cccf3",
+    "storage_bucket": "myboard-cccf3.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:471028534662:android:effb797ab87ef059ce3007",
+        "android_client_info": {
+          "package_name": "com.example.myboardapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "471028534662-h77cad7o1hjoar44ptdjci1clihpchl9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD9NBzSsdfSQnS8hsTr2GucViZpqBbgIJY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "471028534662-h77cad7o1hjoar44ptdjci1clihpchl9.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
