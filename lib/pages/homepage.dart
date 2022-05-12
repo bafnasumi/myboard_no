@@ -182,39 +182,44 @@ class _HomePageState extends State<HomePage> {
             const SizedBox(
               height: 10.0,
             ),
-            Align(
-              alignment: Alignment.bottomCenter,
-              child: Stack(
-                alignment: AlignmentDirectional.center,
-                children: [
-                  Container(
-                    width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height * .07,
-                    decoration: const BoxDecoration(
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(10.0),
-                        topRight: Radius.circular(10.0),
-                      ),
-                      color: Color.fromARGB(255, 161, 160, 160),
-                    ),
-                  ),
-                  Container(
-                    padding: const EdgeInsets.all(8.0),
-                    width: MediaQuery.of(context).size.width * 0.92,
-                    height: MediaQuery.of(context).size.height * .042,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10.0),
-                      color: const Color.fromARGB(255, 197, 197, 197),
-                    ),
-                    child: const Text(
-                      'Add Photo, Video, Link,...',
-                      style: TextStyle(
-                        color: Colors.white70,
-                        fontSize: 15.0,
+            GestureDetector(
+              onTap: () {
+                //showModalBottomSheet(context: context, builder: builder);
+              },
+              child: Align(
+                alignment: Alignment.bottomCenter,
+                child: Stack(
+                  alignment: AlignmentDirectional.center,
+                  children: [
+                    Container(
+                      width: MediaQuery.of(context).size.width,
+                      height: MediaQuery.of(context).size.height * .07,
+                      decoration: const BoxDecoration(
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(10.0),
+                          topRight: Radius.circular(10.0),
+                        ),
+                        color: Color.fromARGB(255, 161, 160, 160),
                       ),
                     ),
-                  ),
-                ],
+                    Container(
+                      padding: const EdgeInsets.all(8.0),
+                      width: MediaQuery.of(context).size.width * 0.92,
+                      height: MediaQuery.of(context).size.height * .042,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10.0),
+                        color: const Color.fromARGB(255, 197, 197, 197),
+                      ),
+                      child: const Text(
+                        'Add Photo, Video, Link,...',
+                        style: TextStyle(
+                          color: Colors.white70,
+                          fontSize: 15.0,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ],
