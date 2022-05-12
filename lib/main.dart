@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:myboardapp/pages/audio.dart';
+import 'package:myboardapp/pages/boardeditpage.dart';
 import 'package:myboardapp/pages/homepage.dart';
 import 'package:myboardapp/pages/links.dart';
 import 'package:myboardapp/pages/loginpage.dart';
@@ -9,6 +10,7 @@ import 'package:myboardapp/pages/reminder.dart';
 import 'package:myboardapp/pages/screenshots.dart';
 import 'package:myboardapp/pages/screentime.dart';
 import 'package:myboardapp/pages/signuppage.dart';
+// import 'package:myboardapp/pages/stack_board.dart';
 import 'package:myboardapp/pages/todo.dart';
 import 'package:myboardapp/pages/video.dart';
 import 'package:myboardapp/pages/voicetotext.dart';
@@ -48,6 +50,8 @@ class _MyAppState extends State<MyApp> {
         '/quotes': (context) => const Quotes(),
         '/video': (context) => const Video(),
         '/audio': (context) => const Audio(),
+        // '/stack_board': (context) => const StackBoard(),
+        '/boardeditpage': (context) => const BoardEditPage(),
       },
     );
   }

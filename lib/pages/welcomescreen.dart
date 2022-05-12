@@ -15,11 +15,13 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
       width: 60.0,
       child: Row(
         children: [
-          TextButton(
-            onPressed: () {
-              Navigator.pushNamed(context, '/login');
-            },
-            child: const Text('Let\'s start'),
+          Center(
+            child: TextButton(
+              onPressed: () {
+                Navigator.pushNamed(context, '/homepage');
+              },
+              child: const Text('Let\'s start'),
+            ),
           ),
         ],
       ),

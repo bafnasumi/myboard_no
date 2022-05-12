@@ -36,6 +36,13 @@ dependencies:
   cupertino_icons: ^1.0.2
   firebase: ^9.0.2
 
+  stack_board: ^0.1.2
+
+  google_fonts: ^2.3.2
+
+  # Responsive: It is a flutter plugin for adapting screen and font size.Let your UI display a reasonable layout on different screen sizes!
+  flutter_screenutil: ^5.5.2
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
