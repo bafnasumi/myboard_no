@@ -1,3 +1,4 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:myboardapp/pages/audio.dart';
 import 'package:myboardapp/pages/boardeditpage.dart';
@@ -21,7 +22,7 @@ import 'services/google_sign_in.dart';
 
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  //await Firebase
+  await Firebase.initializeApp();
   runApp(const MyApp());
 }
 
@@ -45,7 +46,7 @@ class _MyAppState extends State<MyApp> {
           '/': (context) => const WelcomeScreen(),
           '/homepage': (context) => const HomePage(),
           '/login': (context) => const LogInPage(),
-          '/signup': (context) => const SignUpPage(),
+          '/register': (context) => const RegisterPage(),
           '/reminder': (context) => const Reminder(),
           '/voicetotext': (context) => const VoiceToText(),
           '/todo': (context) => const ToDo(),

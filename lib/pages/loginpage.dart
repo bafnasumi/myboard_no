@@ -194,11 +194,14 @@ class _LogInPageState extends State<LogInPage> {
                         fontSize: 16,
                       ),
                     ),
-                    Text('Register Now',
-                        style: GoogleFonts.sourceSansPro(
-                            fontSize: 16,
-                            color: Colors.lightBlue,
-                            fontWeight: FontWeight.bold))
+                    GestureDetector(
+                      onTap: () =>  Navigator.pushNamed(context, '/register'),
+                      child: Text('Register Now',
+                          style: GoogleFonts.sourceSansPro(
+                              fontSize: 16,
+                              color: Colors.lightBlue,
+                              fontWeight: FontWeight.bold)),
+                    )
                   ],
                 )
               ],
