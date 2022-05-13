@@ -15,6 +15,9 @@ import 'package:myboardapp/pages/todo.dart';
 import 'package:myboardapp/pages/video.dart';
 import 'package:myboardapp/pages/voicetotext.dart';
 import 'package:myboardapp/pages/welcomescreen.dart';
+import 'package:provider/provider.dart';
+// import 'package:firebase_core/firebase_core.dart';
+import 'services/google_sign_in.dart';
 
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -32,27 +35,30 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'welcomescreen',
-      initialRoute: '/',
-      routes: {
-        '/': (context) => const WelcomeScreen(),
-        '/homepage': (context) => const HomePage(),
-        '/login': (context) => const LoginPage(),
-        '/signup': (context) => const SignUpPage(),
-        '/reminder': (context) => const Reminder(),
-        '/voicetotext': (context) => const VoiceToText(),
-        '/todo': (context) => const ToDo(),
-        '/memories': (context) => const Memories(),
-        '/screenshots': (context) => const Screenshots(),
-        '/links': (context) => const Links(),
-        '/screentime': (context) => const ScreenTime(),
-        '/quotes': (context) => const Quotes(),
-        '/video': (context) => const Video(),
-        '/audio': (context) => const Audio(),
-        // '/stack_board': (context) => const StackBoard(),
-        '/boardeditpage': (context) => const BoardEditPage(),
-      },
+    return ChangeNotifierProvider(
+      create: (context) => GoogleSignInProvider(),
+      child: MaterialApp(
+        title: 'welcomescreen',
+        initialRoute: '/',
+        routes: {
+          '/': (context) => const WelcomeScreen(),
+          '/homepage': (context) => const HomePage(),
+          '/login': (context) => const LogInPage(),
+          '/signup': (context) => const SignUpPage(),
+          '/reminder': (context) => const Reminder(),
+          '/voicetotext': (context) => const VoiceToText(),
+          '/todo': (context) => const ToDo(),
+          '/memories': (context) => const Memories(),
+          '/screenshots': (context) => const Screenshots(),
+          '/links': (context) => const Links(),
+          '/screentime': (context) => const ScreenTime(),
+          '/quotes': (context) => const Quotes(),
+          '/video': (context) => const Video(),
+          '/audio': (context) => const Audio(),
+          // '/stack_board': (context) => const StackBoard(),
+          '/boardeditpage': (context) => const BoardEditPage(),
+        },
+      ),
     );
   }
 }

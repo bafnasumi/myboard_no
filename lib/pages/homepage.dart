@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 // import 'package:myboardapp/pages/stack_board.dart' as sb;
@@ -184,7 +186,118 @@ class _HomePageState extends State<HomePage> {
             ),
             GestureDetector(
               onTap: () {
-                //showModalBottomSheet(context: context, builder: builder);
+                showModalBottomSheet(
+                    isScrollControlled: true,
+                    context: context,
+                    builder: (context) {
+                      return Container(
+                        color: Color.fromARGB(255, 214, 214, 214),
+                        child: Wrap(
+                          children: [
+                            Divider(
+                              height: MediaQuery.of(context).size.height * .01,
+                            ),
+                            // SizedBox(
+                            //   height: MediaQuery.of(context).size.height * .01,
+                            // ),
+                            Row(
+                              children: [
+                                AddPin(
+                                  'Text',
+                                  () {
+                                    _boardController.add(
+                                      const AdaptiveText(
+                                        'Flutter Candies',
+                                        tapToEdit: true,
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                    );
+                                  },
+                                ),
+                                AddPin(
+                                  'Photo',
+                                  () {
+                                    _boardController.add(
+                                      StackBoardItem(
+                                        child: Image.network(
+                                            'https://avatars.githubusercontent.com/u/47586449?s=200&v=4'),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ],
+                            ),
+                            Divider(
+                              height: MediaQuery.of(context).size.height * .01,
+                            ),
+                            Row(
+                              children: [
+                                AddPin(
+                                  'Screenshots',
+                                  () {
+                                    _boardController.add(
+                                      StackBoardItem(
+                                        child: Image.network(
+                                            'https://avatars.githubusercontent.com/u/47586449?s=200&v=4'),
+                                      ),
+                                    );
+                                  },
+                                ),
+                                AddPin(
+                                  'Video',
+                                  () {},
+                                ),
+                              ],
+                            ),
+                            Divider(
+                              height: MediaQuery.of(context).size.height * .01,
+                            ),
+                            Row(
+                              children: [
+                                AddPin(
+                                  'Link',
+                                  () {},
+                                ),
+                                AddPin(
+                                  'Scribble',
+                                  () {
+                                    _boardController.add(
+                                      StackBoardItem(
+                                        child: const Text(
+                                          'Custom Widget',
+                                          style: TextStyle(color: Colors.black),
+                                        ),
+                                        onDel: _onDel,
+                                        // caseStyle: const CaseStyle(initOffset: Offset(100, 100)),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ],
+                            ),
+                            Divider(
+                              height: MediaQuery.of(context).size.height * .01,
+                            ),
+                            Row(
+                              children: [
+                                AddPin(
+                                  'Audio',
+                                  () {},
+                                ),
+                                AddPin(
+                                  'Voice to Text',
+                                  () {},
+                                ),
+                              ],
+                            ),
+                            Divider(
+                              height: MediaQuery.of(context).size.height * .01,
+                            ),
+                          ],
+                        ),
+                      );
+                    });
               },
               child: Align(
                 alignment: Alignment.bottomCenter,
@@ -313,6 +426,33 @@ class _HomePageState extends State<HomePage> {
       //     ),
       //   ],
       // ),
+    );
+  }
+
+  Widget AddPin(String textt, VoidCallback onPressed) {
+    return Expanded(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 25),
+        child: GestureDetector(
+          onTap: onPressed,
+          child: Container(
+            padding: EdgeInsets.all(15),
+            decoration: BoxDecoration(
+              color: Color.fromARGB(255, 117, 117, 117),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Center(
+              child: Text(
+                '$textt',
+                style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18),
+              ),
+            ),
+          ),
+        ),
+      ),
     );
   }
 
