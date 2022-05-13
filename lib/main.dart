@@ -38,6 +38,7 @@ class _MyAppState extends State<MyApp> {
     return ChangeNotifierProvider(
       create: (context) => GoogleSignInProvider(),
       child: MaterialApp(
+        debugShowCheckedModeBanner: false,
         title: 'welcomescreen',
         initialRoute: '/',
         routes: {
