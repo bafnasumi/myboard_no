@@ -218,12 +218,13 @@ class _HomePageState extends State<HomePage> {
                                 AddPin(
                                   'Photo',
                                   () {
-                                    _boardController.add(
-                                      StackBoardItem(
-                                        child: Image.network(
-                                            'https://avatars.githubusercontent.com/u/47586449?s=200&v=4'),
-                                      ),
-                                    );
+                                    // _boardController.add(
+                                    //   StackBoardItem(
+                                    //     child: Image.network(
+                                    //         'https://avatars.githubusercontent.com/u/47586449?s=200&v=4'),
+                                    //   ),
+                                    // );
+                                    Navigator.pushNamed(context, '/memories');
                                   },
                                 ),
                               ],
