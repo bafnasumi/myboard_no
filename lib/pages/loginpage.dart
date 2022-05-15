@@ -78,7 +78,7 @@ class _LogInPageState extends State<LogInPage> {
                       style: GoogleFonts.lato(
                         fontSize: 26,
                       ),
-                    )
+                    ),
                   ],
                 ),
                 SizedBox(height: 40),

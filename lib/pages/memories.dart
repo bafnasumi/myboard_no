@@ -16,9 +16,7 @@ class _MemoriesState extends State<Memories> {
   @override
   Widget build(BuildContext context) {
      return Scaffold(
-       
        body: SafeArea(
-
        child: Column(
          children: [
            TextButton(
@@ -41,4 +39,3 @@ class _MemoriesState extends State<Memories> {
      );
    }
  }
-
