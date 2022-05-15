@@ -2,6 +2,7 @@
 
 // import 'dart:html';
 
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -220,7 +221,7 @@ class _HomePageState extends State<HomePage> {
                                 ),
                                 AddPin(
                                   'Photo',
-                                  () {
+                                  () async {
                                     Navigator.pushNamed(context, '/memories');
                                     var pickedPicture = Get.arguments();
                                     _boardController.add(StackBoardItem(
@@ -233,7 +234,7 @@ class _HomePageState extends State<HomePage> {
                                           pickedPicture.files.first.name;
 
                                       // Upload file
-                                      // await FirebaseStorage.instance.ref('uploads/$fileName').putData(fileBytes);
+                                      await FirebaseStorage.instance.ref('uploads/$fileName').putData(fileBytes);
                                     }
                                   },
                                 ),
