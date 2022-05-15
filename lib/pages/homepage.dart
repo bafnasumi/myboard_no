@@ -1,6 +1,9 @@
 // ignore_for_file: prefer_const_constructors
 
+// import 'dart:html';
+
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 // import 'package:myboardapp/pages/stack_board.dart' as sb;
 import 'package:stack_board/stack_board.dart';
@@ -218,12 +221,20 @@ class _HomePageState extends State<HomePage> {
                                 AddPin(
                                   'Photo',
                                   () {
-                                    _boardController.add(
-                                      StackBoardItem(
-                                        child: Image.network(
-                                            'https://avatars.githubusercontent.com/u/47586449?s=200&v=4'),
-                                      ),
-                                    );
+                                    Navigator.pushNamed(context, '/memories');
+                                    var pickedPicture = Get.arguments();
+                                    _boardController.add(StackBoardItem(
+                                      child: Image(image: pickedPicture),
+                                    ));
+                                    if (pickedPicture != null) {
+                                      var fileBytes =
+                                          pickedPicture.files.first.bytes;
+                                      String fileName =
+                                          pickedPicture.files.first.name;
+
+                                      // Upload file
+                                      // await FirebaseStorage.instance.ref('uploads/$fileName').putData(fileBytes);
+                                    }
                                   },
                                 ),
                               ],
