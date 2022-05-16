@@ -51,6 +51,7 @@ dependencies:
   get: ^4.6.3
 
   firebase_storage: ^10.2.16
+  path: ^1.8.1
 
 
 dev_dependencies:

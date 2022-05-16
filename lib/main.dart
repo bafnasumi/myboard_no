@@ -1,5 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:myboardapp/pages/audio.dart';
 import 'package:myboardapp/pages/boardeditpage.dart';
 import 'package:myboardapp/pages/homepage.dart';
@@ -38,7 +39,7 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
       create: (context) => GoogleSignInProvider(),
-      child: MaterialApp(
+      child: GetMaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'welcomescreen',
         initialRoute: '/',

@@ -1,17 +1,19 @@
 // ignore_for_file: prefer_const_constructors
 
-
 // import 'dart:html';
 
+import 'package:file_picker/file_picker.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:myboardapp/services/firebaseApi.dart';
+import 'package:path/path.dart' as p;
 // import 'package:myboardapp/pages/stack_board.dart' as sb;
 import 'package:stack_board/stack_board.dart';
 import 'dart:math' as math;
-
 
 /// Custom item type
 class CustomItem extends StackBoardItem {
@@ -66,7 +68,36 @@ class _HomePageState extends State<HomePage> {
     super.dispose();
   }
 
-  /// 删除拦截
+  File? file;
+  UploadTask? task;
+  String? urlDownload;
+  dynamic path;
+  Future selectPhotoOrVideo() async {
+    final result = await FilePicker.platform.pickFiles(
+        type: FileType.custom,
+        allowMultiple: false,
+        allowedExtensions: ['jpeg', 'png', 'gif', 'mp4', 'mkv']);
+    if (result != null) return;
+
+    final path = result!.files.first.path!;
+
+    setState(() {
+      file = File(path);
+    });
+  }
+
+  Future uploadPhotoOrVideo() async {
+    if (file == null) return;
+
+    final fileName = p.basename(file!.path);
+    final destination = 'files/$fileName';
+
+    task = FirebaseApi.uploadFile(destination, file!);
+    setState(() {});
+    final snapshot = await task!.whenComplete(() {});
+    urlDownload = await snapshot.ref.getDownloadURL();
+  }
+
   Future<bool> _onDel() async {
     final bool? r = await showDialog<bool>(
       context: context,
@@ -82,7 +113,7 @@ class _HomePageState extends State<HomePage> {
                   children: <Widget>[
                     const Padding(
                       padding: EdgeInsets.only(top: 10, bottom: 60),
-                      child: Text('确认删除?'),
+                      child: Text('Confirm Delete?'),
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -119,7 +150,7 @@ class _HomePageState extends State<HomePage> {
               padding: const EdgeInsets.only(top: 35.0),
               child: Text(
                 'MyBoard',
-                style: GoogleFonts.adamina(
+                style: GoogleFonts.dmSans(
                   color: Colors.black87,
                   fontSize: 30,
                 ),
@@ -224,23 +255,36 @@ class _HomePageState extends State<HomePage> {
                                 ),
                                 AddPin(
                                   'Photo',
-
                                   () async {
+                                    selectPhotoOrVideo();
+                                    uploadPhotoOrVideo();
+                                    //Navigator.pushNamed(context, '/memories');
+                                    // ImageProvider gotFile = Get.arguments();
+                                    setState(() {
+                                      _boardController.add(
+                                        StackBoardItem(
+                                          child: Image(
+                                            // image: NetworkImage(
+                                            //     mediaurl.toString()),
+                                            image: path,
+                                          ),
+                                        ),
+                                      );
+                                    });
 
-                                    Navigator.pushNamed(context, '/memories');
-                                    var pickedPicture = Get.arguments();
-                                    _boardController.add(StackBoardItem(
-                                      child: Image(image: pickedPicture),
-                                    ));
-                                    if (pickedPicture != null) {
-                                      var fileBytes =
-                                          pickedPicture.files.first.bytes;
-                                      String fileName =
-                                          pickedPicture.files.first.name;
+                                    // print(yesfile);
+                                    // if (pickedPicture != null) {
+                                    //   var fileBytes =
+                                    //       pickedPicture.files.first.bytes!;
+                                    //   String fileName =
+                                    //       pickedPicture.files.first.name;
 
-                                      // Upload file
-                                      await FirebaseStorage.instance.ref('uploads/$fileName').putData(fileBytes);
-                                    }
+                                    // Upload file
+
+                                    // await FirebaseStorage.instance
+                                    //     .ref('uploads/$fileName')
+                                    //     .putData(fileBytes);
+                                    //}
                                   },
                                 ),
                               ],
