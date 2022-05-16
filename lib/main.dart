@@ -51,7 +51,7 @@ class _MyAppState extends State<MyApp> {
           '/reminder': (context) => const Reminder(),
           '/voicetotext': (context) => const VoiceToText(),
           '/todo': (context) => const ToDo(),
-          '/memories': (context) => Memories(),
+          '/memories': (context) => const Memories(),
           '/screenshots': (context) => const Screenshots(),
           '/links': (context) => const Links(),
           '/screentime': (context) => const ScreenTime(),

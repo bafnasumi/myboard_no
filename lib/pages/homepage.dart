@@ -7,13 +7,13 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+// import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:myboardapp/services/firebaseApi.dart';
 import 'package:path/path.dart' as p;
 // import 'package:myboardapp/pages/stack_board.dart' as sb;
 import 'package:stack_board/stack_board.dart';
-import 'dart:math' as math;
+// import 'dart:math' as math;
 
 /// Custom item type
 class CustomItem extends StackBoardItem {
@@ -260,17 +260,19 @@ class _HomePageState extends State<HomePage> {
                                     uploadPhotoOrVideo();
                                     //Navigator.pushNamed(context, '/memories');
                                     // ImageProvider gotFile = Get.arguments();
-                                    setState(() {
-                                      _boardController.add(
-                                        StackBoardItem(
-                                          child: Image(
-                                            // image: NetworkImage(
-                                            //     mediaurl.toString()),
-                                            image: path,
+                                    setState(
+                                      () {
+                                        _boardController.add(
+                                          StackBoardItem(
+                                            child: Image(
+                                              // image: NetworkImage(
+                                              //     mediaurl.toString()),
+                                              image: path,
+                                            ),
                                           ),
-                                        ),
-                                      );
-                                    });
+                                        );
+                                      },
+                                    );
 
                                     // print(yesfile);
                                     // if (pickedPicture != null) {
@@ -318,7 +320,9 @@ class _HomePageState extends State<HomePage> {
                               children: [
                                 AddPin(
                                   'Link',
-                                  () {},
+                                  () {
+                                     Navigator.pushNamed(context, '/links');
+                                  },
                                 ),
                                 AddPin(
                                   'Scribble',
