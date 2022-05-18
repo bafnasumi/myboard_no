@@ -349,11 +349,15 @@ class _HomePageState extends State<HomePage> {
                               children: [
                                 AddPin(
                                   'Audio',
-                                  () {},
+                                  () {
+                                     Navigator.pushNamed(context, '/audio');
+                                  },
                                 ),
                                 AddPin(
                                   'Voice to Text',
-                                  () {},
+                                  () {
+                                     Navigator.pushNamed(context, '/voicetotext');
+                                  },
                                 ),
                               ],
                             ),
