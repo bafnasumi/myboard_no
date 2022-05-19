@@ -3,6 +3,8 @@
 // import 'dart:html';
 
 //import 'package:file_picker/file_picker.dart';
+import 'dart:typed_data';
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'dart:io';
@@ -10,11 +12,15 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:home_widget/home_widget.dart';
 import 'package:myboardapp/services/firebaseApi.dart';
 import 'package:path/path.dart' as p;
+import 'package:path_provider/path_provider.dart';
+import 'package:screenshot/screenshot.dart';
 // import 'package:myboardapp/pages/stack_board.dart' as sb;
 import 'package:stack_board/stack_board.dart';
 import 'dart:math' as math;
+
 
 /// Custom item type
 class CustomItem extends StackBoardItem {
@@ -61,7 +67,32 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     _boardController = StackBoardController();
+    // HomeWidget.widgetClicked.listen((Uri uri) => loadData());
+    // loadData();
   }
+
+  Future<void> updateAppWidget() async {
+    //await HomeWidget.saveWidgetData();
+    screenshotController.capture().then((image) async {
+      //Capture Done
+      if(image != null){
+
+        final directory = (await getApplicationDocumentsDirectory ()).path; //from path_provide package
+        String fileName = DateTime.now().microsecondsSinceEpoch as String;
+        String path = '$directory';
+
+        screenshotController.captureAndSave(path);
+      }
+
+    });
+    await HomeWidget.updateWidget();
+    //(name: 'AppWidgetProvider', iOSName: 'AppWidgetProvider')
+  }
+
+  // void _getSS() {
+  //
+  //   updateAppWidget();
+  // }
 
   @override
   void dispose() {
@@ -139,6 +170,9 @@ class _HomePageState extends State<HomePage> {
     return r ?? false;
   }
 
+  ScreenshotController screenshotController = ScreenshotController();
+  late Uint8List _imageFile;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -167,7 +201,8 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
             ),
-            Container(
+            Screenshot(
+              child: Container(
               height: MediaQuery.of(context).size.height * 0.75,
               width: MediaQuery.of(context).size.width * 0.95,
               decoration: BoxDecoration(
@@ -215,11 +250,12 @@ class _HomePageState extends State<HomePage> {
                       ),
                     );
                   }
-
                   return null;
                 },
               ),
             ),
+              controller: screenshotController,),
+
             const SizedBox(
               height: 10.0,
             ),
@@ -252,6 +288,7 @@ class _HomePageState extends State<HomePage> {
                                             fontWeight: FontWeight.bold),
                                       ),
                                     );
+                                    updateAppWidget();
                                   },
                                 ),
                                 AddPin(
@@ -400,94 +437,7 @@ class _HomePageState extends State<HomePage> {
           ],
         ),
       ),
-      // floatingActionButton: Row(
-      //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      //   children: <Widget>[
-      //     Flexible(
-      //       child: SingleChildScrollView(
-      //         scrollDirection: Axis.horizontal,
-      //         child: Row(
-      //           children: <Widget>[
-      //             const SizedBox(width: 25),
-      //             FloatingActionButton(
-      //               onPressed: () {
-      //                 _boardController.add(
-      //                   const AdaptiveText(
-      //                     'Flutter Candies',
-      //                     tapToEdit: true,
-      //                     style: TextStyle(fontWeight: FontWeight.bold),
-      //                   ),
-      //                 );
-      //               },
-      //               child: const Icon(Icons.border_color),
-      //             ),
-      //             _spacer,
-      //             FloatingActionButton(
-      //               onPressed: () {
-      //                 _boardController.add(
-      //                   StackBoardItem(
-      //                     child: Image.network(
-      //                         'https://avatars.githubusercontent.com/u/47586449?s=200&v=4'),
-      //                   ),
-      //                 );
-      //               },
-      //               child: const Icon(Icons.image),
-      //             ),
-      //             _spacer,
-      //             FloatingActionButton(
-      //               onPressed: () {
-      //                 _boardController.add(
-      //                   const StackDrawing(
-      //                     caseStyle: CaseStyle(
-      //                       borderColor: Colors.grey,
-      //                       iconColor: Colors.white,
-      //                       boxAspectRatio: 1,
-      //                     ),
-      //                   ),
-      //                 );
-      //               },
-      //               child: const Icon(Icons.color_lens),
-      //             ),
-      //             _spacer,
-      //             FloatingActionButton(
-      //               onPressed: () {
-      //                 _boardController.add(
-      //                   StackBoardItem(
-      //                     child: const Text(
-      //                       'Custom Widget',
-      //                       style: TextStyle(color: Colors.black),
-      //                     ),
-      //                     onDel: _onDel,
-      //                     // caseStyle: const CaseStyle(initOffset: Offset(100, 100)),
-      //                   ),
-      //                 );
-      //               },
-      //               child: const Icon(Icons.add_box),
-      //             ),
-      //             _spacer,
-      //             FloatingActionButton(
-      //               onPressed: () {
-      //                 _boardController.add<CustomItem>(
-      //                   CustomItem(
-      //                     color: Color((math.Random().nextDouble() * 0xFFFFFF)
-      //                             .toInt())
-      //                         .withOpacity(1.0),
-      //                     onDel: () async => true,
-      //                   ),
-      //                 );
-      //               },
-      //               child: const Icon(Icons.add),
-      //             ),
-      //           ],
-      //         ),
-      //       ),
-      //     ),
-      //     FloatingActionButton(
-      //       onPressed: () => _boardController.clear(),
-      //       child: const Icon(Icons.close),
-      //     ),
-      //   ],
-      // ),
+
     );
   }
 
