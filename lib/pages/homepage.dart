@@ -8,6 +8,7 @@
 // import 'dart:math' as math;
 //import 'package:file_picker/file_picker.dart';
 import 'package:myboardapp/boxes.dart';
+import 'package:myboardapp/pages/myvideo.dart' as vid;
 //import 'dart:ffi';
 import 'dart:typed_data';
 import 'package:path_provider/path_provider.dart';
@@ -310,7 +311,7 @@ class _HomePageState extends State<HomePage> {
                     builder: (context) {
                       return Container(
                         color: Color.fromARGB(255, 214, 214, 214),
-                        child: Wrap( 
+                        child: Wrap(
                           //TODO: Converti Wrap into GridView
                           children: [
                             Divider(
@@ -346,9 +347,7 @@ class _HomePageState extends State<HomePage> {
                                             allowedExtensions: [
                                           'jpeg',
                                           'png',
-                                          'gif',
-                                          'mp4',
-                                          'mkv'
+                                          'gif'
                                         ]);
                                     final oneFile = result?.files.first;
 
@@ -399,43 +398,66 @@ class _HomePageState extends State<HomePage> {
                               children: [
                                 AddPin(
                                   'Video',
-                                  () async{
-                                    final result = await FilePicker.platform
-                                        .pickFiles(
-                                            type: FileType.custom,
-                                            allowMultiple: false,
-                                            allowedExtensions: [
-                                          'mp4',
-                                          'mkv',
-                                          'heic'
-                                          ]);
-                                    final oneFile = result?.files.first;
+                                  () async {
+                                    //Navigator.pushNamed(context, '/video');
 
-                                    final legitfile =
-                                        File(oneFile!.path.toString());
-                                    print(oneFile.name);
-                                    print(oneFile.extension);
-                                    print(oneFile.path);
-                                    print(oneFile.size);
-                                    //Navigator.pushNamed(context, '/memories');
-                                    // ImageProvider gotFile = Get.arguments();
-                                    File finalImage =
-                                        await saveFilePermanently(oneFile);
-                                    print('from ' + oneFile.path.toString());
-                                    print('to ' + finalImage.path);
+                                    PlatformFile localfile =
+                                        await vid.pickVideoFile();
+
+                                    //final myvideo = await vid.saveFilePermanently(localfile);
+
                                     setState(
-                                      () {
+                                      () async {
                                         // final myimage = box.values.toList().cast<db.Images>();
                                         //var myimage = BoxesofImage.getImages;
                                         //print(myimage.toString());
+
+                                        final myvideo = await vid
+                                            .saveFilePermanently(localfile);
+
                                         _boardController.add(StackBoardItem(
-                                          child: Image.file(finalImage),
+                                          // child: Image.file(finalImage),
+                                          child: Text(myvideo.toString()),
                                         ));
+
+                                        // final result = await FilePicker.platform
+                                        //     .pickFiles(
+                                        //         type: FileType.custom,
+                                        //         allowMultiple: false,
+                                        //         allowedExtensions: [
+                                        //       'mp4',
+                                        //       'mkv',
+                                        //       'heic'
+                                        //     ]);
+                                        // final oneFile = result?.files.first;
+
+                                        // final legitfile =
+                                        //     File(oneFile!.path.toString());
+                                        // print(oneFile.name);
+                                        // print(oneFile.extension);
+                                        // print(oneFile.path);
+                                        // print(oneFile.size);
+                                        // //Navigator.pushNamed(context, '/memories');
+                                        // // ImageProvider gotFile = Get.arguments();
+                                        // File finalImage =
+                                        //     await saveFilePermanently(oneFile);
+                                        // print('from ' + oneFile.path.toString());
+                                        // print('to ' + finalImage.path);
+                                        // setState(
+                                        //   () {
+                                        //     // final myimage = box.values.toList().cast<db.Images>();
+                                        //     //var myimage = BoxesofImage.getImages;
+                                        //     //print(myimage.toString());
+                                        //     _boardController.add(StackBoardItem(
+                                        //       // child: Image.file(finalImage),
+                                        //       child: Text('VIdeo will come here'),
+                                        //     ));
+                                        //   },
+                                        // );
                                       },
                                     );
                                   },
                                 ),
-
                               ],
                             ),
                             Divider(
