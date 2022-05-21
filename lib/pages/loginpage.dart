@@ -24,7 +24,7 @@ class _LogInPageState extends State<LogInPage> {
     await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: _emailController.text.trim(),
         password: _passwordController.text.trim());
-        bool emailValid = RegExp(
+    bool emailValid = RegExp(
             r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
         .hasMatch(_emailController.text.trim());
     if (emailValid) {
@@ -201,7 +201,7 @@ class _LogInPageState extends State<LogInPage> {
                       ),
                     ),
                     GestureDetector(
-                      onTap: () =>  Navigator.pushNamed(context, '/register'),
+                      onTap: () => Navigator.pushNamed(context, '/register'),
                       child: Text('Register Now',
                           style: GoogleFonts.sourceSansPro(
                               fontSize: 16,

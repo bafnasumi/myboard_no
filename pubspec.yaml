@@ -61,6 +61,11 @@ dependencies:
   highlight_text: ^1.3.0
   avatar_glow: ^2.0.2
 
+  hive_generator: ^1.1.3
+  build_runner: ^2.1.0
+  build_test: ^2.1.0
+  hive_flutter: ^1.1.0
+
 
 dev_dependencies:
   flutter_test:

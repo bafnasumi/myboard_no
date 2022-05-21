@@ -1,20 +1,23 @@
-// ignore_for_file: prefer_const_constructors
+// ignore_for_file: prefer_const_constructors, prefer_typing_uninitialized_variables, prefer_const_literals_to_create_immutables
 
 // import 'dart:html';
 
 //import 'package:file_picker/file_picker.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-// import 'package:get/get.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:myboardapp/services/firebaseApi.dart';
 import 'package:path/path.dart' as p;
 // import 'package:myboardapp/pages/stack_board.dart' as sb;
 import 'package:stack_board/stack_board.dart';
 // import 'dart:math' as math;
+import 'loginpage.dart' as loginpage;
+import "package:myboardapp/services/google_sign_in.dart" as GSI;
 
 /// Custom item type
 class CustomItem extends StackBoardItem {
@@ -73,31 +76,31 @@ class _HomePageState extends State<HomePage> {
   UploadTask? task;
   String? urlDownload;
   dynamic path;
-  Future selectPhotoOrVideo() async {
+  Future<FilePickerResult> selectPhotoOrVideo() async {
     final result = await FilePicker.platform.pickFiles(
         type: FileType.custom,
         allowMultiple: false,
         allowedExtensions: ['jpeg', 'png', 'gif', 'mp4', 'mkv']);
-    if (result != null) return;
+    // if (result != null) return ;
 
     final path = result!.files.first.path!;
-
     setState(() {
       file = File(path);
     });
+    return result;
   }
 
-  Future uploadPhotoOrVideo() async {
-    if (file == null) return;
-
-    final fileName = p.basename(file!.path);
-    final destination = 'files/$fileName';
-
-    task = FirebaseApi.uploadFile(destination, file!);
-    setState(() {});
-    final snapshot = await task!.whenComplete(() {});
-    urlDownload = await snapshot.ref.getDownloadURL();
-  }
+  // Future uploadPhotoOrVideo() async {
+  //   if (file == null) return;
+  //
+  //   final fileName = p.basename(file!.path);
+  //   final destination = 'files/$fileName';
+  //
+  //   task = FirebaseApi.uploadFile(destination, file!);
+  //   setState(() {});
+  //   final snapshot = await task!.whenComplete(() {});
+  //   urlDownload = await snapshot.ref.getDownloadURL();
+  // }
 
   Future<bool> _onDel() async {
     final bool? r = await showDialog<bool>(
@@ -141,24 +144,81 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    var scaffoldKey;
     return Scaffold(
+      backgroundColor: Colors.white,
       resizeToAvoidBottomInset: false,
+      key: scaffoldKey,
+      appBar: AppBar(
+        toolbarHeight: 70.0,
+        centerTitle: true,
+        title: Padding(
+          padding: const EdgeInsets.only(top: 35.0),
+          child: Text(
+            'MyBoard',
+            style: GoogleFonts.smooch(
+              color: Colors.black87,
+              fontSize: 60,
+            ),
+          ),
+        ),
+        backgroundColor: Color.fromARGB(255, 255, 255, 255),
+        elevation: 0.0,
+        iconTheme: IconThemeData(color: Colors.black),
+      ),
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          // ignore: prefer_const_literals_to_create_immutables
+          children: [
+            DrawerHeader(
+              child: Text("Header"),
+            ),
+            ListTile(
+              leading: Icon(Icons.settings),
+              title: Text("Settings"),
+              onTap: () {},
+            ),
+            ListTile(
+              leading: Icon(Icons.tag_faces_rounded),
+              title: Text("Contact us"),
+              onTap: () {},
+            ),
+            ListTile(
+              leading: Icon(Icons.logout),
+              title: Text("Logout"),
+              onTap: () async {
+                await GSI.GoogleSignInProvider().LogOut();
+                await FirebaseAuth.instance.signOut();
+                Get.off(loginpage.LogInPage());
+              },
+            ),
+          ],
+        ),
+      ),
+      //drawer: Drawer(child: ListView()),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            Padding(
-              padding: const EdgeInsets.only(top: 35.0),
-              child: Text(
-                'MyBoard',
-                style: GoogleFonts.dmSans(
-                  color: Colors.black87,
-                  fontSize: 30,
+            Stack(
+              children: [
+                Center(
+                    child: Column(
+                  children: <Widget>[],
+                )),
+                Positioned(
+                  left: 10,
+                  top: 20,
+                  child: IconButton(
+                    icon: Icon(Icons.menu),
+                    onPressed: () => scaffoldKey.currentState.openDrawer(),
+                  ),
                 ),
-              ),
+              ],
             ),
             Padding(
-              padding: const EdgeInsets.only(bottom: 5.0),
+              padding: const EdgeInsets.only(top: 7.0, bottom: 5.0),
               child: Text(
                 'edit',
                 style: GoogleFonts.adamina(
@@ -168,7 +228,7 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
             Container(
-              height: MediaQuery.of(context).size.height * 0.75,
+              height: MediaQuery.of(context).size.height * 0.73,
               width: MediaQuery.of(context).size.width * 0.95,
               decoration: BoxDecoration(
                 boxShadow: const [
@@ -257,19 +317,29 @@ class _HomePageState extends State<HomePage> {
                                 AddPin(
                                   'Photo',
                                   () async {
-                                    selectPhotoOrVideo();
-                                    uploadPhotoOrVideo();
+                                    // selectPhotoOrVideo();
+                                    // uploadPhotoOrVideo();
+                                    final result = await FilePicker.platform
+                                        .pickFiles(
+                                            type: FileType.custom,
+                                            allowMultiple: false,
+                                            allowedExtensions: [
+                                          'jpeg',
+                                          'png',
+                                          'gif',
+                                          'mp4',
+                                          'mkv'
+                                        ]);
+                                    final oneFile = result?.files.first;
+                                    final legitfile =
+                                        File(oneFile!.path.toString());
                                     //Navigator.pushNamed(context, '/memories');
                                     // ImageProvider gotFile = Get.arguments();
                                     setState(
                                       () {
                                         _boardController.add(
                                           StackBoardItem(
-                                            child: Image(
-                                              // image: NetworkImage(
-                                              //     mediaurl.toString()),
-                                              image: path,
-                                            ),
+                                            child: Image.file(legitfile),
                                           ),
                                         );
                                       },
@@ -322,7 +392,7 @@ class _HomePageState extends State<HomePage> {
                                 AddPin(
                                   'Link',
                                   () {
-                                     Navigator.pushNamed(context, '/links');
+                                    Navigator.pushNamed(context, '/links');
                                   },
                                 ),
                                 AddPin(
@@ -350,13 +420,14 @@ class _HomePageState extends State<HomePage> {
                                 AddPin(
                                   'Audio',
                                   () {
-                                     Navigator.pushNamed(context, '/audio');
+                                    Navigator.pushNamed(context, '/audio');
                                   },
                                 ),
                                 AddPin(
                                   'Voice to Text',
                                   () {
-                                     Navigator.pushNamed(context, '/voicetotext');
+                                    Navigator.pushNamed(
+                                        context, '/voicetotext');
                                   },
                                 ),
                               ],

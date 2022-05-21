@@ -9,29 +9,28 @@ import android.view.View
 import android.widget.EditText
 import com.example.myboardapp.databinding.MyBoardAppWidgetConfigureBinding
 
-/**
- * The configuration screen for the [MyBoardAppWidget] AppWidget.
- */
+/** The configuration screen for the [MyBoardAppWidget] AppWidget. */
 class MyBoardAppWidgetConfigureActivity : Activity() {
     private var appWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID
     private lateinit var appWidgetText: EditText
-    private var onClickListener = View.OnClickListener {
-        val context = this@MyBoardAppWidgetConfigureActivity
+    private var onClickListener =
+            View.OnClickListener {
+                val context = this@MyBoardAppWidgetConfigureActivity
 
-        // When the button is clicked, store the string locally
-        val widgetText = appWidgetText.text.toString()
-        saveTitlePref(context, appWidgetId, widgetText)
+                // When the button is clicked, store the string locally
+                val widgetText = appWidgetText.text.toString()
+                saveTitlePref(context, appWidgetId, widgetText)
 
-        // It is the responsibility of the configuration activity to update the app widget
-        val appWidgetManager = AppWidgetManager.getInstance(context)
-        updateAppWidget(context, appWidgetManager, appWidgetId)
+                // It is the responsibility of the configuration activity to update the app widget
+                val appWidgetManager = AppWidgetManager.getInstance(context)
+                updateAppWidget(context, appWidgetManager, appWidgetId)
 
-        // Make sure we pass back the original appWidgetId
-        val resultValue = Intent()
-        resultValue.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
-        setResult(RESULT_OK, resultValue)
-        finish()
-    }
+                // Make sure we pass back the original appWidgetId
+                val resultValue = Intent()
+                resultValue.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
+                setResult(RESULT_OK, resultValue)
+                finish()
+            }
     private lateinit var binding: MyBoardAppWidgetConfigureBinding
 
     public override fun onCreate(icicle: Bundle?) {
@@ -51,12 +50,15 @@ class MyBoardAppWidgetConfigureActivity : Activity() {
         val intent = intent
         val extras = intent.extras
         if (extras != null) {
-            appWidgetId = extras.getInt(
-                AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID
-            )
+            appWidgetId =
+                    extras.getInt(
+                            AppWidgetManager.EXTRA_APPWIDGET_ID,
+                            AppWidgetManager.INVALID_APPWIDGET_ID
+                    )
         }
 
-        // If this activity was started with an intent without an app widget ID, finish with an error.
+        // If this activity was started with an intent without an app widget ID, finish with an
+        // error.
         if (appWidgetId == AppWidgetManager.INVALID_APPWIDGET_ID) {
             finish()
             return
@@ -64,7 +66,6 @@ class MyBoardAppWidgetConfigureActivity : Activity() {
 
         appWidgetText.setText(loadTitlePref(this@MyBoardAppWidgetConfigureActivity, appWidgetId))
     }
-
 }
 
 private const val PREFS_NAME = "com.example.myboardapp.MyBoardAppWidget"
