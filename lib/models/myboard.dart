@@ -1,12 +1,14 @@
+import 'dart:typed_data';
+
 import 'package:flutter/cupertino.dart';
 import 'package:hive/hive.dart';
 
 part 'myboard.g.dart';
 
 @HiveType(typeId: 0)
-class images extends HiveObject {
+class Images extends HiveObject {
   @HiveField(0)
-  late Image imagesource;
+  late Uint8List imagesource;
   @HiveField(1)
   late double height;
   @HiveField(2)

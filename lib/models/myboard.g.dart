@@ -6,24 +6,24 @@ part of 'myboard.dart';
 // TypeAdapterGenerator
 // **************************************************************************
 
-class imagesAdapter extends TypeAdapter<images> {
+class ImagesAdapter extends TypeAdapter<Images> {
   @override
   final int typeId = 0;
 
   @override
-  images read(BinaryReader reader) {
+  Images read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return images()
-      ..imagesource = fields[0] as Image
+    return Images()
+      ..imagesource = fields[0] as Uint8List
       ..height = fields[1] as double
       ..width = fields[2] as double;
   }
 
   @override
-  void write(BinaryWriter writer, images obj) {
+  void write(BinaryWriter writer, Images obj) {
     writer
       ..writeByte(3)
       ..writeByte(0)
@@ -40,7 +40,7 @@ class imagesAdapter extends TypeAdapter<images> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is imagesAdapter &&
+      other is ImagesAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }

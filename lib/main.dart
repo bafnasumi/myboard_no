@@ -37,10 +37,10 @@ Future main() async {
   Hive.init(localdocument.path);
   // await Hive.initFlutter();
 
-  Hive.registerAdapter(imagesAdapter());
+  Hive.registerAdapter(ImagesAdapter());
   Hive.registerAdapter(LinkAdapter());
 
-  await Hive.openBox<images>('images');
+  await Hive.openBox<Images>('images');
   await Hive.openBox<Link>('links');
   await Firebase.initializeApp();
   runApp(const MyApp());

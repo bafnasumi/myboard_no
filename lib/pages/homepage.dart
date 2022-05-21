@@ -1,22 +1,28 @@
-// ignore_for_file: prefer_const_constructors, prefer_typing_uninitialized_variables, prefer_const_literals_to_create_immutables
+// ignore_for_file: prefer_const_constructors, prefer_typing_uninitialized_variables, prefer_const_literals_to_create_immutables, avoid_print
 
 // import 'dart:html';
-
+// import 'package:myboardapp/services/firebaseApi.dart';
+// import 'package:path/path.dart' as p;
+// import 'package:myboardapp/pages/stack_board.dart' as sb;
+// import 'package:firebase_core/firebase_core.dart';
+// import 'dart:math' as math;
 //import 'package:file_picker/file_picker.dart';
+import 'package:myboardapp/boxes.dart';
+//import 'dart:ffi';
+import 'dart:typed_data';
+import 'package:path_provider/path_provider.dart';
+
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:myboardapp/services/firebaseApi.dart';
-import 'package:path/path.dart' as p;
-// import 'package:myboardapp/pages/stack_board.dart' as sb;
 import 'package:stack_board/stack_board.dart';
-// import 'dart:math' as math;
 import 'loginpage.dart' as loginpage;
+import 'package:myboardapp/models/myboard.dart' as db;
+// ignore: library_prefixes
 import "package:myboardapp/services/google_sign_in.dart" as GSI;
 
 /// Custom item type
@@ -59,6 +65,19 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   late StackBoardController _boardController;
+  var box;
+  ValueNotifier<db.Images> myImages = ValueNotifier<db.Images>(db.Images());
+
+  Future addImages(Uint8List imagesource, double height, double width) async {
+    final localaddImages = db.Images()
+      ..imagesource = imagesource
+      ..height = height
+      ..width = width;
+    box = BoxesofImage.getImages();
+    //ValueNotifier<db.Images?> myiamges = ValueNotifier(localaddImages);
+    box.add(localaddImages);
+  }
+
 // FireBaseSt
   @override
   void initState() {
@@ -291,7 +310,8 @@ class _HomePageState extends State<HomePage> {
                     builder: (context) {
                       return Container(
                         color: Color.fromARGB(255, 214, 214, 214),
-                        child: Wrap(
+                        child: Wrap( 
+                          //TODO: Converti Wrap into GridView
                           children: [
                             Divider(
                               height: MediaQuery.of(context).size.height * .01,
@@ -331,17 +351,27 @@ class _HomePageState extends State<HomePage> {
                                           'mkv'
                                         ]);
                                     final oneFile = result?.files.first;
+
                                     final legitfile =
                                         File(oneFile!.path.toString());
+                                    print(oneFile.name);
+                                    print(oneFile.extension);
+                                    print(oneFile.path);
+                                    print(oneFile.size);
                                     //Navigator.pushNamed(context, '/memories');
                                     // ImageProvider gotFile = Get.arguments();
+                                    File finalImage =
+                                        await saveFilePermanently(oneFile);
+                                    print('from ' + oneFile.path.toString());
+                                    print('to ' + finalImage.path);
                                     setState(
                                       () {
-                                        _boardController.add(
-                                          StackBoardItem(
-                                            child: Image.file(legitfile),
-                                          ),
-                                        );
+                                        // final myimage = box.values.toList().cast<db.Images>();
+                                        //var myimage = BoxesofImage.getImages;
+                                        //print(myimage.toString());
+                                        _boardController.add(StackBoardItem(
+                                          child: Image.file(finalImage),
+                                        ));
                                       },
                                     );
 
@@ -368,20 +398,44 @@ class _HomePageState extends State<HomePage> {
                             Row(
                               children: [
                                 AddPin(
-                                  'Screenshots',
-                                  () {
-                                    _boardController.add(
-                                      StackBoardItem(
-                                        child: Image.network(
-                                            'https://avatars.githubusercontent.com/u/47586449?s=200&v=4'),
-                                      ),
+                                  'Video',
+                                  () async{
+                                    final result = await FilePicker.platform
+                                        .pickFiles(
+                                            type: FileType.custom,
+                                            allowMultiple: false,
+                                            allowedExtensions: [
+                                          'mp4',
+                                          'mkv',
+                                          'heic'
+                                          ]);
+                                    final oneFile = result?.files.first;
+
+                                    final legitfile =
+                                        File(oneFile!.path.toString());
+                                    print(oneFile.name);
+                                    print(oneFile.extension);
+                                    print(oneFile.path);
+                                    print(oneFile.size);
+                                    //Navigator.pushNamed(context, '/memories');
+                                    // ImageProvider gotFile = Get.arguments();
+                                    File finalImage =
+                                        await saveFilePermanently(oneFile);
+                                    print('from ' + oneFile.path.toString());
+                                    print('to ' + finalImage.path);
+                                    setState(
+                                      () {
+                                        // final myimage = box.values.toList().cast<db.Images>();
+                                        //var myimage = BoxesofImage.getImages;
+                                        //print(myimage.toString());
+                                        _boardController.add(StackBoardItem(
+                                          child: Image.file(finalImage),
+                                        ));
+                                      },
                                     );
                                   },
                                 ),
-                                AddPin(
-                                  'Video',
-                                  () {},
-                                ),
+
                               ],
                             ),
                             Divider(
@@ -479,94 +533,6 @@ class _HomePageState extends State<HomePage> {
           ],
         ),
       ),
-      // floatingActionButton: Row(
-      //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      //   children: <Widget>[
-      //     Flexible(
-      //       child: SingleChildScrollView(
-      //         scrollDirection: Axis.horizontal,
-      //         child: Row(
-      //           children: <Widget>[
-      //             const SizedBox(width: 25),
-      //             FloatingActionButton(
-      //               onPressed: () {
-      //                 _boardController.add(
-      //                   const AdaptiveText(
-      //                     'Flutter Candies',
-      //                     tapToEdit: true,
-      //                     style: TextStyle(fontWeight: FontWeight.bold),
-      //                   ),
-      //                 );
-      //               },
-      //               child: const Icon(Icons.border_color),
-      //             ),
-      //             _spacer,
-      //             FloatingActionButton(
-      //               onPressed: () {
-      //                 _boardController.add(
-      //                   StackBoardItem(
-      //                     child: Image.network(
-      //                         'https://avatars.githubusercontent.com/u/47586449?s=200&v=4'),
-      //                   ),
-      //                 );
-      //               },
-      //               child: const Icon(Icons.image),
-      //             ),
-      //             _spacer,
-      //             FloatingActionButton(
-      //               onPressed: () {
-      //                 _boardController.add(
-      //                   const StackDrawing(
-      //                     caseStyle: CaseStyle(
-      //                       borderColor: Colors.grey,
-      //                       iconColor: Colors.white,
-      //                       boxAspectRatio: 1,
-      //                     ),
-      //                   ),
-      //                 );
-      //               },
-      //               child: const Icon(Icons.color_lens),
-      //             ),
-      //             _spacer,
-      //             FloatingActionButton(
-      //               onPressed: () {
-      //                 _boardController.add(
-      //                   StackBoardItem(
-      //                     child: const Text(
-      //                       'Custom Widget',
-      //                       style: TextStyle(color: Colors.black),
-      //                     ),
-      //                     onDel: _onDel,
-      //                     // caseStyle: const CaseStyle(initOffset: Offset(100, 100)),
-      //                   ),
-      //                 );
-      //               },
-      //               child: const Icon(Icons.add_box),
-      //             ),
-      //             _spacer,
-      //             FloatingActionButton(
-      //               onPressed: () {
-      //                 _boardController.add<CustomItem>(
-      //                   CustomItem(
-      //                     color: Color((math.Random().nextDouble() * 0xFFFFFF)
-      //                             .toInt())
-      //                         .withOpacity(1.0),
-      //                     onDel: () async => true,
-      //                   ),
-      //                 );
-      //               },
-      //               child: const Icon(Icons.add),
-      //             ),
-      //           ],
-      //         ),
-      //       ),
-      //     ),
-      //     FloatingActionButton(
-      //       onPressed: () => _boardController.clear(),
-      //       child: const Icon(Icons.close),
-      //     ),
-      //   ],
-      // ),
     );
   }
 
@@ -598,6 +564,19 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget get _spacer => const SizedBox(width: 5);
+}
+
+Future<File> saveFilePermanently(PlatformFile file) async {
+  final appStorage = await getApplicationDocumentsDirectory();
+  final newFile = File('${appStorage.path}/${file.name}');
+
+  return File(file.path!).copy(newFile.path);
+}
+
+void openFile(File file) {
+  Dialog(
+    child: Image.file(file),
+  );
 }
 
 class ItemCaseDemo extends StatefulWidget {
