@@ -68,7 +68,7 @@ class ToDo extends StatelessWidget {
                   height: 10.0,
                 ),
                 Text(
-                  'Todoey',
+                  'Todo',
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 50.0,

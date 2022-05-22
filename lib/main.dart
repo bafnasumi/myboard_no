@@ -66,13 +66,11 @@ class _MyAppState extends State<MyApp> {
       providers: [
         ChangeNotifierProvider(
           create: (context) => GoogleSignInProvider(),
-          // create: (context) => TaskData(),
         ),
-        // Provider(),
-        // Provider(
-        InheritedProvider(
+        ChangeNotifierProvider(
           create: (context) => TaskData(),
         ),
+        
       ],
       child: GetMaterialApp(
         debugShowCheckedModeBanner: false,
