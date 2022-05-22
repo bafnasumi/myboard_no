@@ -1,18 +1,11 @@
 // ignore_for_file: prefer_const_constructors, prefer_typing_uninitialized_variables, prefer_const_literals_to_create_immutables, avoid_print
 
-// import 'dart:html';
-// import 'package:myboardapp/services/firebaseApi.dart';
-// import 'package:path/path.dart' as p;
-// import 'package:myboardapp/pages/stack_board.dart' as sb;
-// import 'package:firebase_core/firebase_core.dart';
-// import 'dart:math' as math;
-//import 'package:file_picker/file_picker.dart';
+import 'package:flutter/services.dart';
+import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:myboardapp/boxes.dart';
 import 'package:myboardapp/pages/myvideo.dart' as vid;
-//import 'dart:ffi';
 import 'dart:typed_data';
 import 'package:path_provider/path_provider.dart';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'dart:io';
@@ -20,11 +13,14 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:stack_board/stack_board.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:screenshot/screenshot.dart';
+import 'package:pinningtrialpackage/pinningtrialpackage.dart';
 import 'loginpage.dart' as loginpage;
 import 'package:myboardapp/models/myboard.dart' as db;
 // ignore: library_prefixes
 import "package:myboardapp/services/google_sign_in.dart" as GSI;
+import 'package:myboardapp/components/stack_board_board.dart';
 
 /// Custom item type
 class CustomItem extends StackBoardItem {
@@ -65,7 +61,53 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  late StackBoardController _boardController;
+  static const batteryChannel = MethodChannel('com.example.myboardapp/method');
+  int newbatterylevel = 0;
+  late final StackBoardController _boardController;
+
+  //Screenshot controller
+  final screenshotController = ScreenshotController();
+
+  AddPin(String textt, VoidCallback onPressed, ImageProvider givenimage) {
+    return Expanded(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 10),
+        child: GestureDetector(
+          onTap: onPressed,
+          child: Container(
+            height: MediaQuery.of(context).size.height * .18,
+            width: MediaQuery.of(context).size.width * .2,
+
+            //padding: EdgeInsets.all(15),
+            decoration: BoxDecoration(
+              image: DecorationImage(image: givenimage, fit: BoxFit.cover),
+              color: Color.fromARGB(255, 117, 117, 117),
+              borderRadius: BorderRadius.circular(32),
+            ),
+            child: Text(
+              '$textt',
+              style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future _checkConnection() async {
+    final arguments = {'sumi': 'flutter'};
+    try {
+      int batterylevel =
+          await batteryChannel.invokeMethod('isConnected', arguments);
+      setState(() => batterylevel = newbatterylevel);
+    } on PlatformException catch (e) {
+      print(e);
+    }
+  }
+
   var box;
   ValueNotifier<db.Images> myImages = ValueNotifier<db.Images>(db.Images());
 
@@ -95,7 +137,18 @@ class _HomePageState extends State<HomePage> {
   File? file;
   UploadTask? task;
   String? urlDownload;
+
   dynamic path;
+
+  Future<File> saveFilePermanently(PlatformFile file) async {
+    //final File file_File = File(file.path);
+    //final PlatformFile file_PlatformFile = file;
+    final appStorage = await getApplicationDocumentsDirectory();
+    final newFile = File('${appStorage.path}/${file.name}');
+
+    return File(file.path!).copy(newFile.path);
+  }
+
   Future<FilePickerResult> selectPhotoOrVideo() async {
     final result = await FilePicker.platform.pickFiles(
         type: FileType.custom,
@@ -165,419 +218,414 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     var scaffoldKey;
-    return Scaffold(
-      backgroundColor: Colors.white,
-      resizeToAvoidBottomInset: false,
-      key: scaffoldKey,
-      appBar: AppBar(
-        toolbarHeight: 70.0,
-        centerTitle: true,
-        title: Padding(
-          padding: const EdgeInsets.only(top: 35.0),
-          child: Text(
-            'MyBoard',
-            style: GoogleFonts.smooch(
-              color: Colors.black87,
-              fontSize: 60,
+    return SafeArea(
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        resizeToAvoidBottomInset: false,
+        key: scaffoldKey,
+        appBar: AppBar(
+          toolbarHeight: 70.0,
+          centerTitle: true,
+          title: Padding(
+            padding: const EdgeInsets.only(top: 35.0),
+            child: Text(
+              'MyBoard $newbatterylevel',
+              style: GoogleFonts.smooch(
+                color: Colors.black87,
+                fontSize: 60,
+              ),
             ),
           ),
+          backgroundColor: Color.fromARGB(255, 255, 255, 255),
+          elevation: 0.0,
+          iconTheme: IconThemeData(color: Colors.black),
         ),
-        backgroundColor: Color.fromARGB(255, 255, 255, 255),
-        elevation: 0.0,
-        iconTheme: IconThemeData(color: Colors.black),
-      ),
-      drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          // ignore: prefer_const_literals_to_create_immutables
-          children: [
-            DrawerHeader(
-              child: Text("Header"),
-            ),
-            ListTile(
-              leading: Icon(Icons.settings),
-              title: Text("Settings"),
-              onTap: () {},
-            ),
-            ListTile(
-              leading: Icon(Icons.tag_faces_rounded),
-              title: Text("Contact us"),
-              onTap: () {},
-            ),
-            ListTile(
-              leading: Icon(Icons.logout),
-              title: Text("Logout"),
-              onTap: () async {
-                await GSI.GoogleSignInProvider().LogOut();
-                await FirebaseAuth.instance.signOut();
-                Get.off(loginpage.LogInPage());
-              },
-            ),
-          ],
-        ),
-      ),
-      //drawer: Drawer(child: ListView()),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            Stack(
-              children: [
-                Center(
-                    child: Column(
-                  children: <Widget>[],
-                )),
-                Positioned(
-                  left: 10,
-                  top: 20,
-                  child: IconButton(
-                    icon: Icon(Icons.menu),
-                    onPressed: () => scaffoldKey.currentState.openDrawer(),
-                  ),
-                ),
-              ],
-            ),
-            Padding(
-              padding: const EdgeInsets.only(top: 7.0, bottom: 5.0),
-              child: Text(
-                'edit',
-                style: GoogleFonts.adamina(
-                  color: Colors.black26,
-                  fontSize: 15,
-                ),
+        drawer: Drawer(
+          child: ListView(
+            padding: EdgeInsets.zero,
+            // ignore: prefer_const_literals_to_create_immutables
+            children: [
+              DrawerHeader(
+                child: Text("Header"),
               ),
-            ),
-            Container(
-              height: MediaQuery.of(context).size.height * 0.73,
-              width: MediaQuery.of(context).size.width * 0.95,
-              decoration: BoxDecoration(
-                boxShadow: const [
-                  BoxShadow(
-                    blurRadius: 3.0,
-                    blurStyle: BlurStyle.outer,
-                    color: Colors.black54,
-                  )
-                ],
-                borderRadius: BorderRadius.circular(25.0),
-                image: const DecorationImage(
-                  image: NetworkImage(
-                      'https://media.istockphoto.com/photos/blue-velvet-picture-id174897941?k=20&m=174897941&s=612x612&w=0&h=earrO_3wBH7HIFScdG5hpUvOUVb35CjrO8McEkHi9x4='),
-                  fit: BoxFit.fill,
-                ),
+              ListTile(
+                leading: Icon(Icons.settings),
+                title: Text("Settings"),
+                onTap: () {},
               ),
-              child: StackBoard(
-                controller: _boardController,
-                caseStyle: const CaseStyle(
-                  borderColor: Colors.grey,
-                  iconColor: Colors.white,
-                ),
-                //background: ColoredBox(color: Colors.grey[100]!),
-                customBuilder: (StackBoardItem t) {
-                  if (t is CustomItem) {
-                    return ItemCase(
-                      key: Key('StackBoardItem${t.id}'), // <==== must
-                      isCenter: false,
-                      onDel: () async => _boardController.remove(t.id),
-                      onTap: () => _boardController.moveItemToTop(t.id),
-                      caseStyle: const CaseStyle(
-                        borderColor: Colors.grey,
-                        iconColor: Colors.white,
-                      ),
-                      child: Container(
-                        width: 100,
-                        height: 100,
-                        color: t.color,
-                        alignment: Alignment.center,
-                        child: const Text(
-                          'Custom item',
-                          style: TextStyle(color: Colors.white),
-                        ),
-                      ),
-                    );
-                  }
-
-                  return null;
+              ListTile(
+                leading: Icon(Icons.tag_faces_rounded),
+                title: Text("Contact us"),
+                onTap: () {},
+              ),
+              ListTile(
+                leading: Icon(Icons.logout),
+                title: Text("Logout"),
+                onTap: () async {
+                  await GSI.GoogleSignInProvider().LogOut();
+                  await FirebaseAuth.instance.signOut();
+                  Get.off(loginpage.LogInPage());
                 },
               ),
-            ),
-            const SizedBox(
-              height: 10.0,
-            ),
-            GestureDetector(
-              onTap: () {
-                showModalBottomSheet(
-                    isScrollControlled: true,
-                    context: context,
-                    builder: (context) {
-                      return Container(
-                        color: Color.fromARGB(255, 214, 214, 214),
-                        child: Wrap(
-                          //TODO: Converti Wrap into GridView
-                          children: [
-                            Divider(
-                              height: MediaQuery.of(context).size.height * .01,
-                            ),
-                            // SizedBox(
-                            //   height: MediaQuery.of(context).size.height * .01,
-                            // ),
-                            Row(
-                              children: [
-                                AddPin(
-                                  'Text',
-                                  () {
-                                    _boardController.add(
-                                      const AdaptiveText(
-                                        'Flutter Candies',
-                                        tapToEdit: true,
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.bold),
-                                      ),
-                                    );
-                                  },
-                                ),
-                                AddPin(
-                                  'Photo',
-                                  () async {
-                                    // selectPhotoOrVideo();
-                                    // uploadPhotoOrVideo();
-                                    final result = await FilePicker.platform
-                                        .pickFiles(
-                                            type: FileType.custom,
-                                            allowMultiple: false,
-                                            allowedExtensions: [
-                                          'jpeg',
-                                          'png',
-                                          'gif'
-                                        ]);
-                                    final oneFile = result?.files.first;
-
-                                    final legitfile =
-                                        File(oneFile!.path.toString());
-                                    print(oneFile.name);
-                                    print(oneFile.extension);
-                                    print(oneFile.path);
-                                    print(oneFile.size);
-                                    //Navigator.pushNamed(context, '/memories');
-                                    // ImageProvider gotFile = Get.arguments();
-                                    File finalImage =
-                                        await saveFilePermanently(oneFile);
-                                    print('from ' + oneFile.path.toString());
-                                    print('to ' + finalImage.path);
-                                    setState(
-                                      () {
-                                        // final myimage = box.values.toList().cast<db.Images>();
-                                        //var myimage = BoxesofImage.getImages;
-                                        //print(myimage.toString());
-                                        _boardController.add(StackBoardItem(
-                                          child: Image.file(finalImage),
-                                        ));
-                                      },
-                                    );
-
-                                    // print(yesfile);
-                                    // if (pickedPicture != null) {
-                                    //   var fileBytes =
-                                    //       pickedPicture.files.first.bytes!;
-                                    //   String fileName =
-                                    //       pickedPicture.files.first.name;
-
-                                    // Upload file
-
-                                    // await FirebaseStorage.instance
-                                    //     .ref('uploads/$fileName')
-                                    //     .putData(fileBytes);
-                                    //}
-                                  },
-                                ),
-                              ],
-                            ),
-                            Divider(
-                              height: MediaQuery.of(context).size.height * .01,
-                            ),
-                            Row(
-                              children: [
-                                AddPin(
-                                  'Video',
-                                  () async {
-                                    //Navigator.pushNamed(context, '/video');
-
-                                    PlatformFile localfile =
-                                        await vid.pickVideoFile();
-
-                                    //final myvideo = await vid.saveFilePermanently(localfile);
-
-                                    setState(
-                                      () async {
-                                        // final myimage = box.values.toList().cast<db.Images>();
-                                        //var myimage = BoxesofImage.getImages;
-                                        //print(myimage.toString());
-
-                                        final myvideo = await vid
-                                            .saveFilePermanently(localfile);
-
-                                        _boardController.add(StackBoardItem(
-                                          // child: Image.file(finalImage),
-                                          child: Text(myvideo.toString()),
-                                        ));
-
-                                        // final result = await FilePicker.platform
-                                        //     .pickFiles(
-                                        //         type: FileType.custom,
-                                        //         allowMultiple: false,
-                                        //         allowedExtensions: [
-                                        //       'mp4',
-                                        //       'mkv',
-                                        //       'heic'
-                                        //     ]);
-                                        // final oneFile = result?.files.first;
-
-                                        // final legitfile =
-                                        //     File(oneFile!.path.toString());
-                                        // print(oneFile.name);
-                                        // print(oneFile.extension);
-                                        // print(oneFile.path);
-                                        // print(oneFile.size);
-                                        // //Navigator.pushNamed(context, '/memories');
-                                        // // ImageProvider gotFile = Get.arguments();
-                                        // File finalImage =
-                                        //     await saveFilePermanently(oneFile);
-                                        // print('from ' + oneFile.path.toString());
-                                        // print('to ' + finalImage.path);
-                                        // setState(
-                                        //   () {
-                                        //     // final myimage = box.values.toList().cast<db.Images>();
-                                        //     //var myimage = BoxesofImage.getImages;
-                                        //     //print(myimage.toString());
-                                        //     _boardController.add(StackBoardItem(
-                                        //       // child: Image.file(finalImage),
-                                        //       child: Text('VIdeo will come here'),
-                                        //     ));
-                                        //   },
-                                        // );
-                                      },
-                                    );
-                                  },
-                                ),
-                              ],
-                            ),
-                            Divider(
-                              height: MediaQuery.of(context).size.height * .01,
-                            ),
-                            Row(
-                              children: [
-                                AddPin(
-                                  'Link',
-                                  () {
-                                    Navigator.pushNamed(context, '/links');
-                                  },
-                                ),
-                                AddPin(
-                                  'Scribble',
-                                  () {
-                                    _boardController.add(
-                                      StackBoardItem(
-                                        child: const Text(
-                                          'Custom Widget',
-                                          style: TextStyle(color: Colors.black),
-                                        ),
-                                        onDel: _onDel,
-                                        // caseStyle: const CaseStyle(initOffset: Offset(100, 100)),
-                                      ),
-                                    );
-                                  },
-                                ),
-                              ],
-                            ),
-                            Divider(
-                              height: MediaQuery.of(context).size.height * .01,
-                            ),
-                            Row(
-                              children: [
-                                AddPin(
-                                  'Audio',
-                                  () {
-                                    Navigator.pushNamed(context, '/audio');
-                                  },
-                                ),
-                                AddPin(
-                                  'Voice to Text',
-                                  () {
-                                    Navigator.pushNamed(
-                                        context, '/voicetotext');
-                                  },
-                                ),
-                              ],
-                            ),
-                            Divider(
-                              height: MediaQuery.of(context).size.height * .01,
-                            ),
-                          ],
-                        ),
-                      );
-                    });
-              },
-              child: Align(
-                alignment: Alignment.bottomCenter,
-                child: Stack(
-                  alignment: AlignmentDirectional.center,
+              ListTile(
+                leading: Icon(Icons.settings),
+                title: Text("Screenshot"),
+                onTap: () {
+                  Navigator.pushNamed(context, '/screenshots');
+                },
+              ),
+            ],
+          ),
+        ),
+        //drawer: Drawer(child: ListView()),
+        body: Screenshot(
+          controller: screenshotController,
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Stack(
                   children: [
-                    Container(
-                      width: MediaQuery.of(context).size.width,
-                      height: MediaQuery.of(context).size.height * .07,
-                      decoration: const BoxDecoration(
-                        borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(10.0),
-                          topRight: Radius.circular(10.0),
-                        ),
-                        color: Color.fromARGB(255, 161, 160, 160),
+                    Center(
+                        child: Column(
+                      children: <Widget>[],
+                    )),
+                    Positioned(
+                      left: 10,
+                      top: 20,
+                      child: IconButton(
+                        icon: Icon(Icons.menu),
+                        onPressed: () => scaffoldKey.currentState.openDrawer(),
                       ),
                     ),
-                    Container(
+                  ],
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 7.0, bottom: 5.0),
+                  child: Text(
+                    'edit',
+                    style: GoogleFonts.adamina(
+                      color: Colors.black26,
+                      fontSize: 15,
+                    ),
+                  ),
+                ),
+                Stack(
+                  alignment: Alignment.topRight,
+                  children: [
+                    personalBoard(context, _boardController),
+                    Padding(
                       padding: const EdgeInsets.all(8.0),
-                      width: MediaQuery.of(context).size.width * 0.92,
-                      height: MediaQuery.of(context).size.height * .042,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10.0),
-                        color: const Color.fromARGB(255, 197, 197, 197),
-                      ),
-                      child: const Text(
-                        'Add Photo, Video, Link,...',
-                        style: TextStyle(
-                          color: Colors.white70,
-                          fontSize: 15.0,
+                      child: IconButton(
+                        onPressed: () async {
+                          final ss = await screenshotController.capture();
+                          print(ss);
+                          final File ss_file = File.fromRawPath(ss!);
+                          final String filepath = await saveImage(ss);
+                          print('path os ss file: $filepath');
+                          //await saveFilePermanently(ss_platform_file);
+                        },
+                        icon: Icon(
+                          Icons.done_outline_rounded,
+                          color: Colors.white,
                         ),
                       ),
                     ),
                   ],
                 ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+                const SizedBox(
+                  height: 10.0,
+                ),
+                GestureDetector(
+                  onTap: () async {
+                    showModalBottomSheet(
+                        constraints: BoxConstraints(
+                          maxHeight: MediaQuery.of(context).size.height * .8,
+                        ),
+                        backgroundColor: Colors.transparent,
+                        isScrollControlled: true,
+                        context: context,
+                        builder: (context) {
+                          return Container(
+                            decoration: BoxDecoration(
+                              color: Colors.white.withOpacity(0.8),
+                              borderRadius: BorderRadius.circular(30),
+                            ),
+                            child: ListView(
+                              //TODO: Convert Wrap into GridView
+                              children: [
+                                SizedBox(
+                                  height:
+                                      MediaQuery.of(context).size.height * .04,
+                                ),
+                                // SizedBox(
+                                //   height: MediaQuery.of(context).size.height * .01,
+                                // ),
+                                Row(
+                                  children: [
+                                    AddPin('Photo and Screenshots', () async {
+                                      // selectPhotoOrVideo();
+                                      // uploadPhotoOrVideo();
+                                      final result = await FilePicker.platform
+                                          .pickFiles(
+                                              type: FileType.custom,
+                                              allowMultiple: false,
+                                              allowedExtensions: [
+                                            'jpeg',
+                                            'png',
+                                            'gif'
+                                          ]);
+                                      final oneFile = result?.files.first;
 
-  Widget AddPin(String textt, VoidCallback onPressed) {
-    return Expanded(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 25),
-        child: GestureDetector(
-          onTap: onPressed,
-          child: Container(
-            padding: EdgeInsets.all(15),
-            decoration: BoxDecoration(
-              color: Color.fromARGB(255, 117, 117, 117),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Center(
-              child: Text(
-                '$textt',
-                style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 18),
-              ),
+                                      final legitfile =
+                                          File(oneFile!.path.toString());
+                                      print(oneFile.name);
+                                      print(oneFile.extension);
+                                      print(oneFile.path);
+                                      print(oneFile.size);
+                                      //Navigator.pushNamed(context, '/memories');
+                                      // ImageProvider gotFile = Get.arguments();
+                                      File finalImage =
+                                          await saveFilePermanently(oneFile);
+                                      print('from ' + oneFile.path.toString());
+                                      print('to ' + finalImage.path);
+                                      setState(
+                                        () {
+                                          // final myimage = box.values.toList().cast<db.Images>();
+                                          //var myimage = BoxesofImage.getImages;
+                                          //print(myimage.toString());
+                                          _boardController.add(StackBoardItem(
+                                            child: Image.file(finalImage),
+                                          ));
+                                        },
+                                      );
+
+                                      // print(yesfile);
+                                      // if (pickedPicture != null) {
+                                      //   var fileBytes =
+                                      //       pickedPicture.files.first.bytes!;
+                                      //   String fileName =
+                                      //       pickedPicture.files.first.name;
+
+                                      // Upload file
+
+                                      // await FirebaseStorage.instance
+                                      //     .ref('uploads/$fileName')
+                                      //     .putData(fileBytes);
+                                      //}
+                                    }, AssetImage('assets/images/photos.png')),
+                                  ],
+                                ),
+                                Divider(
+                                  height:
+                                      MediaQuery.of(context).size.height * .02,
+                                ),
+                                Row(
+                                  children: [
+                                    AddPin(
+                                      'Text',
+                                      () {
+                                        _boardController.add(
+                                          const AdaptiveText(
+                                            'Enter text here',
+                                            tapToEdit: true,
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                        );
+                                      },
+                                      AssetImage('assets/images/text.png'),
+                                    ),
+                                    AddPin(
+                                      'Video',
+                                      () async {
+                                        //Navigator.pushNamed(context, '/video');
+
+                                        PlatformFile localfile =
+                                            await vid.pickVideoFile();
+
+                                        //final myvideo = await vid.saveFilePermanently(localfile);
+
+                                        setState(
+                                          () async {
+                                            // final myimage = box.values.toList().cast<db.Images>();
+                                            //var myimage = BoxesofImage.getImages;
+                                            //print(myimage.toString());
+
+                                            final myvideo = await vid
+                                                .saveFilePermanently(localfile);
+
+                                            _boardController.add(StackBoardItem(
+                                              // child: Image.file(finalImage),
+                                              child: Text(myvideo.toString()),
+                                            ));
+
+                                            // final result = await FilePicker.platform
+                                            //     .pickFiles(
+                                            //         type: FileType.custom,
+                                            //         allowMultiple: false,
+                                            //         allowedExtensions: [
+                                            //       'mp4',
+                                            //       'mkv',
+                                            //       'heic'
+                                            //     ]);
+                                            // final oneFile = result?.files.first;
+
+                                            // final legitfile =
+                                            //     File(oneFile!.path.toString());
+                                            // print(oneFile.name);
+                                            // print(oneFile.extension);
+                                            // print(oneFile.path);
+                                            // print(oneFile.size);
+                                            // //Navigator.pushNamed(context, '/memories');
+                                            // // ImageProvider gotFile = Get.arguments();
+                                            // File finalImage =
+                                            //     await saveFilePermanently(oneFile);
+                                            // print('from ' + oneFile.path.toString());
+                                            // print('to ' + finalImage.path);
+                                            // setState(
+                                            //   () {
+                                            //     // final myimage = box.values.toList().cast<db.Images>();
+                                            //     //var myimage = BoxesofImage.getImages;
+                                            //     //print(myimage.toString());
+                                            //     _boardController.add(StackBoardItem(
+                                            //       // child: Image.file(finalImage),
+                                            //       child: Text('VIdeo will come here'),
+                                            //     ));
+                                            //   },
+                                            // );
+                                          },
+                                        );
+                                      },
+                                      AssetImage('assets/images/video.jpg'),
+                                    ),
+                                  ],
+                                ),
+                                Divider(
+                                  height:
+                                      MediaQuery.of(context).size.height * .02,
+                                ),
+                                Row(
+                                  children: [
+                                    AddPin(
+                                      'Link',
+                                      () {
+                                        Navigator.pushNamed(context, '/links');
+                                      },
+                                      AssetImage('assets/images/links.png'),
+                                    ),
+                                    AddPin(
+                                      'Scribble',
+                                      () {
+                                        _boardController.add(
+                                          StackBoardItem(
+                                            child: const Text(
+                                              'Custom Widget',
+                                              style: TextStyle(
+                                                  color: Colors.black),
+                                            ),
+                                            onDel: _onDel,
+                                            // caseStyle: const CaseStyle(initOffset: Offset(100, 100)),
+                                          ),
+                                        );
+                                      },
+                                      AssetImage('assets/images/scribble.jpg'),
+                                    ),
+                                  ],
+                                ),
+                                Divider(
+                                  height:
+                                      MediaQuery.of(context).size.height * .02,
+                                ),
+                                Row(
+                                  children: [
+                                    AddPin(
+                                      'Audio',
+                                      () {
+                                        Navigator.pushNamed(context, '/audio');
+                                      },
+                                      AssetImage('assets/images/audio.jpg'),
+                                    ),
+                                    AddPin(
+                                      'Voice to Text',
+                                      () {
+                                        Navigator.pushNamed(
+                                            context, '/voicetotext');
+                                      },
+                                      AssetImage(
+                                          'assets/images/voicetotext.png'),
+                                    ),
+                                  ],
+                                ),
+                                Divider(
+                                  height:
+                                      MediaQuery.of(context).size.height * .02,
+                                ),
+                                Row(
+                                  children: [
+                                    AddPin(
+                                      'ToDo',
+                                      () {
+                                        Navigator.pushNamed(context, '/todo');
+                                      },
+                                      AssetImage('assets/images/todo.png'),
+                                    ),
+                                    AddPin(
+                                      'Reminders',
+                                      () {
+                                        Navigator.pushNamed(
+                                            context, '/reminder');
+                                      },
+                                      AssetImage('assets/images/reminder.jpg'),
+                                    ),
+                                  ],
+                                ),
+                                Divider(
+                                  height:
+                                      MediaQuery.of(context).size.height * .02,
+                                ),
+                              ],
+                            ),
+                          );
+                        });
+                  },
+                  child: Align(
+                    alignment: Alignment.bottomCenter,
+                    child: Stack(
+                      alignment: AlignmentDirectional.center,
+                      children: [
+                        Container(
+                          width: MediaQuery.of(context).size.width,
+                          height: MediaQuery.of(context).size.height * .07,
+                          decoration: const BoxDecoration(
+                            borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(10.0),
+                              topRight: Radius.circular(10.0),
+                            ),
+                            color: Color.fromARGB(255, 161, 160, 160),
+                          ),
+                        ),
+                        Container(
+                          padding: const EdgeInsets.all(8.0),
+                          width: MediaQuery.of(context).size.width * 0.88,
+                          height: MediaQuery.of(context).size.height * .042,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(15.0),
+                            color: const Color.fromARGB(255, 197, 197, 197),
+                          ),
+                          child: const Text(
+                            'Add Photo, Video, Link,...',
+                            style: TextStyle(
+                              color: Colors.white70,
+                              fontSize: 15.0,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
         ),
@@ -585,14 +633,22 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  // ignore: non_constant_identifier_names
+
   Widget get _spacer => const SizedBox(width: 5);
-}
 
-Future<File> saveFilePermanently(PlatformFile file) async {
-  final appStorage = await getApplicationDocumentsDirectory();
-  final newFile = File('${appStorage.path}/${file.name}');
+  Future<String> saveImage(Uint8List bytes) async {
+    await [Permission.storage].request();
 
-  return File(file.path!).copy(newFile.path);
+    final time = DateTime.now()
+        .toIso8601String()
+        .replaceAll('.', '-')
+        .replaceAll(':', '-');
+    final name = 'screenshot_$time';
+    final result = await ImageGallerySaver.saveImage(bytes, name: name);
+
+    return result['filepath'];
+  }
 }
 
 void openFile(File file) {

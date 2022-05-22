@@ -30,7 +30,8 @@ dependencies:
   flutter:
     sdk: flutter
 
-
+  pinningtrialpackage:
+    path: packages/pinningtrialpackage
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
@@ -39,7 +40,7 @@ dependencies:
   firebase_auth: ^3.3.17
   google_sign_in: ^5.3.1
 
-  stack_board: ^0.1.2
+  # stack_board: ^0.1.2
 
   google_fonts: ^2.3.2
   provider: ^6.0.2
@@ -68,6 +69,10 @@ dependencies:
 
   video_player: ^2.4.2
 
+  screenshot: ^1.2.3
+  permission_handler: ^9.2.0
+  image_gallery_saver: ^1.7.1
+
 
 dev_dependencies:
   flutter_test:
@@ -92,8 +97,8 @@ flutter:
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
-  # assets:
-  #   - images/
+  assets:
+    - assets/images/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
