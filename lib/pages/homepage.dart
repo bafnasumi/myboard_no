@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors, prefer_typing_uninitialized_variables, prefer_const_literals_to_create_immutables, avoid_print
+// ignore_for_file: prefer_const_constructors, prefer_typing_uninitialized_variables, prefer_const_literals_to_create_immutables, avoid_print, non_constant_identifier_names
 
 // import 'dart:html';
 // import 'package:myboardapp/services/firebaseApi.dart';
@@ -20,6 +20,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 import 'package:stack_board/stack_board.dart';
 import 'loginpage.dart' as loginpage;
 import 'package:myboardapp/models/myboard.dart' as db;
@@ -494,9 +495,10 @@ class _HomePageState extends State<HomePage> {
                             Row(
                               children: [
                                 AddPin(
-                                  'Audio',
+                                  'ToDo',
                                   () {
-                                    Navigator.pushNamed(context, '/audio');
+                                    // Provider(create: create)
+                                    Navigator.pushNamed(context, '/todo');
                                   },
                                 ),
                                 AddPin(

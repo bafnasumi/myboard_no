@@ -62,8 +62,18 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => GoogleSignInProvider(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (context) => GoogleSignInProvider(),
+          // create: (context) => TaskData(),
+        ),
+        // Provider(),
+        // Provider(
+        InheritedProvider(
+          create: (context) => TaskData(),
+        ),
+      ],
       child: GetMaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'welcomescreen',
@@ -75,7 +85,7 @@ class _MyAppState extends State<MyApp> {
           '/register': (context) => const RegisterPage(),
           '/reminder': (context) => const Reminder(),
           '/voicetotext': (context) => const VoiceToText(),
-          '/todo': (context) => const ToDo(),
+          '/todo': (context) => ToDo(),
           '/memories': (context) => const Memories(),
           '/screenshots': (context) => const Screenshots(),
           '/links': (context) => const Links(),
