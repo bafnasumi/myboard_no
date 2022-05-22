@@ -1,31 +1,8 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors, use_key_in_widget_constructors, prefer_const_constructors_in_immutables, avoid_unnecessary_containers
 
-
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'dart:collection';
-
-// class AppProviders extends StatelessWidget {
-//   final Widget? child;
-
-//   AppProviders({this.child});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return MultiProvider(
-//       providers: [
-//         ChangeNotifierProvider<TaskData>(
-//           builder: (context) => Posts(),
-//         ),
-//         ChangeNotifierProvider<Settings>(
-//           builder: (context) => Settings(),
-//         ),
-//       ],
-//       child: child;
-//     );
-//   }
-// }
 
 class ToDo extends StatelessWidget {
   @override
@@ -109,7 +86,7 @@ class ToDo extends StatelessWidget {
 class TasksList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return  Consumer<TaskData>(
+    return Consumer<TaskData>(
       builder: (context, taskData, child) {
         return ListView.builder(
           itemBuilder: (context, index) {
@@ -169,7 +146,7 @@ class TaskTile extends StatelessWidget {
 class AddTaskScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    String newTaskTitle;
+    String? newTaskTitle;
 
     return Container(
       color: Color(0xff757575),
@@ -200,18 +177,25 @@ class AddTaskScreen extends StatelessWidget {
                 newTaskTitle = newText;
               },
             ),
+            SizedBox(
+              height: 15,
+            ),
             // ignore: deprecated_member_use
-            FlatButton(
+            ElevatedButton(
               child: Text(
                 'Add',
                 style: TextStyle(
-                  color: Colors.white,
-                ),
+                    // color: Colors.white,
+                    // backgroundcolor: Color.fromARGB(255, 10, 75, 107),
+                    ),
               ),
-              color: Color.fromARGB(255, 10, 75, 107),
+              style: ElevatedButton.styleFrom(
+                primary: Color.fromARGB(255, 10, 75, 107),
+              ),
               onPressed: () {
-                // addTask(newTaskTitle);
-                // AddTask();
+                
+                Provider.of<TaskData>(context, listen: false)
+                    .addTask(newTaskTitle!);
                 Navigator.pop(context);
               },
             ),
@@ -227,9 +211,9 @@ class AddTaskScreen extends StatelessWidget {
 class TaskData extends ChangeNotifier {
   // ignore: prefer_final_fields
   List<Task> _tasks = [
-    Task(name: 'Buy milk'),
-    Task(name: 'Buy cake'),
-    Task(name: 'Buy bread'),
+    Task(name: 'Study for CAT'),
+    Task(name: 'Google Pay :)'),
+    Task(name: 'Get into IIM'),
   ];
 
   UnmodifiableListView<Task> get tasks {
