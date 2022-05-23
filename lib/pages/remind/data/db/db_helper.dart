@@ -33,7 +33,7 @@ class DbHelper {
     }
   }
 
-  static Future<int> insertDb({required Task task}) async {
+  static Future<int> insertDb({required reminderTask task}) async {
     if (kDebugMode) {
       print('insert function called.');
     }
@@ -47,7 +47,7 @@ class DbHelper {
     return await _database!.query(_tableName);
   }
 
-  static Future<int> deleteTask(Task task) async {
+  static Future<int> deleteTask(reminderTask task) async {
     return await _database!
         .delete(_tableName, where: 'id=?', whereArgs: [task.id]);
   }

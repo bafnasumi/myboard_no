@@ -154,9 +154,7 @@ class _ReminderState extends State<Reminder> {
           onTap: () {},
           customBorder: const CircleBorder(),
           child: Padding(
-            padding: const EdgeInsets.all(10.0),
-            child: Icon(Icons.person)
-          ),
+              padding: const EdgeInsets.all(10.0), child: Icon(Icons.person)),
         ),
       ],
     );
@@ -168,7 +166,7 @@ class _ReminderState extends State<Reminder> {
           itemCount: _taskController.taskList.length,
           itemBuilder: (_, index) {
             print(_taskController.taskList.length);
-            Task task = _taskController.taskList[index];
+            reminderTask task = _taskController.taskList[index];
             if (task.repeat!.toLowerCase() == 'daily' ||
                 task.date == DateFormat.yMd().format(currentDate)) {
               return AnimationConfiguration.staggeredList(
@@ -190,7 +188,7 @@ class _ReminderState extends State<Reminder> {
     }));
   }
 
-  void _showBottomSheet(BuildContext context, Task task) {
+  void _showBottomSheet(BuildContext context, reminderTask task) {
     Get.bottomSheet(
       Container(
         padding: const EdgeInsets.only(top: 4),
@@ -227,7 +225,7 @@ class _ReminderState extends State<Reminder> {
     );
   }
 
-  _completedButtonBottomSheet(Task task) {
+  _completedButtonBottomSheet(reminderTask task) {
     return _buttonBottomSheet(
         color: ColorPalette.primaryClr,
         label: 'Task Completed',
@@ -237,7 +235,7 @@ class _ReminderState extends State<Reminder> {
         });
   }
 
-  _deleteButtonBottomSheet(Task task) {
+  _deleteButtonBottomSheet(reminderTask task) {
     return _buttonBottomSheet(
         color: Colors.red[300]!,
         label: 'Delete Task',

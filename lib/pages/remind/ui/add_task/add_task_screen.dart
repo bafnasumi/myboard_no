@@ -339,7 +339,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
 
   void _addTaskToDb() async {
     int finalTask = await taskController.addTask(
-      task: Task(
+      task: reminderTask(
         title: titleController.text,
         note: noteController.text,
         startTime: startTime,

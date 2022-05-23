@@ -4,7 +4,7 @@ import '../../data/entity/task.dart';
 import '../../ui/text_theme.dart';
 
 class TaskItem extends StatelessWidget {
-  final Task task;
+  final reminderTask task;
   final Function() onTap;
   const TaskItem({Key? key, required this.task, required this.onTap})
       : super(key: key);

@@ -3,18 +3,19 @@ import '../data/db/db_helper.dart';
 import '../data/entity/task.dart';
 
 class TaskController extends GetxController {
-  List<Task> taskList = <Task>[].obs;
+  List<reminderTask> taskList = <reminderTask>[].obs;
 
-  Future<int> addTask({required Task task}) async {
+  Future<int> addTask({required reminderTask task}) async {
     return await DbHelper.insertDb(task: task);
   }
 
   Future<void> getAllTask() async {
     final tasks = await DbHelper.getAllTask();
-    taskList.assignAll(tasks.map((task) => Task.fromJson(task)).toList());
+    taskList
+        .assignAll(tasks.map((task) => reminderTask.fromJson(task)).toList());
   }
 
-  Future<int> deleteTask({required Task task}) async {
+  Future<int> deleteTask({required reminderTask task}) async {
     final index = await DbHelper.deleteTask(task);
     getAllTask();
     return index;

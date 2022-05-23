@@ -1,4 +1,4 @@
-class Task {
+class reminderTask {
   int? id;
   String? title;
   String? note;
@@ -10,7 +10,7 @@ class Task {
   int? isCompleted;
   String? color;
 
-  Task({
+  reminderTask({
     this.id,
     this.title,
     this.note,
@@ -23,7 +23,7 @@ class Task {
     this.color,
   });
 
-  Task.fromJson(Map<String, dynamic> json)
+  reminderTask.fromJson(Map<String, dynamic> json)
       : id = json['id'],
         title = json['title'],
         note = json['note'],
