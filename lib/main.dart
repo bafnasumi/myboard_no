@@ -55,6 +55,8 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+
+
   @override
   void dispose() {
     Hive.close();
@@ -71,7 +73,6 @@ class _MyAppState extends State<MyApp> {
         ChangeNotifierProvider(
           create: (context) => TaskData(),
         ),
-        
       ],
       child: GetMaterialApp(
         debugShowCheckedModeBanner: false,
@@ -92,7 +93,6 @@ class _MyAppState extends State<MyApp> {
           '/quotes': (context) => const Quotes(),
           '/video': (context) => const Video(),
           '/audio': (context) => const Audio(),
-          // '/stack_board': (context) => const StackBoard(),
           '/boardeditpage': (context) => const BoardEditPage(),
         },
       ),
