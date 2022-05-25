@@ -22,3 +22,17 @@ class Link extends HiveObject {
   @HiveField(1)
   late String description;
 }
+
+@HiveType(typeId: 3)
+class ToDo extends HiveObject with ChangeNotifier {
+  @HiveField(0)
+  late String? todo;
+  @HiveField(1)
+  late bool isDone;
+
+  ToDo({this.todo, this.isDone = false});
+
+  void toggleDone() {
+    isDone = !isDone;
+  }
+}

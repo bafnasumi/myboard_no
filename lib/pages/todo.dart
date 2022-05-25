@@ -1,14 +1,16 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors, use_key_in_widget_constructors, prefer_const_constructors_in_immutables, avoid_unnecessary_containers
 
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'dart:collection';
+import 'package:myboardapp/models/myboard.dart' as m;
 
 class ToDo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromARGB(255, 10, 75, 107),
+      backgroundColor: Colors.white,
       floatingActionButton: FloatingActionButton(
           backgroundColor: Color.fromARGB(255, 10, 75, 107),
           child: Icon(Icons.add),
@@ -28,26 +30,26 @@ class ToDo extends StatelessWidget {
         children: <Widget>[
           Container(
             padding: EdgeInsets.only(
-                top: 60.0, left: 30.0, right: 30.0, bottom: 30.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+                top: 70.0, left: 30.0, right: 30.0, bottom: 30.0),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
-                CircleAvatar(
-                  child: Icon(
-                    Icons.list,
-                    size: 30.0,
-                    color: Color.fromARGB(255, 10, 75, 107),
-                  ),
-                  backgroundColor: Colors.white,
-                  radius: 30.0,
+                IconButton(
+                  icon: Icon(Icons.arrow_back_outlined),
+                  color: Colors.black,
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  iconSize: 40.0,
                 ),
                 SizedBox(
                   height: 10.0,
                 ),
                 Text(
                   'Todo',
-                  style: TextStyle(
-                    color: Colors.white,
+                  style: GoogleFonts.italiana(
+                    color: Colors.black,
                     fontSize: 50.0,
                     fontWeight: FontWeight.w700,
                   ),
@@ -55,7 +57,7 @@ class ToDo extends StatelessWidget {
                 Text(
                   '${Provider.of<TaskData>(context).taskCount} Tasks',
                   style: TextStyle(
-                    color: Colors.white,
+                    color: Colors.black,
                     fontSize: 18,
                   ),
                 ),
@@ -92,7 +94,7 @@ class TasksList extends StatelessWidget {
           itemBuilder: (context, index) {
             final task = taskData.tasks[index];
             return TaskTile(
-              taskTitle: task.name,
+              taskTitle: task.todo,
               isChecked: task.isDone,
               checkboxCallback: (checkboxState) {
                 taskData.updateTask(task);
@@ -193,7 +195,6 @@ class AddTaskScreen extends StatelessWidget {
                 primary: Color.fromARGB(255, 10, 75, 107),
               ),
               onPressed: () {
-                
                 Provider.of<TaskData>(context, listen: false)
                     .addTask(newTaskTitle!);
                 Navigator.pop(context);
@@ -210,13 +211,13 @@ class AddTaskScreen extends StatelessWidget {
 
 class TaskData extends ChangeNotifier {
   // ignore: prefer_final_fields
-  List<Task> _tasks = [
-    Task(name: 'Study for CAT'),
-    Task(name: 'Google Pay :)'),
-    Task(name: 'Get into IIM'),
+  List<m.ToDo> _tasks = [
+    m.ToDo(todo: 'Study for CAT'),
+    m.ToDo(todo: 'Google Pay :)'),
+    m.ToDo(todo: 'Get into IIM'),
   ];
 
-  UnmodifiableListView<Task> get tasks {
+  UnmodifiableListView<m.ToDo> get tasks {
     return UnmodifiableListView(_tasks);
   }
 
@@ -225,17 +226,17 @@ class TaskData extends ChangeNotifier {
   }
 
   void addTask(String newTaskTitle) {
-    final task = Task(name: newTaskTitle);
+    final task = m.ToDo(todo: newTaskTitle);
     _tasks.add(task);
     notifyListeners();
   }
 
-  void updateTask(Task task) {
+  void updateTask(m.ToDo task) {
     task.toggleDone();
     notifyListeners();
   }
 
-  void deleteTask(Task task) {
+  void deleteTask(m.ToDo task) {
     _tasks.remove(task);
     notifyListeners();
   }
@@ -243,13 +244,13 @@ class TaskData extends ChangeNotifier {
 
 // TASK
 
-class Task {
-  final String? name;
-  bool isDone;
+// class Task {
+//   final String? name;
+//   bool isDone;
 
-  Task({this.name, this.isDone = false});
+//   Task({this.name, this.isDone = false});
 
-  void toggleDone() {
-    isDone = !isDone;
-  }
-}
+//   void toggleDone() {
+//     isDone = !isDone;
+//   }
+// }

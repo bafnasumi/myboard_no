@@ -85,10 +85,7 @@ class _SpeechScreenState extends State<SpeechScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Confidence: ${(_confidence * 100.0).toStringAsFixed(1)}%'),
-        centerTitle: true,
-      ),
+      // Text('Confidence: ${(_confidence * 100.0).toStringAsFixed(1)}%'),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: AvatarGlow(
         animate: _isListening,
@@ -98,6 +95,7 @@ class _SpeechScreenState extends State<SpeechScreen> {
         repeatPauseDuration: const Duration(milliseconds: 100),
         repeat: true,
         child: FloatingActionButton(
+          backgroundColor: Colors.red,
           onPressed: _listen,
           child: Icon(_isListening ? Icons.mic : Icons.mic_none),
         ),
@@ -105,7 +103,9 @@ class _SpeechScreenState extends State<SpeechScreen> {
       body: SingleChildScrollView(
         reverse: true,
         child: Container(
-          padding: const EdgeInsets.fromLTRB(30.0, 30.0, 30.0, 150.0),
+          padding: const EdgeInsets.fromLTRB(30.0, 100.0, 30.0, 150.0),
+          // decoration:
+          //     BoxDecoration(color: Colors.white12, border: Border.all()),
           child: TextHighlight(
             text: _text,
             words: _highlights,

@@ -8,6 +8,7 @@ import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:myboardapp/boxes.dart';
 import 'package:myboardapp/components/custom_stack.dart';
 import 'package:myboardapp/pages/myvideo.dart' as vid;
+import 'package:myboardapp/pages/todo.dart';
 import 'dart:typed_data';
 import 'package:path_provider/path_provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -18,6 +19,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:provider/provider.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:pinningtrialpackage/pinningtrialpackage.dart';
 import '../components/round_image_button.dart';
@@ -27,37 +29,8 @@ import 'package:myboardapp/models/myboard.dart' as db;
 import "package:myboardapp/services/google_sign_in.dart" as GSI;
 import 'package:myboardapp/components/stack_board_board.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-
-/// Custom item type
-class CustomItem extends StackBoardItem {
-  const CustomItem({
-    required this.color,
-    Future<bool> Function()? onDel,
-    int? id, // <==== must
-  }) : super(
-          child: const Text('CustomItem'),
-          onDel: onDel,
-          id: id, // <==== must
-        );
-
-  final Color? color;
-
-  @override // <==== must
-  CustomItem copyWith({
-    CaseStyle? caseStyle,
-    Widget? child,
-    int? id,
-    Future<bool> Function()? onDel,
-    dynamic Function(bool)? onEdit,
-    bool? tapToEdit,
-    Color? color,
-  }) =>
-      CustomItem(
-        onDel: onDel,
-        id: id,
-        color: color ?? this.color,
-      );
-}
+import 'package:myboardapp/models/myboard.dart' as m;
+import 'todo.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -100,6 +73,7 @@ class _HomePageState extends State<HomePage> {
 
   var box;
   ValueNotifier<db.Images> myImages = ValueNotifier<db.Images>(db.Images());
+  ValueNotifier<m.ToDo> myToDos = ValueNotifier<m.ToDo>(m.ToDo());
 
   Future addImages(Uint8List imagesource, double height, double width) async {
     final localaddImages = db.Images()
@@ -153,125 +127,6 @@ class _HomePageState extends State<HomePage> {
     return result;
   }
 
-  // Future uploadPhotoOrVideo() async {
-  //   if (file == null) return;
-  //
-  //   final fileName = p.basename(file!.path);
-  //   final destination = 'files/$fileName';
-  //
-  //   task = FirebaseApi.uploadFile(destination, file!);
-  //   setState(() {});
-  //   final snapshot = await task!.whenComplete(() {});
-  //   urlDownload = await snapshot.ref.getDownloadURL();
-  // }
-
-  List<double> positioningCoordinates(
-      bool imageOrVideo, double? width, double? height) {
-    if (imageOrVideo) {
-      var num;
-      switch (num) {
-        case 1: //image orientation: potrait
-          {
-            left = left + 100;
-            if (left > 300) {
-              top = top + 170;
-              left = 10;
-            }
-
-            setState(() {});
-            return [left, top];
-          }
-        case 2: //image orientation: landscape
-          {
-            left = left + 100;
-            if (left > 300) {
-              top = top + 170;
-              left = 10;
-            }
-            setState(() {});
-            return [left, top];
-          }
-        case 3: //image orientation: squarish
-          {
-            left = left + 100;
-            if (left > 300) {
-              top = top + 170;
-              left = 10;
-            }
-            setState(() {});
-            return [left, top];
-          }
-        default:
-          {
-            left = left + 100;
-            if (left > 300) {
-              top = top + 170;
-              left = 10;
-            }
-            setState(() {});
-            return [left, top];
-          }
-      }
-    } else {
-      left = left + 100;
-      if (left > 300) {
-        top = top + 170;
-        left = 10;
-      }
-      setState(() {});
-      return [left, top];
-    }
-  }
-
-  Future<bool> _onDel() async {
-    final bool? r = await showDialog<bool>(
-      context: context,
-      builder: (_) {
-        return Center(
-          child: SizedBox(
-            width: 400,
-            child: Material(
-              child: Padding(
-                padding: const EdgeInsets.all(20),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    const Padding(
-                      padding: EdgeInsets.only(top: 10, bottom: 60),
-                      child: Text('Confirm Delete?'),
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: <Widget>[
-                        IconButton(
-                            onPressed: () => Navigator.pop(context, true),
-                            icon: const Icon(Icons.check)),
-                        IconButton(
-                            onPressed: () => Navigator.pop(context, false),
-                            icon: const Icon(Icons.clear)),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        );
-      },
-    );
-
-    return r ?? false;
-  }
-
-  double left1 = 2.0;
-  double top1 = 2.0;
-  double left = -140.0;
-  double top = 0.0;
-  double left2 = 0.0;
-  double top2 = 0.0;
-  double left3 = 0.0;
-  double top3 = 0.0;
-
   @override
   Widget build(BuildContext context) {
     var scaffoldKey;
@@ -286,10 +141,10 @@ class _HomePageState extends State<HomePage> {
           title: Padding(
             padding: const EdgeInsets.only(top: 35.0),
             child: Text(
-              'MyBoard',
-              style: GoogleFonts.smooch(
+              'MYBOARD',
+              style: GoogleFonts.italiana(
                 color: Colors.black87,
-                fontSize: 60,
+                fontSize: screenHeight() * 0.05,
               ),
             ),
           ),
@@ -360,6 +215,10 @@ class _HomePageState extends State<HomePage> {
                 padding: const EdgeInsets.all(11.0),
                 child: Container(
                   decoration: BoxDecoration(
+                    image: DecorationImage(
+                        image: NetworkImage(
+                            'https://media.istockphoto.com/photos/blue-color-velvet-texture-background-picture-id587220352?b=1&k=20&m=587220352&s=170667a&w=0&h=aznCAcatYJ2kORIffDkNOVD3QWezdkd-d-X8Ms9DCss='),
+                        fit: BoxFit.cover),
                     boxShadow: [
                       BoxShadow(
                         color: Colors.black87,
@@ -457,7 +316,27 @@ class _HomePageState extends State<HomePage> {
                                       crossAxisCellCount:
                                           width > height ? 3 : 2,
                                       mainAxisCellCount: width < height ? 3 : 2,
-                                      child: Image.file(finalImage),
+                                      child: Stack(
+                                        alignment: Alignment.topCenter,
+                                        children: [
+                                          Container(
+                                            child: Image.file(finalImage),
+                                            decoration:
+                                                BoxDecoration(boxShadow: [
+                                              BoxShadow(
+                                                blurRadius: 3.0,
+                                                spreadRadius: 0.5,
+                                                offset: Offset(1, 1),
+                                              ),
+                                            ]),
+                                          ),
+                                          Image.asset(
+                                            'assets/images/pin.png',
+                                            width: 13,
+                                            height: 13,
+                                          ),
+                                        ],
+                                      ),
                                     ),
                                   );
                                   //positioningCoordinates(true, width, height);
@@ -507,8 +386,24 @@ class _HomePageState extends State<HomePage> {
                                 context,
                                 'ToDo',
                                 'assets/images/todo.png',
-                                () {
+                                () async {
                                   Navigator.pushNamed(context, '/todo');
+                                  final todotext = await Provider.of<TaskData>(
+                                      context,
+                                      listen: false);
+                                  //Consumer<m.ToDo>(builder: (context, tasks, child) {return Text($tasks.todo)},)
+                                  pinnedWidgets.add(
+                                    StaggeredGridTile.count(
+                                      crossAxisCellCount: 2,
+                                      mainAxisCellCount: 1,
+                                      child: Text(
+                                        todotext.toString(),
+                                        style: TextStyle(fontSize: 10.0),
+                                      ),
+                                    ),
+                                  );
+                                  print(
+                                      'Todo text ############  +++++++++++++  ${todotext}');
                                 },
                               ),
                               buildCircleButton(
@@ -553,7 +448,7 @@ class _HomePageState extends State<HomePage> {
                                         'Custom Widget',
                                         style: TextStyle(color: Colors.black),
                                       ),
-                                      onDel: _onDel,
+                                      //onDel: _onDel,
                                       // caseStyle: const CaseStyle(initOffset: Offset(100, 100)),
                                     ),
                                   );

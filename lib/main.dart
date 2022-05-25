@@ -22,7 +22,7 @@ import 'package:myboardapp/pages/voicetotext.dart';
 import 'package:myboardapp/pages/welcomescreen.dart';
 import 'package:provider/provider.dart';
 // import 'package:firebase_core/firebase_core.dart';
-import 'models/myboard.dart';
+import 'models/myboard.dart' as m;
 import 'services/google_sign_in.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:hive/hive.dart';
@@ -38,11 +38,14 @@ Future main() async {
   Hive.init(localdocument.path);
   // await Hive.initFlutter();
 
-  Hive.registerAdapter(ImagesAdapter());
-  Hive.registerAdapter(LinkAdapter());
+  Hive.registerAdapter(m.ImagesAdapter());
+  Hive.registerAdapter(m.LinkAdapter());
+  Hive.registerAdapter(m.ToDoAdapter());
 
-  await Hive.openBox<Images>('images');
+  await Hive.openBox<m.Images>('images');
   await Hive.openBox<Link>('links');
+  await Hive.openBox<m.ToDo>('todo');
+
   await Firebase.initializeApp();
   runApp(const MyApp());
 }
@@ -55,8 +58,6 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-
-
   @override
   void dispose() {
     Hive.close();

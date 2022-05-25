@@ -165,3 +165,116 @@
 //       ),
 //     );
 //   }
+
+
+  // List<double> positioningCoordinates(
+  //     bool imageOrVideo, double? width, double? height) {
+  //   if (imageOrVideo) {
+  //     var num;
+  //     switch (num) {
+  //       case 1: //image orientation: potrait
+  //         {
+  //           left = left + 100;
+  //           if (left > 300) {
+  //             top = top + 170;
+  //             left = 10;
+  //           }
+
+  //           setState(() {});
+  //           return [left, top];
+  //         }
+  //       case 2: //image orientation: landscape
+  //         {
+  //           left = left + 100;
+  //           if (left > 300) {
+  //             top = top + 170;
+  //             left = 10;
+  //           }
+  //           setState(() {});
+  //           return [left, top];
+  //         }
+  //       case 3: //image orientation: squarish
+  //         {
+  //           left = left + 100;
+  //           if (left > 300) {
+  //             top = top + 170;
+  //             left = 10;
+  //           }
+  //           setState(() {});
+  //           return [left, top];
+  //         }
+  //       default:
+  //         {
+  //           left = left + 100;
+  //           if (left > 300) {
+  //             top = top + 170;
+  //             left = 10;
+  //           }
+  //           setState(() {});
+  //           return [left, top];
+  //         }
+  //     }
+  //   } else {
+  //     left = left + 100;
+  //     if (left > 300) {
+  //       top = top + 170;
+  //       left = 10;
+  //     }
+  //     setState(() {});
+  //     return [left, top];
+  //   }
+  // }
+
+
+  //   Future<bool> _onDel() async {
+  //   final bool? r = await showDialog<bool>(
+  //     context: context,
+  //     builder: (_) {
+  //       return Center(
+  //         child: SizedBox(
+  //           width: 400,
+  //           child: Material(
+  //             child: Padding(
+  //               padding: const EdgeInsets.all(20),
+  //               child: Column(
+  //                 mainAxisSize: MainAxisSize.min,
+  //                 children: <Widget>[
+  //                   const Padding(
+  //                     padding: EdgeInsets.only(top: 10, bottom: 60),
+  //                     child: Text('Confirm Delete?'),
+  //                   ),
+  //                   Row(
+  //                     mainAxisAlignment: MainAxisAlignment.spaceAround,
+  //                     children: <Widget>[
+  //                       IconButton(
+  //                           onPressed: () => Navigator.pop(context, true),
+  //                           icon: const Icon(Icons.check)),
+  //                       IconButton(
+  //                           onPressed: () => Navigator.pop(context, false),
+  //                           icon: const Icon(Icons.clear)),
+  //                     ],
+  //                   ),
+  //                 ],
+  //               ),
+  //             ),
+  //           ),
+  //         ),
+  //       );
+  //     },
+  //   );
+
+  //   return r ?? false;
+  // }
+
+
+    // Future uploadPhotoOrVideo() async {
+  //   if (file == null) return;
+  //
+  //   final fileName = p.basename(file!.path);
+  //   final destination = 'files/$fileName';
+  //
+  //   task = FirebaseApi.uploadFile(destination, file!);
+  //   setState(() {});
+  //   final snapshot = await task!.whenComplete(() {});
+  //   urlDownload = await snapshot.ref.getDownloadURL();
+  // }
