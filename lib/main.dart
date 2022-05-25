@@ -11,7 +11,7 @@ import 'package:myboardapp/pages/mylinks.dart';
 import 'package:myboardapp/pages/loginpage.dart';
 import 'package:myboardapp/pages/memories.dart';
 import 'package:myboardapp/pages/quotes.dart';
-import 'package:myboardapp/pages/reminder.dart';
+import 'package:myboardapp/pages/remind/reminder.dart';
 import 'package:myboardapp/pages/screenshots.dart';
 import 'package:myboardapp/pages/screentime.dart';
 import 'package:myboardapp/pages/signuppage.dart';
