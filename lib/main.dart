@@ -83,7 +83,7 @@ class _MyAppState extends State<MyApp> {
           '/homepage': (context) => const HomePage(),
           '/login': (context) => const LogInPage(),
           '/register': (context) => const RegisterPage(),
-          '/reminder': (context) => const Reminder(),
+          //'/reminder': (context) => const Reminder(),
           '/voicetotext': (context) => const VoiceToText(),
           '/todo': (context) => ToDo(),
           '/memories': (context) => const Memories(),

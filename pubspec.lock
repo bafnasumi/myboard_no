@@ -405,34 +405,27 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "5.5.2"
-  flutter_staggered_grid_view:
+  flutter_sound:
     dependency: "direct main"
     description:
-      name: flutter_staggered_grid_view
+      name: flutter_sound
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.6.1"
-  flutter_sound_lite:
-    dependency: "direct main"
-    description:
-      name: flutter_sound_lite
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "8.5.0"
+    version: "9.2.13"
   flutter_sound_platform_interface:
     dependency: transitive
     description:
       name: flutter_sound_platform_interface
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "8.5.0"
+    version: "9.2.13"
   flutter_sound_web:
     dependency: transitive
     description:
       name: flutter_sound_web
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "8.5.0"
+    version: "9.2.13"
   flutter_staggered_animations:
     dependency: "direct main"
     description:
@@ -440,6 +433,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.0"
+  flutter_staggered_grid_view:
+    dependency: "direct main"
+    description:
+      name: flutter_staggered_grid_view
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.6.1"
   flutter_svg:
     dependency: "direct main"
     description:
