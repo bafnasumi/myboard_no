@@ -10,7 +10,7 @@ import 'package:myboardapp/pages/homepage.dart';
 import 'package:myboardapp/pages/mylinks.dart';
 import 'package:myboardapp/pages/loginpage.dart';
 import 'package:myboardapp/pages/memories.dart';
-import 'package:myboardapp/pages/quotes.dart';
+import 'package:myboardapp/pages/quotes/quotes.dart';
 import 'package:myboardapp/pages/remind/reminder.dart';
 import 'package:myboardapp/pages/screenshots.dart';
 import 'package:myboardapp/pages/screentime.dart';
