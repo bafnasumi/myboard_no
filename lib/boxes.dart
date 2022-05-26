@@ -9,3 +9,7 @@ class Boxes {
 class BoxesofImage {
   static Box<Images> getImages() => Hive.box<Images>('images');
 }
+
+class BoxOfToDos{
+  static Box<ToDo> getToDos() => Hive.box<ToDo>('todo');
+}

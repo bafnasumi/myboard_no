@@ -3,6 +3,7 @@
 import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:myboardapp/pages/homepage.dart';
 import 'package:myboardapp/pages/loginpage.dart';
 
 class WelcomeScreen extends StatelessWidget {
@@ -11,14 +12,15 @@ class WelcomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AnimatedSplashScreen(
+        splashTransition: SplashTransition.fadeTransition,
         splash: Hero(
           tag: 'Splash',
           child: Text(
-            'MyBoard',
-            style: GoogleFonts.anton(fontSize: 35.0),
+            'MYBOARD',
+            style: GoogleFonts.italiana(fontSize: 45.0),
           ),
         ),
-        nextScreen: LogInPage());
+        nextScreen: HomePage());
   }
 }
 

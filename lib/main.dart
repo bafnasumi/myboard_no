@@ -66,15 +66,18 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
+    
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(
           create: (context) => GoogleSignInProvider(),
         ),
         ChangeNotifierProvider(
-          create: (context) => TaskData(),
+          create: (context) => TaskController(),
         ),
-        Provider(create: (context) => Reminder(),)
+        Provider(
+          create: (context) => const Reminder(),
+        )
       ],
       child: GetMaterialApp(
         debugShowCheckedModeBanner: false,

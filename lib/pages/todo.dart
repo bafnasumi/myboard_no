@@ -3,8 +3,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
-import 'dart:collection';
 import 'package:myboardapp/models/myboard.dart' as m;
+import 'package:myboardapp/boxes.dart';
+import 'package:hive/hive.dart';
 
 class ToDo extends StatelessWidget {
   @override
@@ -54,13 +55,13 @@ class ToDo extends StatelessWidget {
                     fontWeight: FontWeight.w700,
                   ),
                 ),
-                Text(
-                  '${Provider.of<TaskData>(context).taskCount} Tasks',
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 18,
-                  ),
-                ),
+                // Text(
+                //   '${Provider.of<TaskController>(context).taskCount} Tasks',
+                //   style: TextStyle(
+                //     color: Colors.black,
+                //     fontSize: 18,
+                //   ),
+                // ),
               ],
             ),
           ),
@@ -88,23 +89,24 @@ class ToDo extends StatelessWidget {
 class TasksList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Consumer<TaskData>(
+    return Consumer<TaskController>(
       builder: (context, taskData, child) {
         return ListView.builder(
+          itemCount: boxoftodos.length,
           itemBuilder: (context, index) {
-            final task = taskData.tasks[index];
+            final task = boxoftodos.getAt(index);
             return TaskTile(
-              taskTitle: task.todo,
+              taskTitle: task!.todo,
               isChecked: task.isDone,
-              checkboxCallback: (checkboxState) {
-                taskData.updateTask(task);
-              },
+              // checkboxCallback: (checkboxState) {
+              //   taskData.updateTask(task);
+              // },
               longPressCallback: () {
-                taskData.deleteTask(task);
+                taskData.removeToDo(task);
               },
             );
           },
-          itemCount: taskData.taskCount,
+          // itemCount: taskData.taskCount,
         );
       },
     );
@@ -195,9 +197,9 @@ class AddTaskScreen extends StatelessWidget {
                 primary: Color.fromARGB(255, 10, 75, 107),
               ),
               onPressed: () {
-                Provider.of<TaskData>(context, listen: false)
-                    .addTask(newTaskTitle!);
-                Navigator.pop(context);
+                Provider.of<TaskController>(context, listen: false)
+                    .addToDo(m.ToDo(todo: newTaskTitle, isDone: false));
+                Navigator.of(context).pop();
               },
             ),
           ],
@@ -207,50 +209,34 @@ class AddTaskScreen extends StatelessWidget {
   }
 }
 
+var boxoftodos = BoxOfToDos.getToDos();
 // TASK DATA
 
-class TaskData extends ChangeNotifier {
-  // ignore: prefer_final_fields
-  List<m.ToDo> _tasks = [
-    m.ToDo(todo: 'Study for CAT'),
-    m.ToDo(todo: 'Google Pay :)'),
-    m.ToDo(todo: 'Get into IIM'),
-  ];
+class TaskController with ChangeNotifier {
+  late m.ToDo _todo;
 
-  UnmodifiableListView<m.ToDo> get tasks {
-    return UnmodifiableListView(_tasks);
+  TaskController() {
+    _todo = m.ToDo(todo: 'Hi', isDone: false);
   }
 
-  int get taskCount {
-    return _tasks.length;
-  }
+//getters
+  m.ToDo get todo => _todo;
 
-  void addTask(String newTaskTitle) {
-    final task = m.ToDo(todo: newTaskTitle);
-    _tasks.add(task);
+//setters
+  void setToDo(m.ToDo todo) {
+    _todo = todo;
     notifyListeners();
   }
 
-  void updateTask(m.ToDo task) {
-    task.toggleDone();
+  void addToDo(m.ToDo todo) {
+    // boxodtodos = BoxOfToDos.getToDos();
+    boxoftodos.add(todo);
     notifyListeners();
   }
 
-  void deleteTask(m.ToDo task) {
-    _tasks.remove(task);
+  void removeToDo(m.ToDo todo) {
+    boxoftodos = BoxOfToDos.getToDos();
+    boxoftodos.delete(todo);
     notifyListeners();
   }
 }
-
-// TASK
-
-// class Task {
-//   final String? name;
-//   bool isDone;
-
-//   Task({this.name, this.isDone = false});
-
-//   void toggleDone() {
-//     isDone = !isDone;
-//   }
-// }

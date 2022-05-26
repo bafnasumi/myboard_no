@@ -130,13 +130,24 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     var scaffoldKey;
+    var todoprovider = Provider.of<TaskController>(context);
     return SafeArea(
       child: Scaffold(
         backgroundColor: Colors.white,
         resizeToAvoidBottomInset: false,
         key: scaffoldKey,
         appBar: AppBar(
-          toolbarHeight: 70.0,
+          toolbarHeight: 80.0,
+          actions: [
+            IconButton(
+              icon: Icon(Icons.refresh),
+              onPressed: () {
+                setState(() {
+                  pinnedWidgets.clear();
+                });
+              },
+            ),
+          ],
           centerTitle: true,
           title: Padding(
             padding: const EdgeInsets.only(top: 35.0),
@@ -157,7 +168,32 @@ class _HomePageState extends State<HomePage> {
             padding: EdgeInsets.zero,
             children: [
               DrawerHeader(
-                child: Text("Header"),
+                child: Container(
+                    color: Colors.blueGrey,
+                    alignment: Alignment.bottomLeft,
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "MYBOARD",
+                            style: GoogleFonts.italiana(
+                              color: Colors.white,
+                              fontSize: 35.0,
+                            ),
+                          ),
+                          Text(
+                            "Extras",
+                            style: TextStyle(
+                              fontSize: 25,
+                              color: Colors.black45,
+                            ),
+                          ),
+                        ],
+                      ),
+                    )),
               ),
               ListTile(
                 leading: Icon(Icons.settings),
@@ -169,15 +205,15 @@ class _HomePageState extends State<HomePage> {
                 title: Text("Contact us"),
                 onTap: () {},
               ),
-              ListTile(
-                leading: Icon(Icons.logout),
-                title: Text("Logout"),
-                onTap: () async {
-                  await GSI.GoogleSignInProvider().LogOut();
-                  await FirebaseAuth.instance.signOut();
-                  Get.off(loginpage.LogInPage());
-                },
-              ),
+              // ListTile(
+              //   leading: Icon(Icons.logout),
+              //   title: Text("Logout"),
+              //   onTap: () async {
+              //     await GSI.GoogleSignInProvider().LogOut();
+              //     await FirebaseAuth.instance.signOut();
+              //     Get.off(loginpage.LogInPage());
+              //   },
+              // ),
             ],
           ),
         ),
@@ -200,16 +236,6 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
                 ],
-              ),
-              Padding(
-                padding: const EdgeInsets.only(top: 7.0, bottom: 5.0),
-                child: Text(
-                  'edit',
-                  style: GoogleFonts.adamina(
-                    color: Colors.black26,
-                    fontSize: 15,
-                  ),
-                ),
               ),
               Padding(
                 padding: const EdgeInsets.all(11.0),
@@ -243,8 +269,8 @@ class _HomePageState extends State<HomePage> {
                     padding: const EdgeInsets.fromLTRB(10.0, 14.0, 10.0, 14.0),
                     child: StaggeredGrid.count(
                       //staggeredTileBuilder: (index) => StaggeredTile.fit(2),
-                      mainAxisSpacing: 8,
-                      crossAxisSpacing: 8,
+                      mainAxisSpacing: 4,
+                      crossAxisSpacing: 6,
                       crossAxisCount: 6,
                       //itemCount: 50,
                       children: pinnedWidgets,
@@ -386,24 +412,21 @@ class _HomePageState extends State<HomePage> {
                                 context,
                                 'ToDo',
                                 'assets/images/todo.png',
-                                () async {
+                                () {
                                   Navigator.pushNamed(context, '/todo');
-                                  final todotext = await Provider.of<TaskData>(
-                                      context,
-                                      listen: false);
-                                  //Consumer<m.ToDo>(builder: (context, tasks, child) {return Text($tasks.todo)},)
+                                  final todo = todoprovider.todo.todo;
                                   pinnedWidgets.add(
                                     StaggeredGridTile.count(
                                       crossAxisCellCount: 2,
                                       mainAxisCellCount: 1,
                                       child: Text(
-                                        todotext.toString(),
-                                        style: TextStyle(fontSize: 10.0),
+                                        todo.toString(),
+                                        style: TextStyle(
+                                            fontSize: 10.0,
+                                            color: Colors.white),
                                       ),
                                     ),
                                   );
-                                  print(
-                                      'Todo text ############  +++++++++++++  ${todotext}');
                                 },
                               ),
                               buildCircleButton(
