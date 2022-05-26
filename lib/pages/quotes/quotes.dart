@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors
+// ignore_for_file: prefer_const_constructors, unused_import
 
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
@@ -14,11 +14,10 @@ class Quotes extends StatefulWidget {
 }
 
 class _QuotesState extends State<Quotes> {
+  final index1 = quotesList.length;
   @override
   Widget build(BuildContext context) {
-    
     return Scaffold(
-      
       body: Container(
         color: Color.fromARGB(255, 5, 33, 47),
         height: double.infinity,
@@ -30,22 +29,44 @@ class _QuotesState extends State<Quotes> {
               return Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.all(25.0),
+                  Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(25.0),
+                        child: Text(
+                          quotesList[index1][kQuote],
+                          style: quoteTextStyle,
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      Text(
+                        '- ${quotesList[index1][kAuthor]} -',
+                        style: authorTextStyle,
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
+                  SizedBox(
+                    height: 50,
+                  ),
+                  ElevatedButton(
+                    onPressed: null,
                     child: Text(
-                      quotesList[index1][kQuote],
-                      style: quoteTextStyle,
-                      textAlign: TextAlign.center,
+                      'Pin',
+                      style: TextStyle(
+                          color: Colors.white, fontWeight: FontWeight.w700,fontSize: 17),
                     ),
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  Text(
-                    '- ${quotesList[index1][kAuthor]} -',
-                    style: authorTextStyle,
-                    textAlign: TextAlign.center,
-                  ),
+                    style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all<Color>(
+                          Colors.blueGrey.shade700),
+                          //  elevation: MaterialStateProperty.all(6.0),
+                          //  shadowColor: MaterialStateProperty.all(
+                          //   Colors.white)
+                    ),
+                  )
                 ],
               );
             },
