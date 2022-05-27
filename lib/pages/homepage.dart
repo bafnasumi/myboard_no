@@ -3,6 +3,7 @@
 //import 'dart:html';
 import 'dart:math';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:myboardapp/boxes.dart';
@@ -32,6 +33,8 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:myboardapp/models/myboard.dart' as m;
 import 'todo.dart';
 
+List<Widget> pinnedWidgets = [];
+
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
 
@@ -54,7 +57,6 @@ class _HomePageState extends State<HomePage> {
   }
 
   //list of widgets
-  List<Widget> pinnedWidgets = [];
 
   //Screenshot controller
   final screenshotController = ScreenshotController();
@@ -412,21 +414,30 @@ class _HomePageState extends State<HomePage> {
                                 context,
                                 'ToDo',
                                 'assets/images/todo.png',
-                                () {
-                                  Navigator.pushNamed(context, '/todo');
-                                  final todo = todoprovider.todo.todo;
-                                  pinnedWidgets.add(
-                                    StaggeredGridTile.count(
-                                      crossAxisCellCount: 2,
-                                      mainAxisCellCount: 1,
-                                      child: Text(
-                                        todo.toString(),
-                                        style: TextStyle(
-                                            fontSize: 10.0,
-                                            color: Colors.white),
-                                      ),
-                                    ),
-                                  );
+                                () async {
+                                  await Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          
+                                          builder: (context) => ToDo()));
+                                  // if (ifVisited) {
+                                  //   final box = BoxOfToDos.getToDos();
+                                  //   final latesttodo =
+                                  //       box.getAt(box.length - 1);
+
+                                  //   pinnedWidgets.add(
+                                  //     StaggeredGridTile.count(
+                                  //       crossAxisCellCount: 2,
+                                  //       mainAxisCellCount: 1,
+                                  //       child: Text(
+                                  //         latesttodo.toString(),
+                                  //         style: TextStyle(
+                                  //             fontSize: 10.0,
+                                  //             color: Colors.white),
+                                  //       ),
+                                  //     ),
+                                  //   );
+                                  // }
                                 },
                               ),
                               buildCircleButton(

@@ -1,13 +1,20 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors, use_key_in_widget_constructors, prefer_const_constructors_in_immutables, avoid_unnecessary_containers
 
 import 'package:flutter/material.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:myboardapp/pages/homepage.dart';
 import 'package:provider/provider.dart';
 import 'package:myboardapp/models/myboard.dart' as m;
 import 'package:myboardapp/boxes.dart';
 import 'package:hive/hive.dart';
 
-class ToDo extends StatelessWidget {
+class ToDo extends StatefulWidget {
+  @override
+  State<ToDo> createState() => _ToDoState();
+}
+
+class _ToDoState extends State<ToDo> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -55,6 +62,21 @@ class ToDo extends StatelessWidget {
                     fontWeight: FontWeight.w700,
                   ),
                 ),
+                Consumer<TaskController>(builder: (context, taskData, child) {
+                  return IconButton(
+                      onPressed: () {
+                        // taskData.emptyToDo;
+                        if (boxoftodos.isNotEmpty) {
+                          boxoftodos.clear();
+                        } else {
+                          var snackBar = SnackBar(
+                              content: Text('To-Do list already empty'));
+                          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                        }
+                        setState(() {});
+                      },
+                      icon: Icon(Icons.refresh));
+                }),
                 // Text(
                 //   '${Provider.of<TaskController>(context).taskCount} Tasks',
                 //   style: TextStyle(
@@ -86,7 +108,12 @@ class ToDo extends StatelessWidget {
 
 // TASK LIST
 
-class TasksList extends StatelessWidget {
+class TasksList extends StatefulWidget {
+  @override
+  State<TasksList> createState() => _TasksListState();
+}
+
+class _TasksListState extends State<TasksList> {
   @override
   Widget build(BuildContext context) {
     return Consumer<TaskController>(
@@ -103,6 +130,7 @@ class TasksList extends StatelessWidget {
               // },
               longPressCallback: () {
                 taskData.removeToDo(task);
+                setState(() {});
               },
             );
           },
@@ -199,7 +227,20 @@ class AddTaskScreen extends StatelessWidget {
               onPressed: () {
                 Provider.of<TaskController>(context, listen: false)
                     .addToDo(m.ToDo(todo: newTaskTitle, isDone: false));
-                Navigator.of(context).pop();
+                final box = BoxOfToDos.getToDos();
+                final latesttodo = box.getAt(box.length - 1);
+                var index = box.length - 1;
+                int pinnedWidgetIndex = pinnedWidgets.length;
+
+                pinnedWidgets.add(
+                  StaggeredGridTile.count(
+                    crossAxisCellCount: 2,
+                    mainAxisCellCount: 1,
+                    child: PinnedToDo(latesttodo!.todo, latesttodo.isDone,
+                        index, pinnedWidgetIndex),
+                  ),
+                );
+                Navigator.pushNamed(context, '/homepage');
               },
             ),
           ],
@@ -207,6 +248,44 @@ class AddTaskScreen extends StatelessWidget {
       ),
     );
   }
+
+  // ignore: non_constant_identifier_names
+  PinnedToDo(
+          String? todotext, bool? isDone, int index, int pinnedWidgetIndex) =>
+      GestureDetector(
+        child: Container(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(todotext!),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Icon(
+                  Icons.done_all_outlined,
+                  color: Colors.black,
+                  size: 15.0,
+                ),
+              ),
+            ],
+          ),
+          decoration: BoxDecoration(
+            color: Colors.white70,
+            borderRadius: BorderRadius.circular(10.0),
+            border: Border.all(
+              color: Colors.black,
+              width: 2.0,
+            ),
+          ),
+        ),
+        onDoubleTap: () {
+          isDone = true;
+          boxoftodos.delete(index);
+          pinnedWidgets.removeAt(pinnedWidgetIndex);
+        },
+      );
 }
 
 var boxoftodos = BoxOfToDos.getToDos();
@@ -237,6 +316,12 @@ class TaskController with ChangeNotifier {
   void removeToDo(m.ToDo todo) {
     boxoftodos = BoxOfToDos.getToDos();
     boxoftodos.delete(todo);
+    notifyListeners();
+  }
+
+  void emptyToDo() async {
+    boxoftodos = BoxOfToDos.getToDos();
+    await boxoftodos.clear();
     notifyListeners();
   }
 }

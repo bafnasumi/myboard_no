@@ -85,7 +85,7 @@ class _MyAppState extends State<MyApp> {
         initialRoute: '/',
         routes: {
           '/': (context) => const WelcomeScreen(),
-          '/homepage': (context) => const HomePage(),
+          '/homepage': (context) => const HomePage() ,
           '/login': (context) => const LogInPage(),
           '/register': (context) => const RegisterPage(),
           '/reminder': (context) => const Reminder(),
