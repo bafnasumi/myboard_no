@@ -3,32 +3,21 @@
 //import 'dart:html';
 import 'dart:math';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
-import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:myboardapp/boxes.dart';
-import 'package:myboardapp/components/custom_stack.dart';
 import 'package:myboardapp/pages/myvideo.dart' as vid;
 import 'package:myboardapp/pages/todo.dart';
-import 'dart:typed_data';
 import 'package:path_provider/path_provider.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:pinningtrialpackage/pinningtrialpackage.dart';
 import '../components/round_image_button.dart';
-import 'loginpage.dart' as loginpage;
 import 'package:myboardapp/models/myboard.dart' as db;
-// ignore: library_prefixes
-import "package:myboardapp/services/google_sign_in.dart" as GSI;
-import 'package:myboardapp/components/stack_board_board.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:myboardapp/models/myboard.dart' as m;
 import 'todo.dart';
@@ -77,12 +66,9 @@ class _HomePageState extends State<HomePage> {
   ValueNotifier<db.Images> myImages = ValueNotifier<db.Images>(db.Images());
   ValueNotifier<m.ToDo> myToDos = ValueNotifier<m.ToDo>(m.ToDo());
 
-  Future addImages(Uint8List imagesource, double height, double width) async {
-    final localaddImages = db.Images()
-      ..imagesource = imagesource
-      ..height = height
-      ..width = width;
-    box = BoxesofImage.getImages();
+  Future addImages(String? imagesource) async {
+    final localaddImages = db.Images()..imagesource = imagesource,
+        box = BoxesofImage.getImages();
     //ValueNotifier<db.Images?> myiamges = ValueNotifier(localaddImages);
     box.add(localaddImages);
   }
@@ -541,18 +527,18 @@ class _HomePageState extends State<HomePage> {
 
   Widget get _spacer => const SizedBox(width: 5);
 
-  Future<String> saveImage(Uint8List bytes) async {
-    await [Permission.storage].request();
+  // Future<String> saveImage(String? bytes) async {
+  //   await [Permission.storage].request();
 
-    final time = DateTime.now()
-        .toIso8601String()
-        .replaceAll('.', '-')
-        .replaceAll(':', '-');
-    final name = 'screenshot_$time';
-    final result = await ImageGallerySaver.saveImage(bytes, name: name);
+  //   final time = DateTime.now()
+  //       .toIso8601String()
+  //       .replaceAll('.', '-')
+  //       .replaceAll(':', '-');
+  //   final name = 'screenshot_$time';
+  //   final result = await ImageGallerySaver.saveImage(bytes, name: name);
 
-    return result['filepath'];
-  }
+  //   return result['filepath'];
+  // }
 }
 
 void openFile(File file) {

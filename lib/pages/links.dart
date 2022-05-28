@@ -5,7 +5,6 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:myboardapp/main.dart';
-import 'package:myboardapp/models/myboard.dart';
 import 'package:myboardapp/pages/homepage.dart';
 import 'package:myboardapp/pages/todo.dart';
 import 'package:provider/provider.dart';
@@ -211,7 +210,7 @@ class _LinksState extends State<Links> {
         },
       );
 
-  Widget BuildContent(List<Link> mylinks) {
+  Widget BuildContent(List<m.Link> mylinks) {
     if (mylinks.isEmpty) {
       return Expanded(
         child: Center(
@@ -252,7 +251,7 @@ class _LinksState extends State<Links> {
 
   Widget buildLinksPage(
     BuildContext context,
-    Link link,
+    m.Link link,
   ) {
     return Card(
       color: Colors.white,

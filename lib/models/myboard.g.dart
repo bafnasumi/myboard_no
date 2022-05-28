@@ -16,22 +16,17 @@ class ImagesAdapter extends TypeAdapter<Images> {
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return Images()
-      ..imagesource = fields[0] as Uint8List
-      ..height = fields[1] as double
-      ..width = fields[2] as double;
+    return Images(
+      imagesource: fields[0] as String?,
+    );
   }
 
   @override
   void write(BinaryWriter writer, Images obj) {
     writer
-      ..writeByte(3)
-      ..writeByte(0)
-      ..write(obj.imagesource)
       ..writeByte(1)
-      ..write(obj.height)
-      ..writeByte(2)
-      ..write(obj.width);
+      ..writeByte(0)
+      ..write(obj.imagesource);
   }
 
   @override
@@ -55,9 +50,10 @@ class LinkAdapter extends TypeAdapter<Link> {
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return Link()
-      ..url = fields[0] as String
-      ..description = fields[1] as String;
+    return Link(
+      url: fields[0] as String?,
+      description: fields[1] as String?,
+    );
   }
 
   @override
@@ -77,6 +73,67 @@ class LinkAdapter extends TypeAdapter<Link> {
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is LinkAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
+
+class ReminderTaskAdapter extends TypeAdapter<ReminderTask> {
+  @override
+  final int typeId = 2;
+
+  @override
+  ReminderTask read(BinaryReader reader) {
+    final numOfFields = reader.readByte();
+    final fields = <int, dynamic>{
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+    };
+    return ReminderTask(
+      id: fields[0] as int?,
+      title: fields[1] as String?,
+      note: fields[2] as String?,
+      date: fields[3] as String?,
+      startTime: fields[4] as String?,
+      endTime: fields[5] as String?,
+      reminder: fields[6] as int?,
+      repeat: fields[7] as String?,
+      isCompleted: fields[8] as int?,
+      color: fields[9] as String?,
+    );
+  }
+
+  @override
+  void write(BinaryWriter writer, ReminderTask obj) {
+    writer
+      ..writeByte(10)
+      ..writeByte(0)
+      ..write(obj.id)
+      ..writeByte(1)
+      ..write(obj.title)
+      ..writeByte(2)
+      ..write(obj.note)
+      ..writeByte(3)
+      ..write(obj.date)
+      ..writeByte(4)
+      ..write(obj.startTime)
+      ..writeByte(5)
+      ..write(obj.endTime)
+      ..writeByte(6)
+      ..write(obj.reminder)
+      ..writeByte(7)
+      ..write(obj.repeat)
+      ..writeByte(8)
+      ..write(obj.isCompleted)
+      ..writeByte(9)
+      ..write(obj.color);
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ReminderTaskAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }
@@ -114,6 +171,142 @@ class ToDoAdapter extends TypeAdapter<ToDo> {
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is ToDoAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
+
+class AudioAdapter extends TypeAdapter<Audio> {
+  @override
+  final int typeId = 4;
+
+  @override
+  Audio read(BinaryReader reader) {
+    final numOfFields = reader.readByte();
+    final fields = <int, dynamic>{
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+    };
+    return Audio(
+      audiosource: fields[0] as String?,
+    );
+  }
+
+  @override
+  void write(BinaryWriter writer, Audio obj) {
+    writer
+      ..writeByte(1)
+      ..writeByte(0)
+      ..write(obj.audiosource);
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is AudioAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
+
+class VideoAdapter extends TypeAdapter<Video> {
+  @override
+  final int typeId = 5;
+
+  @override
+  Video read(BinaryReader reader) {
+    final numOfFields = reader.readByte();
+    final fields = <int, dynamic>{
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+    };
+    return Video(
+      videosource: fields[0] as String?,
+    );
+  }
+
+  @override
+  void write(BinaryWriter writer, Video obj) {
+    writer
+      ..writeByte(1)
+      ..writeByte(0)
+      ..write(obj.videosource);
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is VideoAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
+
+class TextAdapter extends TypeAdapter<Text> {
+  @override
+  final int typeId = 6;
+
+  @override
+  Text read(BinaryReader reader) {
+    final numOfFields = reader.readByte();
+    final fields = <int, dynamic>{
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+    };
+    return Text(
+      text: fields[0] as String?,
+    );
+  }
+
+  @override
+  void write(BinaryWriter writer, Text obj) {
+    writer
+      ..writeByte(1)
+      ..writeByte(0)
+      ..write(obj.text);
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is TextAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
+
+class VoiceToTextAdapter extends TypeAdapter<VoiceToText> {
+  @override
+  final int typeId = 7;
+
+  @override
+  VoiceToText read(BinaryReader reader) {
+    final numOfFields = reader.readByte();
+    final fields = <int, dynamic>{
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+    };
+    return VoiceToText(
+      text: fields[0] as String?,
+    );
+  }
+
+  @override
+  void write(BinaryWriter writer, VoiceToText obj) {
+    writer
+      ..writeByte(1)
+      ..writeByte(0)
+      ..write(obj.text);
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is VoiceToTextAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }
