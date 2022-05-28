@@ -18,9 +18,10 @@ class Images extends HiveObject {
 @HiveType(typeId: 1)
 class Link extends HiveObject {
   @HiveField(0)
-  late String url;
+  late String? url;
   @HiveField(1)
-  late String description;
+  late String? description;
+  Link({this.url, this.description});
 }
 
 @HiveType(typeId: 3)

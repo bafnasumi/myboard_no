@@ -7,7 +7,7 @@ import 'package:get/get.dart';
 import 'package:myboardapp/pages/audio.dart';
 import 'package:myboardapp/pages/boardeditpage.dart';
 import 'package:myboardapp/pages/homepage.dart';
-import 'package:myboardapp/pages/mylinks.dart';
+import 'package:myboardapp/pages/links.dart';
 import 'package:myboardapp/pages/loginpage.dart';
 import 'package:myboardapp/pages/memories.dart';
 import 'package:myboardapp/pages/quotes/quotes.dart';
@@ -43,7 +43,7 @@ Future main() async {
   Hive.registerAdapter(m.ToDoAdapter());
 
   await Hive.openBox<m.Images>('images');
-  await Hive.openBox<Link>('links');
+  await Hive.openBox<m.Link>('links');
   await Hive.openBox<m.ToDo>('todo');
 
   await Firebase.initializeApp();
@@ -66,7 +66,6 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(
@@ -77,7 +76,10 @@ class _MyAppState extends State<MyApp> {
         ),
         Provider(
           create: (context) => const Reminder(),
-        )
+        ),
+        ChangeNotifierProvider(
+          create: (context) => LinksController(),
+        ),
       ],
       child: GetMaterialApp(
         debugShowCheckedModeBanner: false,
@@ -85,7 +87,7 @@ class _MyAppState extends State<MyApp> {
         initialRoute: '/',
         routes: {
           '/': (context) => const WelcomeScreen(),
-          '/homepage': (context) => const HomePage() ,
+          '/homepage': (context) => const HomePage(),
           '/login': (context) => const LogInPage(),
           '/register': (context) => const RegisterPage(),
           '/reminder': (context) => const Reminder(),

@@ -128,10 +128,10 @@ class _TasksListState extends State<TasksList> {
               // checkboxCallback: (checkboxState) {
               //   taskData.updateTask(task);
               // },
-              longPressCallback: () {
-                taskData.removeToDo(task);
-                setState(() {});
-              },
+              // longPressCallback: () {
+              //   taskData.removeToDo(task);
+              //   setState(() {});
+              // },//TODO: on longpress: delete the todo
             );
           },
           // itemCount: taskData.taskCount,
@@ -230,6 +230,7 @@ class AddTaskScreen extends StatelessWidget {
                 final box = BoxOfToDos.getToDos();
                 final latesttodo = box.getAt(box.length - 1);
                 var index = box.length - 1;
+                print(pinnedWidgets.length);
                 int pinnedWidgetIndex = pinnedWidgets.length;
 
                 pinnedWidgets.add(
@@ -252,10 +253,9 @@ class AddTaskScreen extends StatelessWidget {
   // ignore: non_constant_identifier_names
   PinnedToDo(
           String? todotext, bool? isDone, int index, int pinnedWidgetIndex) =>
-      GestureDetector(
+      InkWell(
         child: Container(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          child: Wrap(
             children: [
               Padding(
                 padding: const EdgeInsets.all(8.0),
@@ -289,8 +289,8 @@ class AddTaskScreen extends StatelessWidget {
 }
 
 var boxoftodos = BoxOfToDos.getToDos();
-// TASK DATA
 
+// TASK DATA
 class TaskController with ChangeNotifier {
   late m.ToDo _todo;
 
@@ -313,9 +313,9 @@ class TaskController with ChangeNotifier {
     notifyListeners();
   }
 
-  void removeToDo(m.ToDo todo) {
+  void removeToDo(int todoKey) {
     boxoftodos = BoxOfToDos.getToDos();
-    boxoftodos.delete(todo);
+    boxoftodos.delete(todoKey);
     notifyListeners();
   }
 

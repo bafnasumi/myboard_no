@@ -132,7 +132,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     var scaffoldKey;
-    var todoprovider = Provider.of<TaskController>(context);
+    //var todoprovider = Provider.of<TaskController>(context);
     return SafeArea(
       child: Scaffold(
         backgroundColor: Colors.white,
@@ -418,7 +418,6 @@ class _HomePageState extends State<HomePage> {
                                   await Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                          
                                           builder: (context) => ToDo()));
                                   // if (ifVisited) {
                                   //   final box = BoxOfToDos.getToDos();
