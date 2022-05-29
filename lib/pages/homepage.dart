@@ -185,6 +185,11 @@ class _HomePageState extends State<HomePage> {
                     )),
               ),
               ListTile(
+                leading: Icon(Icons.change_circle_sharp),
+                title: Text("Change Background"),
+                onTap: () {},
+              ),
+              ListTile(
                 leading: Icon(Icons.settings),
                 title: Text("Settings"),
                 onTap: () {
@@ -234,7 +239,9 @@ class _HomePageState extends State<HomePage> {
                   decoration: BoxDecoration(
                     image: DecorationImage(
                         image: NetworkImage(
-                            'https://media.istockphoto.com/photos/blue-color-velvet-texture-background-picture-id587220352?b=1&k=20&m=587220352&s=170667a&w=0&h=aznCAcatYJ2kORIffDkNOVD3QWezdkd-d-X8Ms9DCss='),
+                          'https://media.istockphoto.com/photos/blue-color-velvet-texture-background-picture-id587220352?b=1&k=20&m=587220352&s=170667a&w=0&h=aznCAcatYJ2kORIffDkNOVD3QWezdkd-d-X8Ms9DCss=',
+                        ),
+                        // image: ExactAssetImage('assets/images/board.jpg'),
                         fit: BoxFit.cover),
                     boxShadow: [
                       BoxShadow(
@@ -446,9 +453,8 @@ class _HomePageState extends State<HomePage> {
                               ),
                               buildCircleButton(context, 'Text',
                                   'assets/images/text.png', () {}),
-                              buildCircleButton(
-                                  context, 'Quotes', 'assets/images/quotes_new.png',
-                                  () {
+                              buildCircleButton(context, 'Quotes',
+                                  'assets/images/quotes_new.png', () {
                                 Navigator.pushNamed(context, '/quotes');
                               }),
                               buildCircleButton(
