@@ -158,36 +158,39 @@ class _HomePageState extends State<HomePage> {
             children: [
               DrawerHeader(
                 child: Container(
-                    color: Colors.blueGrey,
-                    alignment: Alignment.bottomLeft,
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            "MYBOARD",
-                            style: GoogleFonts.italiana(
-                              color: Colors.white,
-                              fontSize: 35.0,
-                            ),
+                  color: Colors.blueGrey,
+                  alignment: Alignment.bottomLeft,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "MYBOARD",
+                          style: GoogleFonts.italiana(
+                            color: Colors.white,
+                            fontSize: 35.0,
                           ),
-                          Text(
-                            "Extras",
-                            style: TextStyle(
-                              fontSize: 25,
-                              color: Colors.black45,
-                            ),
+                        ),
+                        Text(
+                          "Extras",
+                          style: TextStyle(
+                            fontSize: 25,
+                            color: Colors.black45,
                           ),
-                        ],
-                      ),
-                    )),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
               ),
               ListTile(
                 leading: Icon(Icons.change_circle_sharp),
                 title: Text("Change Background"),
-                onTap: () {},
+                onTap: () {
+                  Navigator.pushNamed(context, '/background');
+                },
               ),
               ListTile(
                 leading: Icon(Icons.settings),
@@ -238,10 +241,10 @@ class _HomePageState extends State<HomePage> {
                 child: Container(
                   decoration: BoxDecoration(
                     image: DecorationImage(
-                        image: NetworkImage(
-                          'https://media.istockphoto.com/photos/blue-color-velvet-texture-background-picture-id587220352?b=1&k=20&m=587220352&s=170667a&w=0&h=aznCAcatYJ2kORIffDkNOVD3QWezdkd-d-X8Ms9DCss=',
-                        ),
-                        // image: ExactAssetImage('assets/images/board.jpg'),
+                        // image: NetworkImage(
+                        //   'https://media.istockphoto.com/photos/blue-color-velvet-texture-background-picture-id587220352?b=1&k=20&m=587220352&s=170667a&w=0&h=aznCAcatYJ2kORIffDkNOVD3QWezdkd-d-X8Ms9DCss=',
+                        // ),
+                        image: ExactAssetImage('assets/images/board.jpg'),
                         fit: BoxFit.cover),
                     boxShadow: [
                       BoxShadow(
@@ -514,7 +517,7 @@ class _HomePageState extends State<HomePage> {
                           color: const Color.fromARGB(255, 197, 197, 197),
                         ),
                         child: const Text(
-                          'Add Photo, Video, Link,...',
+                          'Add Photo, Video, Link..',
                           style: TextStyle(
                             color: Colors.white70,
                             fontSize: 15.0,

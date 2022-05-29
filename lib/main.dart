@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 // import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:myboardapp/pages/audio.dart';
+import 'package:myboardapp/pages/background.dart';
 import 'package:myboardapp/pages/boardeditpage.dart';
 import 'package:myboardapp/pages/homepage.dart';
 import 'package:myboardapp/pages/links.dart';
@@ -102,7 +103,8 @@ class _MyAppState extends State<MyApp> {
           '/video': (context) => const Video(),
           '/audio': (context) => const Audio(),
           '/boardeditpage': (context) => const BoardEditPage(),
-          '/setting': (context) => SettingsScreen(),
+          '/setting': (context) => const SettingsScreen(),
+          '/background': (context) => const Background(),
         },
       ),
     );
