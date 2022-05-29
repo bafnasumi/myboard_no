@@ -102,7 +102,7 @@ class _MyAppState extends State<MyApp> {
           '/video': (context) => const Video(),
           '/audio': (context) => const Audio(),
           '/boardeditpage': (context) => const BoardEditPage(),
-          '/setting':(context) => Setting(),
+          '/setting': (context) => SettingsScreen(),
         },
       ),
     );

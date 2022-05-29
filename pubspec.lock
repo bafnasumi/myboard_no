@@ -419,6 +419,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "5.5.2"
+  flutter_settings_ui:
+    dependency: "direct main"
+    description:
+      name: flutter_settings_ui
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.1"
   flutter_sound:
     dependency: "direct main"
     description:
