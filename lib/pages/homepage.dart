@@ -6,6 +6,7 @@ import 'dart:math';
 import 'package:flutter/services.dart';
 import 'package:myboardapp/boxes.dart';
 import 'package:myboardapp/pages/myvideo.dart' as vid;
+import 'package:myboardapp/pages/settingspage.dart';
 import 'package:myboardapp/pages/todo.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -186,7 +187,9 @@ class _HomePageState extends State<HomePage> {
               ListTile(
                 leading: Icon(Icons.settings),
                 title: Text("Settings"),
-                onTap: () {},
+                onTap: () {
+                  Navigator.pushNamed(context, '/setting');
+                },
               ),
               ListTile(
                 leading: Icon(Icons.tag_faces_rounded),
@@ -292,7 +295,7 @@ class _HomePageState extends State<HomePage> {
                               buildCircleButton(
                                 context,
                                 'Photo',
-                                'assets/images/photos.jpg',
+                                'assets/images/photos_new.jpg',
                                 () async {
                                   // selectPhotoOrVideo();
                                   // uploadPhotoOrVideo();
@@ -362,7 +365,7 @@ class _HomePageState extends State<HomePage> {
                               buildCircleButton(
                                 context,
                                 'Video',
-                                'assets/images/video.jpg',
+                                'assets/images/video_new.jpg',
                                 () async {
                                   //Navigator.pushNamed(context, '/video');
 
@@ -391,7 +394,7 @@ class _HomePageState extends State<HomePage> {
                               buildCircleButton(
                                 context,
                                 'Voice to Text',
-                                'assets/images/voicetotext.png',
+                                'assets/images/voicetotext_new.jpg',
                                 () {
                                   Navigator.pushNamed(context, '/voicetotext');
                                 },
@@ -399,7 +402,7 @@ class _HomePageState extends State<HomePage> {
                               buildCircleButton(
                                 context,
                                 'ToDo',
-                                'assets/images/todo.png',
+                                'assets/images/todo_new.jpg',
                                 () async {
                                   await Navigator.push(
                                       context,
@@ -444,14 +447,14 @@ class _HomePageState extends State<HomePage> {
                               buildCircleButton(context, 'Text',
                                   'assets/images/text.png', () {}),
                               buildCircleButton(
-                                  context, 'Quotes', 'assets/images/text.png',
+                                  context, 'Quotes', 'assets/images/quotes_new.png',
                                   () {
                                 Navigator.pushNamed(context, '/quotes');
                               }),
                               buildCircleButton(
                                 context,
                                 'Audio',
-                                'assets/images/audio.jpg',
+                                'assets/images/audio_new.png',
                                 () {
                                   Navigator.pushNamed(context, '/audio');
                                 },

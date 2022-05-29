@@ -14,6 +14,7 @@ import 'package:myboardapp/pages/quotes/quotes.dart';
 import 'package:myboardapp/pages/remind/reminder.dart';
 import 'package:myboardapp/pages/screenshots.dart';
 import 'package:myboardapp/pages/screentime.dart';
+import 'package:myboardapp/pages/settingspage.dart';
 import 'package:myboardapp/pages/signuppage.dart';
 // import 'package:myboardapp/pages/stack_board.dart';
 import 'package:myboardapp/pages/todo.dart';
@@ -101,6 +102,7 @@ class _MyAppState extends State<MyApp> {
           '/video': (context) => const Video(),
           '/audio': (context) => const Audio(),
           '/boardeditpage': (context) => const BoardEditPage(),
+          '/setting':(context) => Setting(),
         },
       ),
     );
