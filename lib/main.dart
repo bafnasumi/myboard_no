@@ -4,8 +4,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 // import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:myboardapp/pages/audio.dart';
-import 'package:myboardapp/pages/background.dart';
+import 'package:myboardapp/pages/recorder/audiorecorder.dart';
+import 'package:myboardapp/pages/background.dart' as bg;
 import 'package:myboardapp/pages/boardeditpage.dart';
 import 'package:myboardapp/pages/homepage.dart';
 import 'package:myboardapp/pages/links.dart';
@@ -85,9 +85,9 @@ class _MyAppState extends State<MyApp> {
         ChangeNotifierProvider(
           create: (context) => LinksController(),
         ),
-        ChangeNotifierProvider(
-          create: (context) => AudioController(),
-        ),
+        // ChangeNotifierProvider(
+        //   create: (context) => AudioController(),
+        // ),
       ],
       child: GetMaterialApp(
         debugShowCheckedModeBanner: false,
@@ -110,7 +110,7 @@ class _MyAppState extends State<MyApp> {
           '/audio': (context) => const Audio(),
           '/boardeditpage': (context) => const BoardEditPage(),
           '/setting': (context) => const SettingsScreen(),
-          '/background': (context) => const Background(),
+          '/background': (context) => const bg.Background(),
         },
       ),
     );
