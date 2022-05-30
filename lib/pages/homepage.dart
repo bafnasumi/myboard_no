@@ -69,7 +69,7 @@ class _HomePageState extends State<HomePage> {
 
   Future addImages(String? imagesource) async {
     final localaddImages = db.Images()..imagesource = imagesource,
-        box = BoxesofImage.getImages();
+        box = BoxofImage.getImages();
     //ValueNotifier<db.Images?> myiamges = ValueNotifier(localaddImages);
     box.add(localaddImages);
   }
@@ -466,6 +466,7 @@ class _HomePageState extends State<HomePage> {
                                 'assets/images/audio_new.png',
                                 () {
                                   Navigator.pushNamed(context, '/audio');
+                                  
                                 },
                               ),
                               buildCircleButton(

@@ -1,8 +1,18 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_sound/flutter_sound.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:myboardapp/boxes.dart';
 import 'package:myboardapp/components/audio_widgets.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:myboardapp/models/myboard.dart' as db;
+import 'package:provider/provider.dart';
+
+import 'homepage.dart';
+
+bool audiopresent = false;
 
 class Audio extends StatelessWidget {
   const Audio({Key? key}) : super(key: key);
@@ -73,11 +83,11 @@ class _MainPageState extends State<MainPage> {
     timerController.startTimer();
   }
 
+  late final audiopath;
   Future stop() async {
     if (!isRecorderReady) return;
-    final path = await recorder.stopRecorder();
-    final audioFile = File(path!);
-    print('Recorded audio: $audioFile');
+    final audiopath = await recorder.stopRecorder();
+    var audioFile = File(audiopath!);
     timerController.resetTimer();
   }
 
@@ -86,6 +96,21 @@ class _MainPageState extends State<MainPage> {
     await recorder.pauseRecorder();
     timerController.pauseTimer();
   }
+
+  Future addAudio(String? audioSource) async {
+    final localAudioPath = db.Audio()..audiosource = audioSource,
+        box = BoxOfAudios.getAudios();
+    //ValueNotifier<db.Images?> myiamges = ValueNotifier(localaddImages);
+    box.add(localAudioPath);
+  }
+
+  //   Future<String> saveAudioPermanently(String? audiosource) async {
+  //   //final File file_File = File(file.path);
+  //   //final PlatformFile file_PlatformFile = file;
+  //   final appStorage = await getApplicationDocumentsDirectory();
+  //   final newFile = File('${appStorage.path}/${file.name}');
+  //   return File(file.path!).copy(newFile.path);
+  // }
 
   @override
   Widget build(BuildContext context) => Scaffold(
@@ -125,7 +150,10 @@ class _MainPageState extends State<MainPage> {
                       child: const Icon(Icons.stop, size: 80),
                       onPressed: () async {
                         await stop();
-                        setState(() {});
+                        setState(() {
+                          audiopresent = true;
+                          print('Recorded audio: $audiopath');
+                        });
                       },
                     ),
                   const SizedBox(width: 16),
@@ -143,144 +171,128 @@ class _MainPageState extends State<MainPage> {
                       setState(() {});
                     },
                   ),
+                  Row(
+                    children: [
+                      ElevatedButton(
+                        child: Text(
+                          'Discard',
+                          style: TextStyle(
+                              // color: Colors.white,
+                              // backgroundcolor: Color.fromARGB(255, 10, 75, 107),
+                              ),
+                        ),
+                        onPressed: () {},
+                      ),
+                      ElevatedButton(
+                        child: Text(
+                          'Add',
+                          style: TextStyle(
+                              // color: Colors.white,
+                              // backgroundcolor: Color.fromARGB(255, 10, 75, 107),
+                              ),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          primary: Color.fromARGB(255, 10, 75, 107),
+                        ),
+                        onPressed: () {
+                          if (audiopresent) {
+                            Provider.of<AudioController>(context, listen: false)
+                                .addAudio(db.Audio(audiosource: audiopath));
+                            final box = BoxOfAudios.getAudios();
+                            final audio = box.getAt(box.length - 1);
+                            var index = box.length - 1;
+                            print(
+                                'pinnedwidget index: ${pinnedWidgets.length}');
+                            int pinnedWidgetIndex = pinnedWidgets.length;
+
+                            pinnedWidgets.add(
+                              StaggeredGridTile.count(
+                                crossAxisCellCount: 2,
+                                mainAxisCellCount: 1,
+                                child: PinnedAudio(audio!.audiosource, index,
+                                    pinnedWidgetIndex),
+                              ),
+                            );
+                            Navigator.pushNamed(context, '/homepage');
+                          }
+                        },
+                      ),
+                    ],
+                  )
                 ],
               ),
             ],
           ),
         ),
       );
+
+  PinnedAudio(String? audiosource, int index, int pinnedWidgetIndex) => InkWell(
+        child: Container(
+          child: Wrap(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(audiosource!),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Icon(
+                  Icons.volume_up,
+                  color: Colors.black,
+                  size: 15.0,
+                ),
+              ),
+            ],
+          ),
+          decoration: BoxDecoration(
+            color: Colors.white70,
+            borderRadius: BorderRadius.circular(10.0),
+            border: Border.all(
+              color: Colors.black,
+              width: 2.0,
+            ),
+          ),
+        ),
+        onDoubleTap: () {
+          boxofaudio.delete(index);
+          pinnedWidgets.removeAt(pinnedWidgetIndex);
+        },
+      );
 }
 
+var boxofaudio = BoxOfAudios.getAudios();
 
-// // ignore_for_file: prefer_const_constructors, camel_case_types
+class AudioController extends ChangeNotifier {
+  db.Audio? _audio;
 
-// import 'package:flutter/material.dart';
-// import 'package:flutter_sound_lite/public/flutter_sound_recorder.dart';
-// import 'package:permission_handler/permission_handler.dart';
-// import 'package:path_provider/path_provider.dart';
-// import 'package:myboardapp/components/audio_widgets.dart';
+  AudioController() {
+    _audio = db.Audio(audiosource: 'hardcoded: from constructor');
+  }
 
-// class Audio extends StatefulWidget {
-//   const Audio({Key? key}) : super(key: key);
+//getters
+  db.Audio? get audio => _audio;
 
-//   @override
-//   State<Audio> createState() => _AudioState();
-// }
+//setters
+  void setAudio(db.Audio audio) {
+    _audio = audio;
+    notifyListeners();
+  }
 
-// class _AudioState extends State<Audio> {
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: Text('Recorder'),
-//         backgroundColor: Color.fromARGB(255, 10, 75, 107),
-//         centerTitle: true,
-//       ),
-//       // backgroundColor: Colors.black87,
-//       body: Center(
-//         child: starter(),
-//       ),
-//     );
-//     // Widger starter() {}
-//   }
-// }
+  void addAudio(db.Audio audio) {
+    // boxodtodos = BoxOfAudios.getToDos();
+    boxofaudio.add(audio);
+    notifyListeners();
+  }
 
-// class starter extends StatefulWidget {
-//   const starter({Key? key}) : super(key: key);
+  void removeAudio(int audiokey) {
+    boxofaudio = BoxOfAudios.getAudios();
+    boxofaudio.delete(audiokey);
+    notifyListeners();
+  }
 
-//   @override
-//   State<starter> createState() => _starterState();
-// }
-
-// class _starterState extends State<starter> {
-//   final recorder = SoundRecorder();
-
-//   @override
-//   void initState() {
-//     // TODO: implement initState
-//     super.initState();
-//     recorder.init();
-//   }
-
-//   @override
-//   void dispose() {
-//     // TODO: implement dispose
-//     super.dispose();
-//     recorder.dispose();
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     // ignore: prefer_const_declarations
-//     final isRecording = recorder.isRecording;
-//     final icon = isRecording ? Icons.stop : Icons.mic;
-//     final text = isRecording ? 'STOP' : 'START';
-//     // final primary = isRecording ? Colors.red : Colors.white;
-//     // final onprimary = isRecording ? Colors.white : Colors.black;
-
-//     return ElevatedButton.icon(
-//       style: ElevatedButton.styleFrom(
-//         minimumSize: Size(175, 50),
-//         // primary: primary,
-//         // onPrimary: onprimary,
-//       ),
-//       onPressed: () async {
-//         print('1');
-//         await recorder.toggleRecorder();
-//         print('2');
-//         setState(() {});
-//         print('3');
-//       },
-//       icon: Icon(icon),
-//       label: Text(
-//         text,
-//         style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-//       ),
-//     );
-//   }
-// }
-
-// final pathToSaveAudio = 'audioexample.aac';
-
-// class SoundRecorder {
-//   FlutterSoundRecorder? audioRecorder;
-//   bool isRecorderinit = false;
-//   bool get isRecording => audioRecorder!.isRecording;
-
-//   Future init() async {
-//     audioRecorder = FlutterSoundRecorder();
-
-//     final status = await Permission.microphone.request();
-//     if (status != PermissionStatus.granted) {
-//       throw RecordingPermissionException('Microphone access was denied');
-//     }
-
-//     await audioRecorder!.openAudioSession();
-//     isRecorderinit = true;
-//   }
-
-//   Future dispose() async {
-//     if (!isRecorderinit) return;
-//     audioRecorder!.closeAudioSession();
-//     audioRecorder = null;
-//     isRecorderinit = false;
-//   }
-
-//   Future record() async {
-//     if (!isRecorderinit) return;
-//     await audioRecorder!.startRecorder(toFile: pathToSaveAudio);
-//   }
-
-//   Future stop() async {
-//     if (!isRecorderinit) return;
-//     await audioRecorder!.stopRecorder();
-//   }
-
-//   Future toggleRecorder() async {
-//     if (audioRecorder!.isStopped) {
-//       await record();
-//     } else {
-//       await stop();
-//     }
-//   }
-// }
+  void emptyAudio() async {
+    boxofaudio = BoxOfAudios.getAudios();
+    await boxofaudio.clear();
+    notifyListeners();
+  }
+}

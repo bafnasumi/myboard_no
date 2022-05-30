@@ -28,7 +28,6 @@ import 'models/myboard.dart' as m;
 import 'services/google_sign_in.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:hive/hive.dart';
-import 'boxes.dart';
 import 'package:path_provider/path_provider.dart';
 
 Future main() async {
@@ -43,10 +42,12 @@ Future main() async {
   Hive.registerAdapter(m.ImagesAdapter());
   Hive.registerAdapter(m.LinkAdapter());
   Hive.registerAdapter(m.ToDoAdapter());
+  Hive.registerAdapter(m.AudioAdapter());
 
   await Hive.openBox<m.Images>('images');
   await Hive.openBox<m.Link>('links');
   await Hive.openBox<m.ToDo>('todo');
+  await Hive.openBox<m.Audio>('audio');
 
   await Firebase.initializeApp();
   runApp(const MyApp());
@@ -81,6 +82,9 @@ class _MyAppState extends State<MyApp> {
         ),
         ChangeNotifierProvider(
           create: (context) => LinksController(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => AudioController(),
         ),
       ],
       child: GetMaterialApp(

@@ -132,7 +132,7 @@ class _LinksState extends State<Links> {
                       description: _descriptionController.text,
                     ),
                   );
-                  final box = BoxesOfLinks.getLinks();
+                  final box = BoxOfLinks.getLinks();
                   final latestlink = box.getAt(box.length - 1);
                   var index = box.length - 1;
                   print('pinnedwidget length: ${pinnedWidgets.length}');
@@ -264,7 +264,7 @@ class _LinksState extends State<Links> {
   }
 }
 
-var boxoflinks = BoxesOfLinks.getLinks();
+var boxoflinks = BoxOfLinks.getLinks();
 
 class LinksController with ChangeNotifier {
   late m.Link _link;
