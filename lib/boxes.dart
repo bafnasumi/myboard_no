@@ -18,3 +18,6 @@ class BoxOfAudios {
   static Box<Audio> getAudios() => Hive.box<Audio>('audio');
 }
 
+class BoxOfVideos {
+  static Box<Video> getVideos() => Hive.box<Video>('video');
+}

@@ -381,23 +381,49 @@ class _HomePageState extends State<HomePage> {
 
                                   PlatformFile localfile =
                                       await vid.pickVideoFile();
-
-                                  //final myvideo = await vid.saveFilePermanently(localfile);
-
+                                  var videopath = localfile.path;
+                                  print('Video picked path: $videopath');
+                                  var videobox = BoxOfVideos.getVideos();
+                                  videobox.add(m.Video(
+                                    videosource: videopath,
+                                  ));
+                                  print(videobox.keys);
+                                  pinnedWidgets.add(
+                                    StaggeredGridTile.count(
+                                      crossAxisCellCount: 2,
+                                      mainAxisCellCount: 2,
+                                      child: Stack(
+                                        alignment: Alignment.topCenter,
+                                        children: [
+                                          Container(
+                                            child: Text(
+                                              'video link; ${videopath.toString()}',
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                            // child: Image.file(
+                                            //     File(videopath.toString())),
+                                            decoration:
+                                                BoxDecoration(boxShadow: [
+                                              BoxShadow(
+                                                blurRadius: 3.0,
+                                                spreadRadius: 0.5,
+                                                offset: Offset(1, 1),
+                                              ),
+                                            ]),
+                                          ),
+                                          Image.asset(
+                                            'assets/images/pin.png',
+                                            width: 13,
+                                            height: 13,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  );
                                   setState(
-                                    () async {
-                                      // final myimage = box.values.toList().cast<db.Images>();
-                                      //var myimage = BoxesofImage.getImages;
-                                      //print(myimage.toString());
-
-                                      final myvideo = await vid
-                                          .saveFilePermanently(localfile);
-
-                                      _boardController.add(StackBoardItem(
-                                        // child: Image.file(finalImage),
-                                        child: Text(myvideo.toString()),
-                                      ));
-                                    },
+                                    () {},
                                   );
                                 },
                               ),
@@ -466,7 +492,6 @@ class _HomePageState extends State<HomePage> {
                                 'assets/images/audio_new.png',
                                 () {
                                   Navigator.pushNamed(context, '/audio');
-                                  
                                 },
                               ),
                               buildCircleButton(

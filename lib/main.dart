@@ -43,11 +43,13 @@ Future main() async {
   Hive.registerAdapter(m.LinkAdapter());
   Hive.registerAdapter(m.ToDoAdapter());
   Hive.registerAdapter(m.AudioAdapter());
+  Hive.registerAdapter(m.VideoAdapter());
 
   await Hive.openBox<m.Images>('images');
   await Hive.openBox<m.Link>('links');
   await Hive.openBox<m.ToDo>('todo');
   await Hive.openBox<m.Audio>('audio');
+  await Hive.openBox<m.Video>('video');
 
   await Firebase.initializeApp();
   runApp(const MyApp());
