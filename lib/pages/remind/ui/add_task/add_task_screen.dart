@@ -1,39 +1,98 @@
-// ignore_for_file: prefer_const_constructors
+// ignore_for_file: prefer_const_constructors, non_constant_identifier_names, avoid_print
 
+// import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:myboardapp/boxes.dart';
+import 'package:myboardapp/pages/remind/data/entity/task.dart';
+import 'package:myboardapp/pages/remind/notificationApi.dart';
+import 'package:myboardapp/pages/remind/reminder.dart';
+import 'package:provider/provider.dart';
+import '../../../homepage.dart';
 import '../../controller/task_controller.dart';
 import '../../data/entity/color_task_type.dart';
-import '../../data/entity/task.dart';
 import '../../data/entity/time_mode.dart';
-import '../../ui/colors.dart';
+import '../../notificationAPI2.dart';
 import '../../ui/text_theme.dart';
 import '../../ui/widget/button.dart';
 import '../../ui/widget/input_field.dart';
+import 'package:myboardapp/models/myboard.dart' as m;
 
 class AddTaskScreen extends StatefulWidget {
-  const AddTaskScreen({Key? key}) : super(key: key);
+  const AddTaskScreen({Key? key, payload2}) : super(key: key);
 
   @override
   State<AddTaskScreen> createState() => _AddTaskScreenState();
 }
 
 class _AddTaskScreenState extends State<AddTaskScreen> {
-  DateTime _selectDate = DateTime.now();
+  DateTime? _selectDate = DateTime.now();
   String startTime = DateFormat('hh:mm a').format(DateTime.now()).toString();
+  DateTime? selectStartDate;
+  //DateTime _selectEndDate = DateTime.now();
+
   String endTime = '12:00 AM';
   List<String> reminders = ['5', '10', '15', '30'];
   String _selectReminder = '5';
   List<String> repeats = ['None', 'Daily', 'Weekly', 'Monthly'];
   String _selectRepeats = 'None';
   ColorTaskType _selectColor = ColorTaskType.blue;
+  TimeOfDay? _selectstarttime;
+  TimeOfDay? _selectendtime;
+  String? hintText_startTime =
+      DateFormat('hh:mm a').format(DateTime.now()).toString();
+  String? hintText_endTime =
+      DateFormat('hh:mm a').format(DateTime.now()).toString();
+
   final TextEditingController titleController = TextEditingController();
   final TextEditingController noteController = TextEditingController();
-  // final TaskController taskController = Get.put(TaskController());
+
+  void getRepeats(int repeatIndex) {
+    setState(() {
+      _selectRepeats = repeats[repeatIndex];
+    });
+    // return repeats[repeatIndex];
+  }
+
+  String getText(TimeOfDay newtime) {
+    if (_selectstarttime == null) {
+      return 'Select Time';
+    } else {
+      return '${newtime!.hour}:${newtime!.minute}';
+    }
+  }
+
+  Future pickTime(BuildContext context) async {
+    final initialTime = TimeOfDay(hour: 9, minute: 0);
+    final newtime = await showTimePicker(
+        context: context, initialTime: _selectstarttime ?? initialTime);
+    if (newtime == null) return;
+    setState(() {
+      hintText_startTime = '${newtime.hour}:${newtime.minute}';
+    });
+    return hintText_startTime;
+  }
+
+  Future pickEndTime(BuildContext context) async {
+    final initialTime = TimeOfDay(hour: 9, minute: 0);
+    final newendtime = await showTimePicker(
+        context: context, initialTime: _selectendtime ?? initialTime);
+    if (newendtime == null) return;
+    setState(() {
+      hintText_endTime = '${newendtime.hour}:${newendtime.minute}';
+    });
+    return hintText_endTime;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    // Provider.of<NotificationService>(context, listen: false).initialize();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -66,28 +125,54 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
               ),
               CustomInputField(
                 title: 'Date',
-                hint: DateFormat.yMd().format(_selectDate),
+                //controller: dateController,
+                hint: DateFormat.yMd().format(_selectDate!),
                 widget: _customIcon(
-                    iconData: Icons.calendar_today_outlined,
-                    onTap: () {
-                      _getDateFromUser();
-                    }),
+                  iconData: Icons.calendar_today_outlined,
+                  onTap: () async {
+                    // _selectDate = _getDateFromUser();
+                    _selectDate = await showDatePicker(
+                      context: context,
+                      initialDate: DateTime.now(),
+                      firstDate: DateTime(2020),
+                      lastDate: DateTime(2024),
+                    );
+                    setState(() {
+                      _selectDate;
+                    });
+                  },
+                ),
               ),
               Row(
                 children: [
+                  // Expanded(
+                  //   child: CustomInputField(
+                  //     title: 'Start Time',
+                  //     hint: DateFormat('hh:mm a')
+                  //         .format(DateTime.now())
+                  //         .toString(),
+                  //     widget: _customIcon(
+                  //       iconData: Icons.access_time_rounded,
+                  //       onTap: () {
+                  //         _selectstarttime = _getTimeFromUser(
+                  //           hour: int.parse(startTime.split(':')[0]),
+                  //           minute: int.parse(
+                  //               startTime.split(':')[1].split(' ')[0]),
+                  //           timeMode: TimeMode.startTime,
+                  //         );
+                  //       },
+                  //     ),
+                  //   ),
+                  // ),
                   Expanded(
                     child: CustomInputField(
-                      title: 'Start Time',
-                      hint: startTime,
+                      title: 'Time',
+                      hint: hintText_startTime!,
                       widget: _customIcon(
                         iconData: Icons.access_time_rounded,
-                        onTap: () {
-                          _getTimeFromUser(
-                            hour: int.parse(startTime.split(':')[0]),
-                            minute: int.parse(
-                                startTime.split(':')[1].split(' ')[0]),
-                            timeMode: TimeMode.startTime,
-                          );
+                        onTap: () async {
+                          hintText_startTime = await pickTime(context);
+                          setState(() {});
                         },
                       ),
                     ),
@@ -95,23 +180,6 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                   const SizedBox(
                     width: 12,
                   ),
-                  Expanded(
-                    child: CustomInputField(
-                      title: 'End Time',
-                      hint: endTime,
-                      widget: _customIcon(
-                        iconData: Icons.access_time_rounded,
-                        onTap: () {
-                          _getTimeFromUser(
-                            hour: int.parse(endTime.split(':')[0]),
-                            minute:
-                                int.parse(endTime.split(':')[1].split(' ')[0]),
-                            timeMode: TimeMode.entTime,
-                          );
-                        },
-                      ),
-                    ),
-                  )
                 ],
               ),
               CustomInputField(
@@ -126,26 +194,97 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                 title: 'Repeats',
                 hint: _selectRepeats,
                 widget: _customDropDown(
-                    list: repeats,
-                    iconData: Icons.keyboard_arrow_down_outlined,
-                    isReminder: false),
+                  list: repeats,
+                  iconData: Icons.keyboard_arrow_down_outlined,
+                  isReminder: false,
+                ),
               ),
               const SizedBox(
                 height: 18,
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  _colorSection(),
-                  CustomButton(
-                      label: 'Create Task',
-                      onTap: () {
-                        _validateInput();
-                      })
-                ],
-              ),
-              const SizedBox(
+              CustomButton(
+                  label: 'Create Task',
+                  onTap: () async {
+                    _validateInput();
+                    print(_selectDate);
+
+                    Provider.of<ReminderController>(context, listen: false)
+                        .addReminder(
+                      m.ReminderTask(
+                        title: titleController.text,
+                        note: noteController.text,
+                        date: _selectDate,
+                        //color: colorController.text,
+                        isCompleted: 0,
+                        startTime: hintText_startTime,
+                        endTime: hintText_endTime,
+                        reminder: int.parse(_selectReminder),
+                        //int.tryParse(reminderController.text) ?? 100,
+                        repeat: _selectRepeats,
+                      ),
+                    );
+                    final box = BoxOfReminders.getReminders();
+                    final latestreminder = box.getAt(box.length - 1);
+                    var index = box.length - 1;
+                    print(pinnedWidgets.length);
+                    int pinnedWidgetIndex = pinnedWidgets.length;
+
+                    pinnedWidgets.add(
+                      StaggeredGridTile.count(
+                        crossAxisCellCount: 2,
+                        mainAxisCellCount: 1,
+                        child: PinnedReminder(
+                            latestreminder!, index, pinnedWidgetIndex),
+                      ),
+                    );
+                    print(('month: : : ${int.parse(
+                      latestreminder.startTime.toString().split(':')[0],
+                    )}'));
+
+                    switch (_selectRepeats) {
+                      case "None":
+                        {
+                          //Notification 1
+                          NotificationApi.showScheduledNotification(
+                            latestreminder: latestreminder,
+                            title: latestreminder.title,
+                            body: latestreminder.note,
+                          );
+                        }
+                        break;
+                      case "Daily":
+                        {
+                          // //Notification 2
+                          // NotificationApi.showScheduledNotification_daily(
+                          //   remindertask: latestreminder,
+                          //   //payload: payload,
+                          // );
+                        }
+                        break;
+                      case "Weekly":
+                        {
+                          // //Notification 2
+
+                          // NotificationApi.showScheduledNotification_weekly(
+                          //   remindertask: latestreminder,
+                          // );
+                        }
+                        break;
+                    }
+
+                    // //Notification 2
+                    // NotificationApi.showInstantNotification(
+                    //     title: latestreminder.title,
+                    //     body: latestreminder.note);
+                    // NotificationApi.showScheduledNotification(
+                    //   scheduledDate: latestreminder.date,
+                    //   title: latestreminder.title,
+                    //   body: latestreminder.note,
+                    // );
+
+                    Navigator.pushNamed(context, '/homepage');
+                  }),
+              SizedBox(
                 height: 24,
               ),
             ],
@@ -154,6 +293,47 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
       ),
     );
   }
+
+  PinnedReminder(m.ReminderTask? task, int index, int pinnedWidgetIndex) =>
+      InkWell(
+        child: Container(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            //alignment: WrapAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            //direction: Axis.horizontal,
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(8, 4, 0, 2),
+                child: Text(
+                  task!.title!,
+                  style: GoogleFonts.openSans(fontSize: 13.0),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(8, 0, 0, 4),
+                child: Text(
+                  task.note!,
+                  style: TextStyle(fontSize: 7.0),
+                ),
+              ),
+            ],
+          ),
+          decoration: BoxDecoration(
+            image: DecorationImage(
+                image: AssetImage('assets/images/reminder_backgroud.png')),
+            borderRadius: BorderRadius.circular(10.0),
+            border: Border.all(
+              color: Colors.black,
+              width: 2.0,
+            ),
+          ),
+        ),
+        onDoubleTap: () {
+          boxofreminders.delete(index);
+          pinnedWidgets.removeAt(pinnedWidgetIndex);
+        },
+      );
 
   DropdownButton<String> _customDropDown(
       {required List<String> list,
@@ -167,7 +347,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
         padding: const EdgeInsets.all(8.0),
         child: Icon(
           iconData,
-          color: Colors.grey,
+          color: Colors.black,
         ),
       ),
       iconSize: 28.0,
@@ -259,7 +439,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
 
   _getTimeFromUser(
       {required int hour, required int minute, required TimeMode timeMode}) {
-    _showTimePicker(hour: hour, minute: minute).then((value) => {
+    return _showTimePicker(hour: hour, minute: minute).then((value) => {
           if (value != null)
             {
               if (timeMode == TimeMode.startTime)
@@ -302,10 +482,10 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
               child: CircleAvatar(
                 radius: 14,
                 backgroundColor: index == 0
-                    ? ColorPalette.bluishClr
+                    ? Colors.blueGrey
                     : index == 1
-                        ? ColorPalette.pinkClr
-                        : ColorPalette.yellowClr,
+                        ? Colors.pink
+                        : Colors.yellow,
                 child: index == _selectColor.index
                     ? const Icon(
                         Icons.done,
@@ -332,13 +512,12 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
             color: Colors.white,
           ),
           colorText: Colors.white,
-          backgroundColor: ColorPalette.pinkClr,
+          backgroundColor: Colors.pink,
           snackPosition: SnackPosition.TOP);
     }
   }
 
   void _addTaskToDb() async {
-    
     // int finalTask = await taskController.addTask(
     //   task: reminderTask(
     //     title: titleController.text,
@@ -356,4 +535,80 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
     //   print('task ${finalTask.toString()} created!!');
     // }
   }
+//   getAlarmNotification(m.ReminderTask latestreminder) {
+//     AwesomeNotifications().createNotification(
+//       content: NotificationContent(
+//         id: 1,
+//         channelKey: 'key1',
+//         title: latestreminder.title,
+//         body: latestreminder.note,
+//         notificationLayout: NotificationLayout.BigText,
+//         category: NotificationCategory.Alarm,
+//         wakeUpScreen: true,
+//       ),
+//       actionButtons: [
+//         NotificationActionButton(
+//           key: 'MARK_DONE',
+//           label: 'Mark Done',
+//         )
+//       ],
+//     );
+
+//     AwesomeNotifications().actionStream.listen((receivedNotifiction) {
+//       Navigator.of(context).pushNamed(
+//         '/reminder',
+//       );
+//     });
+//   }
+
+//   getNotification(m.ReminderTask latestreminder) {
+//     AwesomeNotifications().createNotification(
+//       content: NotificationContent(
+//         id: 1,
+//         channelKey: 'key1',
+//         title: latestreminder.title,
+//         body: latestreminder.note,
+//         notificationLayout: NotificationLayout.Default,
+//         category: NotificationCategory.Alarm,
+//         wakeUpScreen: true,
+//       ),
+//       actionButtons: [
+//         NotificationActionButton(
+//           key: 'MARK_DONE',
+//           label: 'Mark Done',
+//         )
+//       ],
+//       schedule: NotificationCalendar(
+//         repeats: latestreminder.repeat == 'None' ? false : true,
+//         year: latestreminder.date!.year,
+//         month: latestreminder.date!.month,
+//         day: latestreminder.date!.day,
+//         hour: int.parse(
+//           latestreminder.startTime.toString().split(':')[0],
+//         ),
+//         minute: int.parse(
+//           latestreminder.startTime.toString().split(':')[1],
+//         ),
+//         second: 0,
+//       ),
+//     );
+//     AwesomeNotifications().createdStream.listen(
+//       (Notifiction) {
+//         print('from created stream(1): $Notifiction');
+//       },
+//     );
+
+//     AwesomeNotifications().actionStream.listen(
+//       (Notifiction) {
+//         print('from action stream(2): $Notifiction');
+//         Navigator.push(
+//           context,
+//           MaterialPageRoute(
+//             builder: (context) => const Reminder(),
+//           ),
+//         );
+//       },
+//     );
+//   }
+
 }

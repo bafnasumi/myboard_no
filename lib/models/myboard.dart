@@ -23,59 +23,77 @@ class Link extends HiveObject {
 
 @HiveType(typeId: 2)
 class ReminderTask extends HiveObject with ChangeNotifier {
+  // @HiveField(0)
+  // int? id;
+  // @HiveField(1)
+  // String? title;
+  // @HiveField(2)
+  // String? note;
+  // @HiveField(3)
+  // String? date;
+  // @HiveField(4)
+  // String? startTime;
+  // @HiveField(5)
+  // String? endTime;
+  // @HiveField(6)
+  // int? reminder;
+  // @HiveField(7)
+  // String? repeat;
+  // @HiveField(8)
+  // int? isCompleted;
+  // @HiveField(9)
+  // String? color;
+
   @HiveField(0)
-  int? id;
-  @HiveField(1)
   String? title;
-  @HiveField(2)
+  @HiveField(1)
   String? note;
+  @HiveField(2)
+  DateTime? date;
   @HiveField(3)
-  String? date;
-  @HiveField(4)
   String? startTime;
-  @HiveField(5)
+  @HiveField(4)
   String? endTime;
-  @HiveField(6)
+  @HiveField(5)
   int? reminder;
-  @HiveField(7)
+  @HiveField(6)
   String? repeat;
-  @HiveField(8)
+  @HiveField(7)
   int? isCompleted;
-  @HiveField(9)
-  String? color;
+  // @HiveField(8)
+  // String? color;
 
   ReminderTask({
-    this.id,
-    this.title,
+    @required this.title,
     this.note,
-    this.date,
-    this.startTime,
+    @required this.date,
+    @required this.startTime,
     this.endTime,
     this.reminder,
     this.repeat,
     this.isCompleted,
-    this.color,
+    // this.color,
   });
 
   ReminderTask.fromJson(Map<String, dynamic> json)
-      : id = json['id'],
-        title = json['title'],
+      // : id = json['id'],
+      : title = json['title'],
         note = json['note'],
         date = json['date'],
         startTime = json['startTime'],
         endTime = json['endTime'],
         reminder = json['reminder'],
         repeat = json['repeat'],
-        color = json['color'],
+        // color = json['color'],
         isCompleted = json['isCompleted'];
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
-    data['id'] = id;
+    // data['id'] = id;
     data['title'] = title;
     data['note'] = note;
     data['date'] = date;
-    data['color'] = color;
+    // data['color'] = color;
     data['isCompleted'] = isCompleted;
     data['startTime'] = startTime;
     data['endTime'] = endTime;
@@ -129,4 +147,12 @@ class VoiceToText extends HiveObject with ChangeNotifier {
   late String? text;
 
   VoiceToText({this.text});
+}
+
+@HiveType(typeId: 8)
+class PinnedWidgets extends HiveObject with ChangeNotifier {
+  @HiveField(0)
+  late String? text;
+
+  PinnedWidgets({this.text});
 }

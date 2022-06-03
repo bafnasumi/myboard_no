@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'dart:io';
 
 import 'package:firebase_core/firebase_core.dart';
@@ -12,11 +14,15 @@ import 'package:myboardapp/pages/links.dart';
 import 'package:myboardapp/pages/loginpage.dart';
 import 'package:myboardapp/pages/memories.dart';
 import 'package:myboardapp/pages/quotes/quotes.dart';
+import 'package:myboardapp/pages/remind/controller/task_controller.dart';
+import 'package:myboardapp/pages/remind/notificationAPI2.dart';
+import 'package:myboardapp/pages/remind/notificationApi.dart';
 import 'package:myboardapp/pages/remind/reminder.dart';
 import 'package:myboardapp/pages/screenshots.dart';
 import 'package:myboardapp/pages/screentime.dart';
 import 'package:myboardapp/pages/settingspage.dart';
 import 'package:myboardapp/pages/signuppage.dart';
+import 'package:myboardapp/pages/text.dart';
 // import 'package:myboardapp/pages/stack_board.dart';
 import 'package:myboardapp/pages/todo.dart';
 import 'package:myboardapp/pages/video.dart';
@@ -29,8 +35,12 @@ import 'services/google_sign_in.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:hive/hive.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:flutter/services.dart';
 
 Future main() async {
+  SystemChrome.setSystemUIOverlayStyle(
+      const SystemUiOverlayStyle(statusBarColor: Colors.transparent));
+
   WidgetsFlutterBinding.ensureInitialized();
 
   Directory localdocument = await getApplicationDocumentsDirectory();
@@ -44,14 +54,21 @@ Future main() async {
   Hive.registerAdapter(m.ToDoAdapter());
   Hive.registerAdapter(m.AudioAdapter());
   Hive.registerAdapter(m.VideoAdapter());
+  Hive.registerAdapter(m.ReminderTaskAdapter());
+  Hive.registerAdapter(m.VoiceToTextAdapter());
+  Hive.registerAdapter(m.TextAdapter());
 
   await Hive.openBox<m.Images>('images');
   await Hive.openBox<m.Link>('links');
   await Hive.openBox<m.ToDo>('todo');
   await Hive.openBox<m.Audio>('audio');
   await Hive.openBox<m.Video>('video');
+  await Hive.openBox<m.ReminderTask>('reminder');
+  await Hive.openBox<m.VoiceToText>('voicetotext');
+  await Hive.openBox<m.Text>('text');
 
   await Firebase.initializeApp();
+
   runApp(const MyApp());
 }
 
@@ -68,6 +85,29 @@ class _MyAppState extends State<MyApp> {
     Hive.close();
     super.dispose();
   }
+
+  @override
+  void initState() {
+    // AwesomeNotifications().actionStream.listen((event) {
+    //   Navigator.pushNamed(context, '/reminder');
+    // });
+
+    // //notification 1
+    NotificationApi.init();
+    listenNotifications();
+    super.initState();
+  }
+
+//notification 2
+  void listenNotifications() =>
+      NotificationApi.onNotifications.stream.listen(onClickNotification);
+
+  void onClickNotification(String? payload) => Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const Reminder(),
+        ),
+      );
 
   @override
   Widget build(BuildContext context) {
@@ -88,6 +128,18 @@ class _MyAppState extends State<MyApp> {
         // ChangeNotifierProvider(
         //   create: (context) => AudioController(),
         // ),
+        ChangeNotifierProvider(
+          create: (context) => ReminderController(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => VoiceToTextController(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => TextPageController(),
+        ),
+        // ChangeNotifierProvider(
+        //   create: (context) => NotificationService(),
+        // ),
       ],
       child: GetMaterialApp(
         debugShowCheckedModeBanner: false,
@@ -100,13 +152,14 @@ class _MyAppState extends State<MyApp> {
           '/register': (context) => const RegisterPage(),
           '/reminder': (context) => const Reminder(),
           '/voicetotext': (context) => const VoiceToText(),
+          '/text': (context) => const TextPage(),
           '/todo': (context) => ToDo(),
           '/memories': (context) => const Memories(),
           '/screenshots': (context) => const Screenshots(),
           '/links': (context) => const Links(),
           '/screentime': (context) => const ScreenTime(),
           '/quotes': (context) => const Quotes(),
-          '/video': (context) => const Video(),
+          '/video': (context) => Video(),
           '/audio': (context) => const Audio(),
           '/boardeditpage': (context) => const BoardEditPage(),
           '/setting': (context) => const SettingsScreen(),

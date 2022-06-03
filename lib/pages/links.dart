@@ -34,6 +34,13 @@ class _LinksState extends State<Links> {
   //   ValueNotifier<Link?> mylinks = ValueNotifier(localaddLink);
   //   box.add(localaddLink);
   // }
+  double screenHeight() {
+    return MediaQuery.of(context).size.height;
+  }
+
+  double screenWidth() {
+    return MediaQuery.of(context).size.width;
+  }
 
   @override
   void initState() {
@@ -56,7 +63,24 @@ class _LinksState extends State<Links> {
   Widget build(BuildContext context) {
     var linksprovider = Provider.of<LinksController>(context);
     return Scaffold(
-      backgroundColor: Colors.grey[300],
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        toolbarHeight: 80.0,
+        centerTitle: true,
+        title: Padding(
+          padding: const EdgeInsets.only(top: 27.0),
+          child: Text(
+            'Links',
+            style: GoogleFonts.italiana(
+              color: Colors.black87,
+              fontSize: screenHeight() * 0.05,
+            ),
+          ),
+        ),
+        backgroundColor: Color.fromARGB(255, 255, 255, 255),
+        elevation: 0.0,
+        iconTheme: IconThemeData(color: Colors.black),
+      ),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(
@@ -64,41 +88,48 @@ class _LinksState extends State<Links> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              // SizedBox(height: 50),
-              Text(
-                'Enter your links!',
-                style: GoogleFonts.lato(
-                  fontSize: 26,
+              SizedBox(height: 90),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(8, 3, 8, 3),
+                child: Text(
+                  'enter your links!',
+                  style: GoogleFonts.reenieBeanie(
+                    fontSize: 36,
+                  ),
                 ),
               ),
               SizedBox(
                 height: 5,
               ),
-              Container(
-                height: 50,
-                decoration: BoxDecoration(
-                  color: Colors.grey[200],
-                  border: Border.all(
-                    color: Color.fromARGB(255, 10, 75, 107),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(8, 3, 8, 3),
+                child: Container(
+                  height: 50,
+                  decoration: BoxDecoration(
+                    color: Colors.grey[200],
+                    border: Border.all(
+                      color: Color.fromARGB(255, 10, 75, 107),
+                    ),
+                    borderRadius: BorderRadius.circular(10),
                   ),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 20.0),
-                  child: TextField(
-                    controller: _linkController,
-                    onSubmitted: (value) => setState(() {
-                      thisLink = value;
-                    }),
-                    decoration: InputDecoration(
-                        border: InputBorder.none, hintText: 'Enter link here'),
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 20.0),
+                    child: TextField(
+                      controller: _linkController,
+                      onSubmitted: (value) => setState(() {
+                        thisLink = value;
+                      }),
+                      decoration: InputDecoration(
+                          border: InputBorder.none,
+                          hintText: 'Enter link here'),
+                    ),
                   ),
                 ),
               ),
               Padding(
                 padding: const EdgeInsets.fromLTRB(8, 3, 8, 3),
                 child: Container(
-                  height: 50,
+                  height: 100,
                   decoration: BoxDecoration(
                     color: Colors.grey[200],
                     border: Border.all(
@@ -122,9 +153,11 @@ class _LinksState extends State<Links> {
                 ),
               ),
               SizedBox(
-                height: 5,
+                height: 35,
               ),
               TextButton(
+                style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all(Colors.blue)),
                 onPressed: () {
                   Provider.of<LinksController>(context, listen: false).addLink(
                     m.Link(
@@ -135,21 +168,68 @@ class _LinksState extends State<Links> {
                   final box = BoxOfLinks.getLinks();
                   final latestlink = box.getAt(box.length - 1);
                   var index = box.length - 1;
-                  print('pinnedwidget length: ${pinnedWidgets.length}');
                   int pinnedWidgetIndex = pinnedWidgets.length;
+                  print('pinnedwidget length: ${pinnedWidgetIndex}');
 
                   pinnedWidgets.add(
                     StaggeredGridTile.count(
-                      crossAxisCellCount: 2,
-                      mainAxisCellCount: 1,
-                      child: PinnedLink(latestlink!.url, latestlink.description,
-                          index, pinnedWidgetIndex),
-                    ),
+                        crossAxisCellCount: 2,
+                        mainAxisCellCount: 1,
+                        // child: InkWell(
+                        //   onDoubleTap: () {
+                        //     if (pinnedWidgetIndex >= 0) {
+                        //       print(
+                        //           'pinnedwidget length: ${pinnedWidgetIndex}');
+                        //       setState(() {
+                        //         boxoflinks.delete(index);
+                        //         pinnedWidgets.removeAt(pinnedWidgetIndex);
+                        //         pinnedWidgets;
+                        //       });
+                        //     }
+                        //   },
+                        child: Padding(
+                          padding: const EdgeInsets.all(4.0),
+                          child: Stack(
+                            alignment: Alignment.topCenter,
+                            children: [
+                              Container(
+                                decoration: BoxDecoration(
+                                  // ignore: prefer_const_literals_to_create_immutables
+                                  boxShadow: [
+                                    BoxShadow(
+                                      blurRadius: 3.0,
+                                      spreadRadius: 0.5,
+                                      offset: Offset(1, 1),
+                                    ),
+                                  ],
+                                ),
+                                child: PinnedLink(
+                                    latestlink!.url,
+                                    latestlink.description,
+                                    index,
+                                    pinnedWidgetIndex),
+                              ),
+                              Image.asset(
+                                'assets/images/pin.png',
+                                width: 13,
+                                height: 13,
+                              ),
+                            ],
+                            // ),
+                          ),
+                        )),
                   );
-                  Navigator.pushNamed(context, '/homepage');
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => HomePage()));
                 },
-                child: Text(
-                  'Add Link',
+                child: Padding(
+                  padding: EdgeInsets.symmetric(
+                      horizontal: screenWidth() * 0.22,
+                      vertical: screenHeight() * 0.01),
+                  child: Text(
+                    'Add Link',
+                    style: TextStyle(color: Colors.white),
+                  ),
                 ),
               ),
               // ValueListenableBuilder<Box<Link>>(
@@ -168,11 +248,14 @@ class _LinksState extends State<Links> {
   PinnedLink(
           String? url, String? description, int index, int pinnedWidgetIndex) =>
       InkWell(
+        onDoubleTap: () {},
         child: Container(
+          height: screenHeight() * 0.3,
+          width: screenWidth() * 0.3,
           child: Wrap(
-            alignment: WrapAlignment.spaceBetween,
+            alignment: WrapAlignment.spaceEvenly,
             crossAxisAlignment: WrapCrossAlignment.start,
-            direction: Axis.horizontal,
+            direction: Axis.vertical,
             children: [
               Padding(
                 padding: const EdgeInsets.fromLTRB(8, 4, 0, 2),
@@ -196,18 +279,25 @@ class _LinksState extends State<Links> {
             ],
           ),
           decoration: BoxDecoration(
-            image: DecorationImage(image: AssetImage('assets/images/www.png')),
-            borderRadius: BorderRadius.circular(10.0),
-            border: Border.all(
-              color: Colors.black,
-              width: 2.0,
+            // ignore: prefer_const_literals_to_create_immutables
+            boxShadow: [
+              BoxShadow(
+                blurRadius: 3.0,
+                spreadRadius: 0.5,
+                offset: Offset(1, 1),
+              ),
+            ],
+            image: DecorationImage(
+              image: AssetImage('assets/images/www.png'),
+              fit: BoxFit.cover,
             ),
+            borderRadius: BorderRadius.circular(10.0),
+            // border: Border.all(
+            //   color: Colors.black,
+            //   width: 2.0,
+            // ),
           ),
         ),
-        onDoubleTap: () {
-          boxoflinks.delete(index);
-          pinnedWidgets.removeAt(pinnedWidgetIndex);
-        },
       );
 
   Widget BuildContent(List<m.Link> mylinks) {

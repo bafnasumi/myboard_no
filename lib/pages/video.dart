@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors
+// ignore_for_file: prefer_const_constructors, non_constant_identifier_names, no_logic_in_create_state, use_key_in_widget_constructors
 
 import 'dart:io';
 
@@ -8,47 +8,50 @@ import 'package:video_player/video_player.dart';
 import 'package:path_provider/path_provider.dart';
 
 class Video extends StatefulWidget {
-  const Video({Key? key}) : super(key: key);
+  String? localfile_path;
+  Video({this.localfile_path});
 
   @override
-  State<Video> createState() => _VideoState();
+  State<Video> createState() => _VideoState(localfile_path);
 }
 
 class _VideoState extends State<Video> {
-  late VideoPlayerController controller;
   //final File file = File('/data/user/0/com.example.myboardapp/app_flutter/screen-20220516-145624.mp4');
-  late final File localfile;
+  String? localfile_path;
+  _VideoState(this.localfile_path);
+  VideoPlayerController? controller;
 
   @override
   void initState() {
     super.initState();
-    controller = VideoPlayerController.file(localfile)
+    print('from init $localfile_path');
+    controller = VideoPlayerController.file(File(localfile_path.toString()))
       ..addListener(() {
         setState(() {});
       })
       ..setLooping(true)
-      ..initialize().then((_) => controller.play());
+      ..initialize().then((_) => controller!.play());
   }
 
   @override
   void dispose() {
-    controller.dispose();
+    controller!.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final isMuted = controller.value.volume == 0;
-    if (controller.value.isInitialized) {
+    final isMuted = controller!.value.volume == 0;
+    if (controller!.value.isInitialized) {
       return SafeArea(
         child: Scaffold(
           body: GestureDetector(
-            onTap: () => controller.value.isPlaying
-                ? controller.pause()
-                : controller.play(),
+            onTap: () => controller!.value.isPlaying
+                ? controller!.pause()
+                : controller!.play(),
             child: Stack(
               children: [
-                VideoPlayerWidget(controller: controller),
+                VideoPlayerWidget(controller: controller!),
                 Container(
                   alignment: Alignment.topRight,
                   child: IconButton(
@@ -56,10 +59,10 @@ class _VideoState extends State<Video> {
                       isMuted ? Icons.volume_mute : Icons.volume_up,
                       color: Colors.white,
                     ),
-                    onPressed: () => controller.setVolume(isMuted ? 1 : 0),
+                    onPressed: () => controller!.setVolume(isMuted ? 1 : 0),
                   ),
                 ),
-                controller.value.isPlaying
+                controller!.value.isPlaying
                     ? Container()
                     : Container(
                         alignment: Alignment.center,
@@ -71,7 +74,7 @@ class _VideoState extends State<Video> {
                         ),
                       ),
                 BasicOverlayWidget(
-                  controller: controller,
+                  controller: controller!,
                 ),
               ],
             ),
@@ -122,26 +125,6 @@ class VideoPlayerWidget extends StatelessWidget {
 
     return File(file.path!).copy(newFile.path);
   }
-
-  // Future<File> selectVideo() async {
-  //   final result = await FilePicker.platform.pickFiles(
-  //       type: FileType.custom,
-  //       allowMultiple: false,
-  //       allowedExtensions: ['mp4', 'mkv', 'heic']);
-  //   final oneFile = result?.files.first;
-
-  //   final legitfile = File(oneFile!.path.toString());
-  //   print(oneFile.name);
-  //   print(oneFile.extension);
-  //   print(oneFile.path);
-  //   print(oneFile.size);
-  //   //Navigator.pushNamed(context, '/memories');
-  //   // ImageProvider gotFile = Get.arguments();
-  //   //File finalImage = await saveFilePermanently(oneFile);
-  //   print('from ' + oneFile.path.toString());
-  //   //print('to ' + finalImage.path);
-  //   return legitfile;
-  // }
 }
 
 class BasicOverlayWidget extends StatelessWidget {

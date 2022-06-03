@@ -32,6 +32,7 @@ class CustomInputField extends StatelessWidget {
             height: 8,
           ),
           TextField(
+            
             readOnly: widget == null ? false : true,
             controller: controller,
             autofocus: false,

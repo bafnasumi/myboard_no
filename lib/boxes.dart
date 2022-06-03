@@ -21,3 +21,16 @@ class BoxOfAudios {
 class BoxOfVideos {
   static Box<Video> getVideos() => Hive.box<Video>('video');
 }
+
+class BoxOfReminders {
+  static Box<ReminderTask> getReminders() => Hive.box<ReminderTask>('reminder');
+}
+
+class BoxOfVoiceToText {
+  static Box<VoiceToText> getVoiceToText() =>
+      Hive.box<VoiceToText>('voicetotext');
+}
+
+class BoxOfText {
+  static Box<Text> getText() => Hive.box<Text>('text');
+}

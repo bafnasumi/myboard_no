@@ -65,43 +65,50 @@ class _QuotesState extends State<Quotes> {
                       pinnedWidgets.add(
                         StaggeredGridTile.count(
                           crossAxisCellCount: 2,
-                          mainAxisCellCount: 2,
-                          child: Stack(
-                            alignment: Alignment.topCenter,
-                            children: [
-                              Transform.rotate(
-                                angle: -math.pi / 60,
-                                child: Container(
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Text(
-                                      '"${quotesList[index1][kQuote]}"',
-                                      style: GoogleFonts.caveatBrush(
-                                        color: Colors.black,
-                                        fontSize: 8.5,
+                          mainAxisCellCount:
+                              (quotesList[index1][kAuthor]).toString().length >
+                                      30
+                                  ? 2
+                                  : 1,
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Stack(
+                              alignment: Alignment.topCenter,
+                              children: [
+                                Transform.rotate(
+                                  angle: -math.pi / 60,
+                                  child: Container(
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Text(
+                                        '"${quotesList[index1][kQuote]}"',
+                                        style: GoogleFonts.caveatBrush(
+                                          color: Colors.black,
+                                          fontSize: 8.5,
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                  // child: Image.file(
-                                  //     File(videopath.toString())),
-                                  decoration: BoxDecoration(
-                                    color: Colors.greenAccent,
-                                    boxShadow: [
-                                      BoxShadow(
-                                        blurRadius: 3.0,
-                                        spreadRadius: 0.5,
-                                        offset: Offset(1, 1),
-                                      ),
-                                    ],
+                                    // child: Image.file(
+                                    //     File(videopath.toString())),
+                                    decoration: BoxDecoration(
+                                      color: Colors.greenAccent,
+                                      boxShadow: [
+                                        BoxShadow(
+                                          blurRadius: 3.0,
+                                          spreadRadius: 0.5,
+                                          offset: Offset(1, 1),
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 ),
-                              ),
-                              Image.asset(
-                                'assets/images/pin.png',
-                                width: 13,
-                                height: 13,
-                              ),
-                            ],
+                                Image.asset(
+                                  'assets/images/pin.png',
+                                  width: 13,
+                                  height: 13,
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       );

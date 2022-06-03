@@ -3,11 +3,20 @@
 //import 'dart:html';
 import 'dart:math';
 
+// import 'package:awesome_notifications/awesome_notifications.dart';
+import 'package:colorful_safe_area/colorful_safe_area.dart';
 import 'package:flutter/services.dart';
 import 'package:myboardapp/boxes.dart';
+import 'package:myboardapp/pages/links.dart';
 import 'package:myboardapp/pages/myvideo.dart' as vid;
+import 'package:myboardapp/pages/remind/notificationAPI2.dart';
+import 'package:myboardapp/pages/remind/notificationApi.dart';
+import 'package:myboardapp/pages/remind/reminder.dart';
 import 'package:myboardapp/pages/settingspage.dart';
+import 'package:myboardapp/pages/text.dart';
 import 'package:myboardapp/pages/todo.dart';
+import 'package:myboardapp/pages/video.dart';
+import 'package:myboardapp/pages/voicetotext.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'dart:io';
@@ -79,6 +88,8 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     _boardController = StackBoardController();
+    NotificationApi.init();
+    // Provider.of<NotificationService>(context, listen: false).initialize();
   }
 
   @override
@@ -107,7 +118,7 @@ class _HomePageState extends State<HomePage> {
         type: FileType.custom,
         allowMultiple: false,
         allowedExtensions: ['jpeg', 'png', 'gif', 'mp4', 'mkv']);
-    // if (result != null) return ;
+    //if (result != null) return ;
 
     final path = result!.files.first.path!;
     setState(() {
@@ -120,33 +131,67 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     var scaffoldKey;
     //var todoprovider = Provider.of<TaskController>(context);
-    return SafeArea(
+    return ColorfulSafeArea(
+      overflowRules: OverflowRules.all(true),
       child: Scaffold(
         backgroundColor: Colors.white,
         resizeToAvoidBottomInset: false,
         key: scaffoldKey,
+        // appBar: AppBar(
+        //   toolbarHeight: 80.0,
+        //   actions: [
+        //     IconButton(
+        //       icon: Icon(Icons.delete),
+        //       onPressed: () {
+        //         setState(() {
+        //           pinnedWidgets.clear();
+        //         });
+        //       },
+        //     ),
+        //   ],
+        //   centerTitle: true,
+        //   title: Padding(
+        //     padding: const EdgeInsets.only(top: 35.0),
+        //     child: Text(
+        //       'MYBOARD',
+        //       style: GoogleFonts.italiana(
+        //         color: Colors.black87,
+        //         fontSize: screenHeight() * 0.05,
+        //       ),
+        //     ),
+        //   ),
+        //   backgroundColor: Color.fromARGB(255, 255, 255, 255),
+        //   elevation: 0.0,
+        //   iconTheme: IconThemeData(color: Colors.black),
+        // ),
         appBar: AppBar(
           toolbarHeight: 80.0,
-          actions: [
-            IconButton(
-              icon: Icon(Icons.refresh),
-              onPressed: () {
-                setState(() {
-                  pinnedWidgets.clear();
-                });
-              },
-            ),
-          ],
-          centerTitle: true,
-          title: Padding(
-            padding: const EdgeInsets.only(top: 35.0),
-            child: Text(
-              'MYBOARD',
-              style: GoogleFonts.italiana(
-                color: Colors.black87,
-                fontSize: screenHeight() * 0.05,
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              SizedBox(
+                width: 10.0,
               ),
-            ),
+              Text(
+                'MYBOARD',
+                style: GoogleFonts.italiana(
+                  color: Colors.black87,
+                  fontSize: screenHeight() * 0.055,
+                ),
+              ),
+              SizedBox(
+                width: 5.0,
+              ),
+              IconButton(
+                icon: Icon(Icons.delete),
+                onPressed: () {
+                  setState(() {
+                    pinnedWidgets.clear();
+                  });
+                },
+              ),
+            ],
           ),
           backgroundColor: Color.fromARGB(255, 255, 255, 255),
           elevation: 0.0,
@@ -190,13 +235,6 @@ class _HomePageState extends State<HomePage> {
                 title: Text("Change Background"),
                 onTap: () {
                   Navigator.pushNamed(context, '/background');
-                },
-              ),
-              ListTile(
-                leading: Icon(Icons.settings),
-                title: Text("Settings"),
-                onTap: () {
-                  Navigator.pushNamed(context, '/setting');
                 },
               ),
               ListTile(
@@ -270,10 +308,9 @@ class _HomePageState extends State<HomePage> {
                     padding: const EdgeInsets.fromLTRB(10.0, 14.0, 10.0, 14.0),
                     child: StaggeredGrid.count(
                       //staggeredTileBuilder: (index) => StaggeredTile.fit(2),
-                      mainAxisSpacing: 4,
-                      crossAxisSpacing: 6,
+                      mainAxisSpacing: 2,
+                      //crossAxisSpacing: 3,
                       crossAxisCount: 6,
-                      //itemCount: 50,
                       children: pinnedWidgets,
                     ),
                   ),
@@ -300,8 +337,72 @@ class _HomePageState extends State<HomePage> {
                           child: GridView.count(
                             padding: EdgeInsets.fromLTRB(0.0, 22.0, 0.0, 0.0),
                             crossAxisCount: 2,
+                            mainAxisSpacing: 2,
+                            crossAxisSpacing: 3,
                             controller: gridviewcontroller,
                             children: [
+                              buildCircleButton(
+                                context,
+                                'Voice to Text',
+                                'assets/images/voicetotext_new.jpg',
+                                () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: ((context) => VoiceToText()),
+                                    ),
+                                  );
+                                },
+                              ),
+                              buildCircleButton(
+                                  context, 'Text', 'assets/images/text.png',
+                                  () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: ((context) => TextPage())));
+                              }),
+
+                              buildCircleButton(
+                                context,
+                                'ToDo',
+                                'assets/images/todo_new.jpg',
+                                () async {
+                                  await Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => ToDo()));
+                                  // if (ifVisited) {
+                                  //   final box = BoxOfToDos.getToDos();
+                                  //   final latesttodo =
+                                  //       box.getAt(box.length - 1);
+
+                                  //   pinnedWidgets.add(
+                                  //     StaggeredGridTile.count(
+                                  //       crossAxisCellCount: 2,
+                                  //       mainAxisCellCount: 1,
+                                  //       child: Text(
+                                  //         latesttodo.toString(),
+                                  //         style: TextStyle(
+                                  //             fontSize: 10.0,
+                                  //             color: Colors.white),
+                                  //       ),
+                                  //     ),
+                                  //   );
+                                  // }
+                                },
+                              ),
+                              buildCircleButton(
+                                context,
+                                'Reminders',
+                                'assets/images/reminder.jpg',
+                                () {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => Reminder()));
+                                },
+                              ),
                               buildCircleButton(
                                 context,
                                 'Photo',
@@ -370,6 +471,7 @@ class _HomePageState extends State<HomePage> {
                                   setState(
                                     () {},
                                   );
+                                  Navigator.pop(context);
                                 },
                               ),
                               buildCircleButton(
@@ -392,33 +494,50 @@ class _HomePageState extends State<HomePage> {
                                     StaggeredGridTile.count(
                                       crossAxisCellCount: 2,
                                       mainAxisCellCount: 2,
-                                      child: Stack(
-                                        alignment: Alignment.topCenter,
-                                        children: [
-                                          Container(
-                                            child: Text(
-                                              'video link; ${videopath.toString()}',
-                                              style: TextStyle(
-                                                color: Colors.white,
-                                              ),
+                                      child: InkWell(
+                                        onTap: (() {
+                                          print('tap on video catched');
+                                          print(localfile.path.toString());
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: ((context) => Video(
+                                                  localfile_path:
+                                                      localfile.path)),
                                             ),
-                                            // child: Image.file(
-                                            //     File(videopath.toString())),
-                                            decoration:
-                                                BoxDecoration(boxShadow: [
-                                              BoxShadow(
-                                                blurRadius: 3.0,
-                                                spreadRadius: 0.5,
-                                                offset: Offset(1, 1),
+                                          );
+                                        }),
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: Stack(
+                                            alignment: Alignment.topCenter,
+                                            children: [
+                                              Container(
+                                                child: Text(
+                                                  'video link; ${videopath.toString()}',
+                                                  style: TextStyle(
+                                                    color: Colors.white,
+                                                  ),
+                                                ),
+                                                // child: Image.file(
+                                                //     File(videopath.toString())),
+                                                decoration:
+                                                    BoxDecoration(boxShadow: [
+                                                  BoxShadow(
+                                                    blurRadius: 3.0,
+                                                    spreadRadius: 0.5,
+                                                    offset: Offset(1, 1),
+                                                  ),
+                                                ]),
                                               ),
-                                            ]),
+                                              Image.asset(
+                                                'assets/images/pin.png',
+                                                width: 13,
+                                                height: 13,
+                                              ),
+                                            ],
                                           ),
-                                          Image.asset(
-                                            'assets/images/pin.png',
-                                            width: 13,
-                                            height: 13,
-                                          ),
-                                        ],
+                                        ),
                                       ),
                                     ),
                                   );
@@ -427,65 +546,7 @@ class _HomePageState extends State<HomePage> {
                                   );
                                 },
                               ),
-                              buildCircleButton(
-                                context,
-                                'Voice to Text',
-                                'assets/images/voicetotext_new.jpg',
-                                () {
-                                  Navigator.pushNamed(context, '/voicetotext');
-                                },
-                              ),
-                              buildCircleButton(
-                                context,
-                                'ToDo',
-                                'assets/images/todo_new.jpg',
-                                () async {
-                                  await Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => ToDo()));
-                                  // if (ifVisited) {
-                                  //   final box = BoxOfToDos.getToDos();
-                                  //   final latesttodo =
-                                  //       box.getAt(box.length - 1);
 
-                                  //   pinnedWidgets.add(
-                                  //     StaggeredGridTile.count(
-                                  //       crossAxisCellCount: 2,
-                                  //       mainAxisCellCount: 1,
-                                  //       child: Text(
-                                  //         latesttodo.toString(),
-                                  //         style: TextStyle(
-                                  //             fontSize: 10.0,
-                                  //             color: Colors.white),
-                                  //       ),
-                                  //     ),
-                                  //   );
-                                  // }
-                                },
-                              ),
-                              buildCircleButton(
-                                context,
-                                'Reminders',
-                                'assets/images/reminder.jpg',
-                                () {
-                                  Navigator.pushNamed(context, '/reminder');
-                                },
-                              ),
-                              buildCircleButton(
-                                context,
-                                'Links',
-                                'assets/images/links.png',
-                                () {
-                                  Navigator.pushNamed(context, '/links');
-                                },
-                              ),
-                              buildCircleButton(context, 'Text',
-                                  'assets/images/text.png', () {}),
-                              buildCircleButton(context, 'Quotes',
-                                  'assets/images/quotes_new.png', () {
-                                Navigator.pushNamed(context, '/quotes');
-                              }),
                               buildCircleButton(
                                 context,
                                 'Audio',
@@ -494,6 +555,22 @@ class _HomePageState extends State<HomePage> {
                                   Navigator.pushNamed(context, '/audio');
                                 },
                               ),
+
+                              buildCircleButton(
+                                context,
+                                'Links',
+                                'assets/images/links.png',
+                                () {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => Links()));
+                                },
+                              ),
+                              buildCircleButton(context, 'Quotes',
+                                  'assets/images/quotes_new.png', () {
+                                Navigator.pushNamed(context, '/quotes');
+                              }),
                               buildCircleButton(
                                 context,
                                 'Scribble',

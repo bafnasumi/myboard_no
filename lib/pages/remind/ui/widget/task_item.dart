@@ -1,10 +1,13 @@
+// ignore_for_file: unnecessary_string_interpolations
+
 import 'package:flutter/material.dart';
 import '../../data/entity/color_task_type.dart';
 import '../../data/entity/task.dart';
 import '../../ui/text_theme.dart';
+import 'package:myboardapp/models/myboard.dart' as m;
 
 class TaskItem extends StatelessWidget {
-  final reminderTask task;
+  final m.ReminderTask task;
   final Function() onTap;
   const TaskItem({Key? key, required this.task, required this.onTap})
       : super(key: key);
@@ -17,8 +20,9 @@ class TaskItem extends StatelessWidget {
         width: MediaQuery.of(context).size.width,
         margin: const EdgeInsets.only(bottom: 12, left: 16, right: 16),
         decoration: BoxDecoration(
-            color: task.color!.toColor(),
-            borderRadius: BorderRadius.circular(12)),
+          color: Colors.red.shade200,
+          borderRadius: BorderRadius.circular(15),
+        ),
         child: Padding(
           padding: const EdgeInsets.all(12.0),
           child: Row(
@@ -48,12 +52,23 @@ class TaskItem extends StatelessWidget {
                         const SizedBox(
                           width: 4,
                         ),
-                        Text(
-                          '${task.startTime!} - ${task.endTime!}',
-                          style: CustomTextTheme().body2Style.copyWith(
-                                color: Colors.grey[100],
-                                fontSize: 13,
-                              ),
+                        Column(
+                          children: [
+                            Text(
+                              '${task.startTime!}',
+                              style: CustomTextTheme().body2Style.copyWith(
+                                    color: Colors.white,
+                                    fontSize: 13,
+                                  ),
+                            ),
+                            Text(
+                              '${task.endTime!}',
+                              style: CustomTextTheme().body2Style.copyWith(
+                                    color: Colors.white,
+                                    fontSize: 13,
+                                  ),
+                            ),
+                          ],
                         ),
                       ],
                     ),
@@ -63,7 +78,7 @@ class TaskItem extends StatelessWidget {
                     Text(
                       task.note!,
                       style: CustomTextTheme().body2Style.copyWith(
-                            color: Colors.grey[100],
+                            color: Colors.white,
                             fontSize: 14,
                           ),
                     ),
@@ -73,20 +88,20 @@ class TaskItem extends StatelessWidget {
               Container(
                 width: 0.5,
                 height: 65,
-                color: Colors.grey[200]!.withOpacity(0.7),
+                color: Colors.grey.withOpacity(0.7),
                 margin: const EdgeInsets.symmetric(
                   horizontal: 10,
                 ),
               ),
-              RotatedBox(
-                quarterTurns: 3,
-                child: Text(
-                  task.isCompleted == 1 ? 'COMPLETED' : 'TODO',
-                  style: CustomTextTheme()
-                      .body2Style
-                      .copyWith(color: Colors.white, fontSize: 11),
-                ),
-              )
+              // RotatedBox(
+              //   quarterTurns: 3,
+              //   child: Text(
+              //     task.isCompleted == 1 ? 'COMPLETED' : 'TODO',
+              //     style: CustomTextTheme()
+              //         .body2Style
+              //         .copyWith(color: Colors.green, fontSize: 11),
+              //   ),
+              // )
               // RotatedBox(quarterTurns: quarterTurns)
             ],
           ),

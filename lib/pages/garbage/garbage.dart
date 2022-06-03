@@ -278,3 +278,42 @@
   //   final snapshot = await task!.whenComplete(() {});
   //   urlDownload = await snapshot.ref.getDownloadURL();
   // }
+
+
+// Widget _addDataBar() {
+//     return Padding(
+//       padding: const EdgeInsets.only(left: 16, top: 20, right: 16),
+//       child: DatePicker(
+//         DateTime.now(),
+//         height: 100,
+//         width: 80,
+//         initialSelectedDate: DateTime.now(),
+//         selectionColor: Colors.red.shade200,
+//         selectedTextColor: Colors.white,
+//         dateTextStyle: TextStyle(
+//           fontSize: 20,
+//           fontFamily: GoogleFonts.lato().fontFamily,
+//           fontWeight: FontWeight.w600,
+//           color: Colors.grey,
+//         ),
+//         dayTextStyle: TextStyle(
+//           fontSize: 14,
+//           fontFamily: GoogleFonts.lato().fontFamily,
+//           fontWeight: FontWeight.w600,
+//           color: Colors.grey,
+//         ),
+//         monthTextStyle: TextStyle(
+//           fontSize: 12,
+//           fontFamily: GoogleFonts.lato().fontFamily,
+//           fontWeight: FontWeight.w600,
+//           color: Colors.grey,
+//         ),
+//         daysCount: 10,
+//         onDateChange: (newDate) {
+//           setState(() {
+//             currentDate = newDate;
+//           });
+//         },
+//       ),
+//     );
+//   }

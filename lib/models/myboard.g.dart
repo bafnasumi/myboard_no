@@ -88,43 +88,37 @@ class ReminderTaskAdapter extends TypeAdapter<ReminderTask> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return ReminderTask(
-      id: fields[0] as int?,
-      title: fields[1] as String?,
-      note: fields[2] as String?,
-      date: fields[3] as String?,
-      startTime: fields[4] as String?,
-      endTime: fields[5] as String?,
-      reminder: fields[6] as int?,
-      repeat: fields[7] as String?,
-      isCompleted: fields[8] as int?,
-      color: fields[9] as String?,
+      title: fields[0] as String?,
+      note: fields[1] as String?,
+      date: fields[2] as DateTime?,
+      startTime: fields[3] as String?,
+      endTime: fields[4] as String?,
+      reminder: fields[5] as int?,
+      repeat: fields[6] as String?,
+      isCompleted: fields[7] as int?,
     );
   }
 
   @override
   void write(BinaryWriter writer, ReminderTask obj) {
     writer
-      ..writeByte(10)
-      ..writeByte(0)
-      ..write(obj.id)
-      ..writeByte(1)
-      ..write(obj.title)
-      ..writeByte(2)
-      ..write(obj.note)
-      ..writeByte(3)
-      ..write(obj.date)
-      ..writeByte(4)
-      ..write(obj.startTime)
-      ..writeByte(5)
-      ..write(obj.endTime)
-      ..writeByte(6)
-      ..write(obj.reminder)
-      ..writeByte(7)
-      ..write(obj.repeat)
       ..writeByte(8)
-      ..write(obj.isCompleted)
-      ..writeByte(9)
-      ..write(obj.color);
+      ..writeByte(0)
+      ..write(obj.title)
+      ..writeByte(1)
+      ..write(obj.note)
+      ..writeByte(2)
+      ..write(obj.date)
+      ..writeByte(3)
+      ..write(obj.startTime)
+      ..writeByte(4)
+      ..write(obj.endTime)
+      ..writeByte(5)
+      ..write(obj.reminder)
+      ..writeByte(6)
+      ..write(obj.repeat)
+      ..writeByte(7)
+      ..write(obj.isCompleted);
   }
 
   @override

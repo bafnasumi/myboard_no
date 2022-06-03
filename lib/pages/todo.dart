@@ -75,7 +75,7 @@ class _ToDoState extends State<ToDo> {
                         }
                         setState(() {});
                       },
-                      icon: Icon(Icons.refresh));
+                      icon: Icon(Icons.delete));
                 }),
                 // Text(
                 //   '${Provider.of<TaskController>(context).taskCount} Tasks',
@@ -116,28 +116,44 @@ class TasksList extends StatefulWidget {
 class _TasksListState extends State<TasksList> {
   @override
   Widget build(BuildContext context) {
-    return Consumer<TaskController>(
-      builder: (context, taskData, child) {
-        return ListView.builder(
-          itemCount: boxoftodos.length,
-          itemBuilder: (context, index) {
-            final task = boxoftodos.getAt(index);
-            return TaskTile(
-              taskTitle: task!.todo,
-              isChecked: task.isDone,
-              // checkboxCallback: (checkboxState) {
-              //   taskData.updateTask(task);
-              // },
-              // longPressCallback: () {
-              //   taskData.removeToDo(task);
-              //   setState(() {});
-              // },//TODO: on longpress: delete the todo
-            );
-          },
-          // itemCount: taskData.taskCount,
-        );
-      },
-    );
+    return boxoftodos.length == 0
+        ? Center(
+            child: Text(
+            'Add your first todo',
+            style: TextStyle(
+              fontSize: 20,
+              color: Colors.grey,
+            ),
+          ))
+        : Consumer<TaskController>(
+            builder: (context, taskData, child) {
+              return ListView.builder(
+                reverse: true,
+                itemCount: boxoftodos.length,
+                itemBuilder: (context, index) {
+                  final task = boxoftodos.getAt(index);
+                  return TaskTile(
+                    taskTitle: task!.todo,
+                    isChecked: task.isDone,
+                    checkboxCallback: (checkboxState) {
+                      taskData.removeToDo(task.key);
+                      setState(() {});
+                      const snackBar = SnackBar(
+                        content: Text('Todo deleted'),
+                      );
+
+                      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                    },
+                    // longPressCallback: () {
+                    //   taskData.removeToDo(task);
+                    //   setState(() {});
+                    // },//TODO: on longpress: delete the todo
+                  );
+                },
+                // itemCount: taskData.taskCount,
+              );
+            },
+          );
   }
 }
 
@@ -256,23 +272,20 @@ class AddTaskScreen extends StatelessWidget {
       InkWell(
         child: Container(
           child: Wrap(
+            alignment: WrapAlignment.start,
             children: [
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Text(todotext!),
               ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Icon(
-                  Icons.done_all_outlined,
-                  color: Colors.black,
-                  size: 15.0,
-                ),
-              ),
             ],
           ),
           decoration: BoxDecoration(
             color: Colors.white70,
+            image: DecorationImage(
+              image: AssetImage('assets/images/todo_background.png'),
+              fit: BoxFit.contain,
+            ),
             borderRadius: BorderRadius.circular(10.0),
             border: Border.all(
               color: Colors.black,
