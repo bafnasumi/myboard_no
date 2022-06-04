@@ -5,13 +5,24 @@ String anonymous = 'Anonymous';
 List quotesList = [
   {
     kQuote:
-        'If something is wrong fix it. But train your self not to worry, worry fixes nothing',
-    kAuthor: 'Ernest Hemingway'
+        "Temperamentally anxious people can have a hard time staying motivated, period, because their intense focus on their worries distracts them from their goals",
+    kAuthor: "Winifred Gallagher, Rapt: Attention and the Focused Life",
+  },
+  {
+    kQuote: '''Smile, you don't own all the problems in the world.
+            Eventually all pieces will fall into place. Until then laugh at the confusion, live in the moment and know that everything happens for a reason.
+            ''',
+    kAuthor: anonymous,
   },
   {
     kQuote:
-        "Temperamentally anxious people can have a hard time staying motivated, period, because their intense focus on their worries distracts them from their goals",
-    kAuthor: "Winifred Gallagher, Rapt: Attention and the Focused Life",
+        "Happiness is always there. You just have to choose to see it. There's no point dwelling in the dark and ignoring the light of the stars.",
+    kAuthor: "Carrie Hope Fletcher",
+  },
+  {
+    kQuote:
+        'If something is wrong fix it. But train your self not to worry, worry fixes nothing',
+    kAuthor: 'Ernest Hemingway'
   },
   {
     kQuote:
@@ -28,12 +39,7 @@ List quotesList = [
         "You can't litter negativity everywhere and wonder why you have a trashy life.Over thinking ruins you. It ruins the situation, twists things around, makes you worry about futile questions and makes everything much worse than actually it is.",
     kAuthor: anonymous,
   },
-  {
-    kQuote: '''Smile, you don't own all the problems in the world.
-            Eventually all pieces will fall into place. Until then laugh at the confusion, live in the moment and know that everything happens for a reason.
-            ''',
-    kAuthor: anonymous,
-  },
+  
   {
     kQuote:
         "If you've given up and chosen something else, then don't hold on to what you let go.",
@@ -113,11 +119,7 @@ List quotesList = [
         "Always be happy, you never know how happy you can make another by just being happy.",
     kAuthor: "Ogwo David Emenike",
   },
-  {
-    kQuote:
-        "Happiness is always there. You just have to choose to see it. There's no point dwelling in the dark and ignoring the light of the stars.",
-    kAuthor: "Carrie Hope Fletcher",
-  },
+  
   {
     kQuote:
         "Happiness is a perfume you cannot pour on others without getting some on yourself",
