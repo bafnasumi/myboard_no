@@ -36,6 +36,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:hive/hive.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter/services.dart';
+import 'package:timezone/data/latest.dart' as tz;
 
 Future main() async {
   SystemChrome.setSystemUIOverlayStyle(
@@ -95,6 +96,8 @@ class _MyAppState extends State<MyApp> {
     // //notification 1
     NotificationApi.init();
     listenNotifications();
+    tz.initializeTimeZones();
+
     super.initState();
   }
 

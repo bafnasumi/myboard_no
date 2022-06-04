@@ -11,7 +11,7 @@ class NotificationApi {
   static final onNotifications = BehaviorSubject<String?>();
 
   static Future init({bool initScheduled = false}) async {
-    final android = AndroidInitializationSettings('@mipmap/ic_launcher');
+    final android = AndroidInitializationSettings('ic_launcher');
     final iOS = IOSInitializationSettings();
     final settings = InitializationSettings(android: android, iOS: iOS);
 
@@ -49,6 +49,7 @@ class NotificationApi {
     String? body,
     String? payload,
     required m.ReminderTask? latestreminder,
+    required int? remindBefore,
   }) async {
     DateTime scheduledDate = DateTime(
       latestreminder!.date!.year,
@@ -61,6 +62,7 @@ class NotificationApi {
         latestreminder.startTime.toString().split(':')[1],
       ),
     );
+
     print(
         'from schedule notification funtion call ${scheduledDate.toString()}');
     return _notifications.zonedSchedule(
@@ -90,11 +92,12 @@ class NotificationApi {
 
   // Daily Notification at 8 am
   static void showScheduledNotification_daily({
-    int id = 0,
+    int id = 1,
     // String? title,
     // String? body,
     String? payload,
     m.ReminderTask? remindertask,
+    required int? remindBefore,
   }) async {
     _notifications.zonedSchedule(
       id,
@@ -115,17 +118,20 @@ class NotificationApi {
     );
   }
 
-  /// Weekly Notification on Monday and Tuesday at 8 am
+  /// Weekly Notification
   static void showScheduledNotification_weekly({
-    int id = 0,
+    int id = 2,
     // String? title,
     // String? body,
     String? payload,
     m.ReminderTask? remindertask,
+    required int? remindBefore,
   }) async {
     final scheduledDates = _scheduleWeekly(
-        Time(int.parse(remindertask!.startTime.toString().split(':')[0]),
-            int.parse(remindertask.startTime.toString().split(':')[1])),
+        Time(
+          int.parse(remindertask!.startTime.toString().split(':')[0]),
+          int.parse(remindertask.startTime.toString().split(':')[1]),
+        ),
         days: [
           remindertask.date!.weekday,
         ]);
@@ -168,5 +174,46 @@ class NotificationApi {
       }
       return scheduledDate;
     }).toList();
+  }
+
+  static void showScheduledNotification_yearly({
+    int id = 3,
+    // String? title,
+    // String? body,
+    String? payload,
+    m.ReminderTask? latestreminder,
+    required int? remindBefore,
+  }) async {
+    for (int i = 0; i < 15; i++) {
+      DateTime scheduledDate = DateTime(
+        latestreminder!.date!.year + i,
+        latestreminder.date!.month,
+        latestreminder.date!.day,
+        int.parse(
+          latestreminder.startTime.toString().split(':')[0],
+        ),
+        int.parse(
+          latestreminder.startTime.toString().split(':')[1],
+        ),
+      );
+      print(scheduledDate.year);
+
+      _notifications.zonedSchedule(
+        id + i,
+        latestreminder!.title,
+        latestreminder.note,
+        tz.TZDateTime.from(
+            scheduledDate.subtract(
+              Duration(minutes: remindBefore!),
+            ),
+            tz.local),
+        await _notificationDetails(),
+        payload: payload,
+        androidAllowWhileIdle: true,
+        uiLocalNotificationDateInterpretation:
+            UILocalNotificationDateInterpretation.absoluteTime,
+        matchDateTimeComponents: DateTimeComponents.dayOfWeekAndTime,
+      );
+    }
   }
 }

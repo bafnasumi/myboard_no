@@ -38,13 +38,19 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
   String endTime = '12:00 AM';
   List<String> reminders = ['5', '10', '15', '30'];
   String _selectReminder = '5';
-  List<String> repeats = ['None', 'Daily', 'Weekly', 'Monthly'];
+  List<String> repeats = ['None', 'Daily', 'Weekly', 'Yearly'];
   String _selectRepeats = 'None';
   ColorTaskType _selectColor = ColorTaskType.blue;
-  TimeOfDay? _selectstarttime;
+  TimeOfDay _selectstarttime = TimeOfDay.now();
   TimeOfDay? _selectendtime;
-  String? hintText_startTime =
-      DateFormat('hh:mm a').format(DateTime.now()).toString();
+  String? hintText_startTime = DateFormat('hh:mm a')
+      .format(
+        DateTime.now().add(
+          Duration(minutes: 10),
+        ),
+      )
+      .toString();
+
   String? hintText_endTime =
       DateFormat('hh:mm a').format(DateTime.now()).toString();
 
@@ -67,14 +73,41 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
   }
 
   Future pickTime(BuildContext context) async {
-    final initialTime = TimeOfDay(hour: 9, minute: 0);
+    final initialTime = TimeOfDay(
+        hour: DateTime.now().hour, minute: DateTime.now().minute + 10);
     final newtime = await showTimePicker(
         context: context, initialTime: _selectstarttime ?? initialTime);
-    if (newtime == null) return;
     setState(() {
-      hintText_startTime = '${newtime.hour}:${newtime.minute}';
+      _selectstarttime = initialTime;
     });
-    return hintText_startTime;
+    if (newtime != null && newtime != _selectstarttime) {
+      setState(() => _selectstarttime = newtime);
+      print(newtime);
+      final AMorPM = newtime.hour > 12 ? 'PM' : 'AM';
+      final hourIn12 = newtime.hour > 12 ? newtime.hour - 12 : newtime.hour;
+      setState(() {
+        hintText_startTime = '${pad(hourIn12)}:${pad(newtime.minute)} $AMorPM';
+      });
+      return hintText_startTime;
+    } else {
+      print(newtime);
+      return initialTime;
+    }
+
+    // if (newtime == null) return;
+    // setState(() {
+    //   hintText_startTime = '${pad(newtime.hour)}:${pad(newtime.minute)}';
+    // });
+    // return hintText_startTime;
+  }
+
+  String pad(int input) {
+    String str = input.toString();
+
+    if (input < 10) {
+      str = "0" + input.toString();
+    }
+    return str;
   }
 
   Future pickEndTime(BuildContext context) async {
@@ -126,44 +159,40 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
               CustomInputField(
                 title: 'Date',
                 //controller: dateController,
-                hint: DateFormat.yMd().format(_selectDate!),
+                // hint: DateFormat.yMd().format(_selectDate!),
+                hint: DateFormat.yMMMEd().format(_selectDate!),
                 widget: _customIcon(
                   iconData: Icons.calendar_today_outlined,
                   onTap: () async {
                     // _selectDate = _getDateFromUser();
-                    _selectDate = await showDatePicker(
+                    DateTime? picked = await showDatePicker(
                       context: context,
                       initialDate: DateTime.now(),
                       firstDate: DateTime(2020),
-                      lastDate: DateTime(2024),
+                      lastDate: DateTime(2025),
                     );
-                    setState(() {
-                      _selectDate;
-                    });
+
+                    // setState(() {
+                    //   _selectDate = _selectDate;
+                    // });
+                    //&& _selectDate != selectedDate
+
+                    // if (pickedDate == null) {
+                    // } else {
+                    //   setState(() => _selectDate = pickedDate);
+                    //   print(_selectDate);
+                    // }
+                    if (picked != null && picked != _selectDate) {
+                      setState(() => _selectDate = picked);
+                      print(picked);
+                    } else {
+                      print(picked);
+                    }
                   },
                 ),
               ),
               Row(
                 children: [
-                  // Expanded(
-                  //   child: CustomInputField(
-                  //     title: 'Start Time',
-                  //     hint: DateFormat('hh:mm a')
-                  //         .format(DateTime.now())
-                  //         .toString(),
-                  //     widget: _customIcon(
-                  //       iconData: Icons.access_time_rounded,
-                  //       onTap: () {
-                  //         _selectstarttime = _getTimeFromUser(
-                  //           hour: int.parse(startTime.split(':')[0]),
-                  //           minute: int.parse(
-                  //               startTime.split(':')[1].split(' ')[0]),
-                  //           timeMode: TimeMode.startTime,
-                  //         );
-                  //       },
-                  //     ),
-                  //   ),
-                  // ),
                   Expanded(
                     child: CustomInputField(
                       title: 'Time',
@@ -177,18 +206,19 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                       ),
                     ),
                   ),
-                  const SizedBox(
-                    width: 12,
-                  ),
                 ],
+              ),
+              const SizedBox(
+                width: 12,
               ),
               CustomInputField(
                 title: 'Reminder',
                 hint: '$_selectReminder minutes early',
                 widget: _customDropDown(
-                    list: reminders,
-                    iconData: Icons.keyboard_arrow_down_outlined,
-                    isReminder: true),
+                  list: reminders,
+                  iconData: Icons.keyboard_arrow_down_outlined,
+                  isReminder: true,
+                ),
               ),
               CustomInputField(
                 title: 'Repeats',
@@ -205,84 +235,122 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
               CustomButton(
                   label: 'Create Task',
                   onTap: () async {
-                    _validateInput();
-                    print(_selectDate);
-
-                    Provider.of<ReminderController>(context, listen: false)
-                        .addReminder(
-                      m.ReminderTask(
-                        title: titleController.text,
-                        note: noteController.text,
-                        date: _selectDate,
-                        //color: colorController.text,
-                        isCompleted: 0,
-                        startTime: hintText_startTime,
-                        endTime: hintText_endTime,
-                        reminder: int.parse(_selectReminder),
-                        //int.tryParse(reminderController.text) ?? 100,
-                        repeat: _selectRepeats,
-                      ),
+                    DateTime? combinedDate = DateTime(
+                      _selectDate!.year,
+                      _selectDate!.month,
+                      _selectDate!.day,
+                      _selectstarttime!.hour,
+                      _selectstarttime!.minute - int.parse(_selectReminder),
+                      _selectstarttime!.minute,
                     );
-                    final box = BoxOfReminders.getReminders();
-                    final latestreminder = box.getAt(box.length - 1);
-                    var index = box.length - 1;
-                    print(pinnedWidgets.length);
-                    int pinnedWidgetIndex = pinnedWidgets.length;
 
-                    pinnedWidgets.add(
-                      StaggeredGridTile.count(
-                        crossAxisCellCount: 2,
-                        mainAxisCellCount: 1,
-                        child: PinnedReminder(
-                            latestreminder!, index, pinnedWidgetIndex),
-                      ),
-                    );
-                    print(('month: : : ${int.parse(
-                      latestreminder.startTime.toString().split(':')[0],
-                    )}'));
+                    if (_validateInput(_selectstarttime)) {
+                      if (combinedDate.isAfter(DateTime.now())) {
+                        //_validateInput();
+                        // _validateDateTime(combinedDate);
+                        print(_selectDate);
+                        Provider.of<ReminderController>(context, listen: false)
+                            .addReminder(
+                          m.ReminderTask(
+                            title: titleController.text,
+                            note: noteController.text,
+                            date: _selectDate,
+                            //color: colorController.text,
+                            isCompleted: 0,
+                            startTime: hintText_startTime,
+                            endTime: hintText_endTime,
+                            reminder: int.parse(_selectReminder),
+                            //int.tryParse(reminderController.text) ?? 100,
+                            repeat: _selectRepeats,
+                          ),
+                        );
+                        final box = BoxOfReminders.getReminders();
+                        final latestreminder = box.getAt(box.length - 1);
+                        var index = box.length - 1;
+                        print(pinnedWidgets.length);
+                        int pinnedWidgetIndex = pinnedWidgets.length;
 
-                    switch (_selectRepeats) {
-                      case "None":
-                        {
-                          //Notification 1
-                          NotificationApi.showScheduledNotification(
-                            latestreminder: latestreminder,
-                            title: latestreminder.title,
-                            body: latestreminder.note,
-                          );
-                        }
-                        break;
-                      case "Daily":
-                        {
-                          // //Notification 2
-                          // NotificationApi.showScheduledNotification_daily(
-                          //   remindertask: latestreminder,
-                          //   //payload: payload,
-                          // );
-                        }
-                        break;
-                      case "Weekly":
-                        {
-                          // //Notification 2
+                        pinnedWidgets.add(
+                          StaggeredGridTile.count(
+                            crossAxisCellCount: 2,
+                            mainAxisCellCount: 1,
+                            child: PinnedReminder(
+                                latestreminder!, index, pinnedWidgetIndex),
+                          ),
+                        );
+                        print(('month: : : ${int.parse(
+                          latestreminder.startTime.toString().split(':')[0],
+                        )}'));
 
-                          // NotificationApi.showScheduledNotification_weekly(
-                          //   remindertask: latestreminder,
-                          // );
+                        switch (_selectRepeats) {
+                          case "None":
+                            {
+                              //Notification 1
+                              NotificationApi.showScheduledNotification(
+                                latestreminder: latestreminder,
+                                title: latestreminder.title,
+                                body: latestreminder.note,
+                                remindBefore: int.parse(_selectReminder),
+                              );
+                            }
+                            break;
+                          case "Daily":
+                            {
+                              //Notification 2
+                              NotificationApi.showScheduledNotification_daily(
+                                remindertask: latestreminder,
+                                remindBefore: int.parse(_selectReminder),
+
+                                //payload: payload,
+                              );
+                            }
+                            break;
+                          case "Weekly":
+                            {
+                              //Notification 2
+
+                              NotificationApi.showScheduledNotification_weekly(
+                                remindertask: latestreminder,
+                                remindBefore: int.parse(_selectReminder),
+                              );
+                            }
+                            break;
+                          case "Yearly":
+                            {
+                              //Notification 2
+
+                              NotificationApi.showScheduledNotification_yearly(
+                                latestreminder: latestreminder,
+                                remindBefore: int.parse(_selectReminder),
+                              );
+                            }
+                            break;
                         }
-                        break;
+
+                        Navigator.pushNamed(context, '/homepage');
+                      } else {
+                        Get.snackbar('Oops',
+                            'Cannot choose a time that has already passed',
+                            icon: const Icon(
+                              Icons.warning_amber_rounded,
+                              color: Colors.white,
+                            ),
+                            shouldIconPulse: true,
+                            colorText: Colors.white,
+                            backgroundColor: Colors.grey,
+                            snackPosition: SnackPosition.TOP);
+                      }
+                      // } else {}
+                    } else {
+                      Get.snackbar('Required', 'All Fields are required !',
+                          icon: const Icon(
+                            Icons.warning_amber_rounded,
+                            color: Colors.white,
+                          ),
+                          colorText: Colors.white,
+                          backgroundColor: Colors.grey,
+                          snackPosition: SnackPosition.TOP);
                     }
-
-                    // //Notification 2
-                    // NotificationApi.showInstantNotification(
-                    //     title: latestreminder.title,
-                    //     body: latestreminder.note);
-                    // NotificationApi.showScheduledNotification(
-                    //   scheduledDate: latestreminder.date,
-                    //   title: latestreminder.title,
-                    //   body: latestreminder.note,
-                    // );
-
-                    Navigator.pushNamed(context, '/homepage');
                   }),
               SizedBox(
                 height: 24,
@@ -395,21 +463,21 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
             CupertinoIcons.back,
             size: 24,
           )),
-      actions: [
-        InkWell(
-          onTap: () {},
-          customBorder: const CircleBorder(),
-          child: Padding(
-            padding: const EdgeInsets.all(10.0),
-            child: Icon(Icons.person),
-            // SvgPicture.asset(
-            //   'assets/img/person.svg',
-            //   width: 36,
-            //   color: Get.isDarkMode ? Colors.white : Colors.black,
-            // ),
-          ),
-        ),
-      ],
+      // actions: [
+      //   InkWell(
+      //     onTap: () {},
+      //     customBorder: const CircleBorder(),
+      //     child: Padding(
+      //       padding: const EdgeInsets.all(10.0),
+      //       child: Icon(Icons.person),
+      //       // SvgPicture.asset(
+      //       //   'assets/img/person.svg',
+      //       //   width: 36,
+      //       //   color: Get.isDarkMode ? Colors.white : Colors.black,
+      //       // ),
+      //     ),
+      //   ),
+      // ],
     );
   }
 
@@ -501,10 +569,13 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
     );
   }
 
-  _validateInput() {
-    if (titleController.text.isNotEmpty && noteController.text.isNotEmpty) {
+  bool _validateInput(_selectstarttime) {
+    if (titleController.text.isNotEmpty &&
+        noteController.text.isNotEmpty &&
+        (_selectstarttime != null)) {
       _addTaskToDb();
-      Get.back();
+      //Get.back();
+      return true;
     } else {
       Get.snackbar('Required', 'All Fields are required !',
           icon: const Icon(
@@ -512,7 +583,24 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
             color: Colors.white,
           ),
           colorText: Colors.white,
-          backgroundColor: Colors.pink,
+          backgroundColor: Colors.grey,
+          snackPosition: SnackPosition.TOP);
+      return false;
+    }
+  }
+
+  _validateDateTime(DateTime? combinedDate) {
+    if (combinedDate!.isAfter(DateTime.now())) {
+      //_addTaskToDb();
+      Get.back();
+    } else {
+      Get.snackbar('Oops', 'You CANNOT',
+          icon: const Icon(
+            Icons.warning_amber_rounded,
+            color: Colors.white,
+          ),
+          colorText: Colors.white,
+          backgroundColor: Colors.red,
           snackPosition: SnackPosition.TOP);
     }
   }

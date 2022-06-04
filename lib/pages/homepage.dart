@@ -88,7 +88,7 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     _boardController = StackBoardController();
-    NotificationApi.init();
+    //NotificationApi.init();
     // Provider.of<NotificationService>(context, listen: false).initialize();
   }
 

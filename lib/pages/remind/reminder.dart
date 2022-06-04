@@ -84,7 +84,8 @@ class _ReminderState extends State<Reminder> {
                           boxofreminders.clear();
                         } else {
                           var snackBar = SnackBar(
-                              content: Text('Reminder list already empty'));
+                            content: Text('Reminder list already empty'),
+                          );
                           ScaffoldMessenger.of(context).showSnackBar(snackBar);
                         }
                         setState(() {});
