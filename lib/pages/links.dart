@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors, unused_local_variable, non_constant_identifier_names
+// ignore_for_file: prefer_const_constructors, unused_local_variable, non_constant_identifier_names, deprecated_member_use
 
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
@@ -10,6 +10,8 @@ import 'package:myboardapp/pages/todo.dart';
 import 'package:provider/provider.dart';
 import '../boxes.dart';
 import 'package:myboardapp/models/myboard.dart' as m;
+import 'package:flutter_linkify/flutter_linkify.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class Links extends StatefulWidget {
   const Links({Key? key}) : super(key: key);
@@ -102,7 +104,7 @@ class _LinksState extends State<Links> {
                 height: 5,
               ),
               Padding(
-                padding: const EdgeInsets.fromLTRB(8, 3, 8, 3),
+                padding: const EdgeInsets.fromLTRB(15, 3, 15, 3),
                 child: Container(
                   height: 50,
                   decoration: BoxDecoration(
@@ -127,7 +129,7 @@ class _LinksState extends State<Links> {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.fromLTRB(8, 3, 8, 3),
+                padding: const EdgeInsets.fromLTRB(15, 3, 15, 3),
                 child: Container(
                   height: 100,
                   decoration: BoxDecoration(
@@ -155,9 +157,12 @@ class _LinksState extends State<Links> {
               SizedBox(
                 height: 35,
               ),
-              TextButton(
+              ElevatedButton(
                 style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.all(Colors.blue)),
+                  backgroundColor: MaterialStateProperty.all(
+                    Color.fromARGB(255, 10, 75, 107),
+                  ),
+                ),
                 onPressed: () {
                   Provider.of<LinksController>(context, listen: false).addLink(
                     m.Link(
@@ -219,13 +224,17 @@ class _LinksState extends State<Links> {
                           ),
                         )),
                   );
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => HomePage()));
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => HomePage(),
+                    ),
+                  );
                 },
                 child: Padding(
                   padding: EdgeInsets.symmetric(
-                      horizontal: screenWidth() * 0.22,
-                      vertical: screenHeight() * 0.01),
+                      horizontal: screenWidth() * 0.15,
+                      vertical: screenHeight() * 0.02),
                   child: Text(
                     'Add Link',
                     style: TextStyle(color: Colors.white),
@@ -248,54 +257,70 @@ class _LinksState extends State<Links> {
   PinnedLink(
           String? url, String? description, int index, int pinnedWidgetIndex) =>
       InkWell(
-        onDoubleTap: () {},
-        child: Container(
-          height: screenHeight() * 0.3,
-          width: screenWidth() * 0.3,
-          child: Wrap(
-            alignment: WrapAlignment.spaceEvenly,
-            crossAxisAlignment: WrapCrossAlignment.start,
-            direction: Axis.vertical,
-            children: [
-              Padding(
-                padding: const EdgeInsets.fromLTRB(8, 4, 0, 2),
-                child: Text(
-                  description!,
-                  style: TextStyle(fontSize: 10.0),
-                ),
-              ),
-              Wrap(
-                //direction: Axis.horizontal,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(8, 0, 0, 4),
-                    child: Text(
-                      url!,
-                      style: TextStyle(fontSize: 5.0),
-                    ),
+        // onDoubleTap: () {},
+        child: GestureDetector(
+          onTap: () {
+            Linkify(
+              onOpen: (link) async {
+                if (await canLaunch(link.url)) {
+                  await launch(link.url);
+                } else {
+                  throw 'Cannot launch $link';
+                }
+              },
+              text: url!,
+              style: TextStyle(color: Colors.yellow),
+              linkStyle: TextStyle(color: Colors.red),
+            );
+          },
+          child: Container(
+            height: screenHeight() * 0.3,
+            width: screenWidth() * 0.3,
+            child: Wrap(
+              alignment: WrapAlignment.spaceEvenly,
+              crossAxisAlignment: WrapCrossAlignment.start,
+              direction: Axis.vertical,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(8, 4, 0, 2),
+                  child: Text(
+                    description!,
+                    style: TextStyle(fontSize: 10.0),
                   ),
-                ],
-              ),
-            ],
-          ),
-          decoration: BoxDecoration(
-            // ignore: prefer_const_literals_to_create_immutables
-            boxShadow: [
-              BoxShadow(
-                blurRadius: 3.0,
-                spreadRadius: 0.5,
-                offset: Offset(1, 1),
-              ),
-            ],
-            image: DecorationImage(
-              image: AssetImage('assets/images/www.png'),
-              fit: BoxFit.cover,
+                ),
+                Wrap(
+                  //direction: Axis.horizontal,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(8, 0, 0, 4),
+                      child: Text(
+                        url!,
+                        style: TextStyle(fontSize: 5.0),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
-            borderRadius: BorderRadius.circular(10.0),
-            // border: Border.all(
-            //   color: Colors.black,
-            //   width: 2.0,
-            // ),
+            decoration: BoxDecoration(
+              // ignore: prefer_const_literals_to_create_immutables
+              boxShadow: [
+                BoxShadow(
+                  blurRadius: 3.0,
+                  spreadRadius: 0.5,
+                  offset: Offset(1, 1),
+                ),
+              ],
+              image: DecorationImage(
+                image: AssetImage('assets/images/www.png'),
+                fit: BoxFit.cover,
+              ),
+              borderRadius: BorderRadius.circular(10.0),
+              // border: Border.all(
+              //   color: Colors.black,
+              //   width: 2.0,
+              // ),
+            ),
           ),
         ),
       );
@@ -347,7 +372,7 @@ class _LinksState extends State<Links> {
       color: Colors.white,
       child: Text(
         link.url!,
-        maxLines: 2,
+        maxLines: 4,
         style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
       ),
     );
@@ -360,8 +385,9 @@ class LinksController with ChangeNotifier {
   late m.Link _link;
   LinksController() {
     _link = m.Link(
-        url: 'https://www.linkedin.com/in/sumangla-bafna-7a9b661a9/',
-        description: 'LinkedIn');
+      url: 'https://www.linkedin.com/in/sumangla-bafna-7a9b661a9/',
+      description: 'LinkedIn',
+    );
   }
 
   m.Link get Link => _link;

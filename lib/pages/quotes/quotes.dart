@@ -226,8 +226,8 @@ class AddQuotesScreen extends StatelessWidget {
               onPressed: () {
                 pinnedWidgets.add(
                   StaggeredGridTile.count(
-                    crossAxisCellCount: 1,
-                    mainAxisCellCount: 1,
+                    crossAxisCellCount: 2,
+                    mainAxisCellCount: 2,
                     // mainAxisCellCount:
                     //     (quotesList[index1][kAuthor]).toString().length > 30
                     //         ? 2
