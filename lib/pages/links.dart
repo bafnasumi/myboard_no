@@ -10,7 +10,6 @@ import 'package:myboardapp/pages/todo.dart';
 import 'package:provider/provider.dart';
 import '../boxes.dart';
 import 'package:myboardapp/models/myboard.dart' as m;
-import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class Links extends StatefulWidget {
@@ -260,18 +259,7 @@ class _LinksState extends State<Links> {
         // onDoubleTap: () {},
         child: GestureDetector(
           onTap: () {
-            Linkify(
-              onOpen: (link) async {
-                if (await canLaunch(link.url)) {
-                  await launch(link.url);
-                } else {
-                  throw 'Cannot launch $link';
-                }
-              },
-              text: url!,
-              style: TextStyle(color: Colors.yellow),
-              linkStyle: TextStyle(color: Colors.red),
-            );
+            launchUrl(url: url!);
           },
           child: Container(
             height: screenHeight() * 0.3,
@@ -410,5 +398,27 @@ class LinksController with ChangeNotifier {
   void emptyLink() async {
     await boxoflinks.clear();
     notifyListeners();
+  }
+}
+
+Future<void> launchUrl({required String url}) async {
+  String checkUrl(String url) {
+    if (url.startsWith('http')) {
+      return url;
+    } else {
+      return 'https://$url';
+    }
+  }
+
+  url = checkUrl(url);
+  try {
+    final bool shouldContinue = await canLaunch(url);
+    if (shouldContinue) {
+      await launch(url, forceSafariVC: false);
+      return;
+    }
+    throw Exception('Could not launch $url');
+  } catch (e) {
+    print('idk');
   }
 }
