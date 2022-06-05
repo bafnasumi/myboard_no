@@ -2,9 +2,11 @@
 
 import 'package:flutter/material.dart';
 
-bool isSet = false;
-String imglink = '';
+var imglink = '';
+
 class Background extends StatelessWidget {
+  
+
   const Background({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
@@ -80,6 +82,8 @@ class GridBox extends StatefulWidget {
 }
 
 class _GridBoxState extends State<GridBox> {
+
+
   @override
   Widget build(BuildContext context) {
     return Flexible(
@@ -93,10 +97,15 @@ class _GridBoxState extends State<GridBox> {
         ), //BoxDecoration
         child: GestureDetector(
           onTap: () {
-            isSet = !isSet;
-             imglink = widget.link;
-            Navigator.pushNamed(context, '/homepage');
-            print(imglink);
+            
+            setState(
+              () {
+                imglink = widget.link;
+                Navigator.pushNamed(context, '/homepage');
+              },
+            );
+            // print(imglink);
+            // imglink = '';
           },
           child: Container(
             decoration: BoxDecoration(

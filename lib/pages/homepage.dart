@@ -279,7 +279,7 @@ class _HomePageState extends State<HomePage> {
               Padding(
                 padding: const EdgeInsets.all(11.0),
                 child: Container(
-                  decoration: isSet? networkimg: localimg,
+                  decoration: imglink.isNotEmpty? networkimg: localimg,
                   height: MediaQuery.of(context).size.height * 0.65,
                   width: MediaQuery.of(context).size.width * 0.9,
                   child: Padding(
