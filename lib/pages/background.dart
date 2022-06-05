@@ -5,8 +5,6 @@ import 'package:flutter/material.dart';
 var imglink = '';
 
 class Background extends StatelessWidget {
-  
-
   const Background({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
@@ -82,8 +80,6 @@ class GridBox extends StatefulWidget {
 }
 
 class _GridBoxState extends State<GridBox> {
-
-
   @override
   Widget build(BuildContext context) {
     return Flexible(
@@ -97,13 +93,9 @@ class _GridBoxState extends State<GridBox> {
         ), //BoxDecoration
         child: GestureDetector(
           onTap: () {
-            
-            setState(
-              () {
-                imglink = widget.link;
-                Navigator.pushNamed(context, '/homepage');
-              },
-            );
+            imglink = widget.link;
+            Navigator.pushNamed(context, '/homepage');
+
             // print(imglink);
             // imglink = '';
           },
