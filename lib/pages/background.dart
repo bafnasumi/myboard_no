@@ -2,9 +2,10 @@
 
 import 'package:flutter/material.dart';
 
+bool isSet = false;
+String imglink = '';
 class Background extends StatelessWidget {
   const Background({Key? key}) : super(key: key);
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -90,30 +91,38 @@ class _GridBoxState extends State<GridBox> {
           borderRadius: BorderRadius.circular(10),
           // color: Colors.blueGrey,
         ), //BoxDecoration
-        child: Container(
-          decoration: BoxDecoration(
-            image: DecorationImage(
-                image: NetworkImage(
-                  widget.link,
-                ),
-                fit: BoxFit.cover),
-            boxShadow: [
-              BoxShadow(
-                // color: Colors.black87,
-                spreadRadius: 2.0,
-                blurRadius: 2.0,
-                offset: Offset(
-                  1.0,
-                  1.0,
-                ),
-              )
-            ],
-            border: Border.all(
-              color: Colors.black26,
-              width: 9.0,
+        child: GestureDetector(
+          onTap: () {
+            isSet = !isSet;
+             imglink = widget.link;
+            Navigator.pushNamed(context, '/homepage');
+            print(imglink);
+          },
+          child: Container(
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                  image: NetworkImage(
+                    widget.link,
+                  ),
+                  fit: BoxFit.cover),
+              boxShadow: [
+                BoxShadow(
+                  // color: Colors.black87,
+                  spreadRadius: 2.0,
+                  blurRadius: 2.0,
+                  offset: Offset(
+                    1.0,
+                    1.0,
+                  ),
+                )
+              ],
+              border: Border.all(
+                color: Colors.black26,
+                width: 9.0,
+              ),
+              borderRadius: BorderRadius.circular(20.0),
+              // color: Colors.blue,
             ),
-            borderRadius: BorderRadius.circular(20.0),
-            color: Colors.blue,
           ),
         ),
       ), //Container

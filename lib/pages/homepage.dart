@@ -31,6 +31,8 @@ import 'package:myboardapp/models/myboard.dart' as db;
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:myboardapp/models/myboard.dart' as m;
 import 'todo.dart';
+import 'background.dart';
+
 
 List<Widget> pinnedWidgets = [];
 
@@ -277,31 +279,7 @@ class _HomePageState extends State<HomePage> {
               Padding(
                 padding: const EdgeInsets.all(11.0),
                 child: Container(
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                        // image: NetworkImage(
-                        //   'https://media.istockphoto.com/photos/blue-color-velvet-texture-background-picture-id587220352?b=1&k=20&m=587220352&s=170667a&w=0&h=aznCAcatYJ2kORIffDkNOVD3QWezdkd-d-X8Ms9DCss=',
-                        // ),
-                        image: ExactAssetImage('assets/images/board.jpg'),
-                        fit: BoxFit.cover),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black87,
-                        spreadRadius: 2.0,
-                        blurRadius: 3.0,
-                        offset: Offset(
-                          2.0,
-                          2.0,
-                        ),
-                      )
-                    ],
-                    border: Border.all(
-                      color: Colors.black38,
-                      width: 9.0,
-                    ),
-                    borderRadius: BorderRadius.circular(20.0),
-                    color: Colors.blue,
-                  ),
+                  decoration: isSet? networkimg: localimg,
                   height: MediaQuery.of(context).size.height * 0.65,
                   width: MediaQuery.of(context).size.width * 0.9,
                   child: Padding(
@@ -661,3 +639,55 @@ void openFile(File file) {
     child: Image.file(file),
   );
 }
+
+var localimg = BoxDecoration(
+  image: DecorationImage(
+      // image: NetworkImage(
+      //   'https://media.istockphoto.com/photos/blue-color-velvet-texture-background-picture-id587220352?b=1&k=20&m=587220352&s=170667a&w=0&h=aznCAcatYJ2kORIffDkNOVD3QWezdkd-d-X8Ms9DCss=',
+      // ),
+      image: ExactAssetImage('assets/images/board.jpg'),
+      fit: BoxFit.cover),
+  boxShadow: [
+    BoxShadow(
+      color: Colors.black87,
+      spreadRadius: 2.0,
+      blurRadius: 3.0,
+      offset: Offset(
+        2.0,
+        2.0,
+      ),
+    )
+  ],
+  border: Border.all(
+    color: Colors.black38,
+    width: 9.0,
+  ),
+  borderRadius: BorderRadius.circular(20.0),
+  color: Colors.blue,
+);
+
+var networkimg = BoxDecoration(
+  image: DecorationImage(
+      image: NetworkImage(
+        imglink,
+      ),
+      
+      fit: BoxFit.cover),
+  boxShadow: [
+    BoxShadow(
+      color: Colors.black87,
+      spreadRadius: 2.0,
+      blurRadius: 3.0,
+      offset: Offset(
+        2.0,
+        2.0,
+      ),
+    )
+  ],
+  border: Border.all(
+    color: Colors.black38,
+    width: 9.0,
+  ),
+  borderRadius: BorderRadius.circular(20.0),
+  color: Colors.blue,
+);
