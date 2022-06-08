@@ -304,3 +304,80 @@ class VoiceToTextAdapter extends TypeAdapter<VoiceToText> {
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }
+
+class PinnedWidgetsAdapter extends TypeAdapter<PinnedWidgets> {
+  @override
+  final int typeId = 8;
+
+  @override
+  PinnedWidgets read(BinaryReader reader) {
+    final numOfFields = reader.readByte();
+    final fields = <int, dynamic>{
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+    };
+    return PinnedWidgets(
+      text: fields[0] as String?,
+    );
+  }
+
+  @override
+  void write(BinaryWriter writer, PinnedWidgets obj) {
+    writer
+      ..writeByte(1)
+      ..writeByte(0)
+      ..write(obj.text);
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is PinnedWidgetsAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
+
+class BoardDataAdapter extends TypeAdapter<BoardData> {
+  @override
+  final int typeId = 10;
+
+  @override
+  BoardData read(BinaryReader reader) {
+    final numOfFields = reader.readByte();
+    final fields = <int, dynamic>{
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+    };
+    return BoardData(
+      position: fields[0] as int?,
+      type: fields[1] as String?,
+      data: fields[2] as String?,
+      isDone: fields[3] as bool?,
+    );
+  }
+
+  @override
+  void write(BinaryWriter writer, BoardData obj) {
+    writer
+      ..writeByte(4)
+      ..writeByte(0)
+      ..write(obj.position)
+      ..writeByte(1)
+      ..write(obj.type)
+      ..writeByte(2)
+      ..write(obj.data)
+      ..writeByte(3)
+      ..write(obj.isDone);
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is BoardDataAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}

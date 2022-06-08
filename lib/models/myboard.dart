@@ -156,3 +156,21 @@ class PinnedWidgets extends HiveObject with ChangeNotifier {
 
   PinnedWidgets({this.text});
 }
+
+@HiveType(typeId: 10)
+class BoardData extends HiveObject with ChangeNotifier {
+  @HiveField(0)
+  int? position;
+  @HiveField(1)
+  String? type;
+  @HiveField(2)
+  String? data;
+  @HiveField(3)
+  bool? isDone;
+
+  BoardData({this.position = 0, this.type, this.data, this.isDone = false});
+
+  void toggleDone() {
+    isDone = isDone;
+  }
+}

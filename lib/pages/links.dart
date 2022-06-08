@@ -12,6 +12,8 @@ import '../boxes.dart';
 import 'package:myboardapp/models/myboard.dart' as m;
 import 'package:url_launcher/url_launcher.dart';
 
+import 'boardState.dart';
+
 class Links extends StatefulWidget {
   const Links({Key? key}) : super(key: key);
 
@@ -172,56 +174,65 @@ class _LinksState extends State<Links> {
                   final box = BoxOfLinks.getLinks();
                   final latestlink = box.getAt(box.length - 1);
                   var index = box.length - 1;
-                  int pinnedWidgetIndex = pinnedWidgets.length;
-                  print('pinnedwidget length: ${pinnedWidgetIndex}');
+                  // int pinnedWidgetIndex = pinnedWidgets!.length;
+                  // print('pinnedwidget length: ${pinnedWidgetIndex}');
 
-                  pinnedWidgets.add(
-                    StaggeredGridTile.count(
-                        crossAxisCellCount: 2,
-                        mainAxisCellCount: 1,
-                        // child: InkWell(
-                        //   onDoubleTap: () {
-                        //     if (pinnedWidgetIndex >= 0) {
-                        //       print(
-                        //           'pinnedwidget length: ${pinnedWidgetIndex}');
-                        //       setState(() {
-                        //         boxoflinks.delete(index);
-                        //         pinnedWidgets.removeAt(pinnedWidgetIndex);
-                        //         pinnedWidgets;
-                        //       });
-                        //     }
-                        //   },
-                        child: Padding(
-                          padding: const EdgeInsets.all(4.0),
-                          child: Stack(
-                            alignment: Alignment.topCenter,
-                            children: [
-                              Container(
-                                decoration: BoxDecoration(
-                                  // ignore: prefer_const_literals_to_create_immutables
-                                  boxShadow: [
-                                    BoxShadow(
-                                      blurRadius: 3.0,
-                                      spreadRadius: 0.5,
-                                      offset: Offset(1, 1),
-                                    ),
-                                  ],
-                                ),
-                                child: PinnedLink(
-                                    latestlink!.url,
-                                    latestlink.description,
-                                    index,
-                                    pinnedWidgetIndex),
-                              ),
-                              Image.asset(
-                                'assets/images/pin.png',
-                                width: 13,
-                                height: 13,
-                              ),
-                            ],
-                            // ),
-                          ),
-                        )),
+                  // pinnedWidgets!.add(
+                  //   StaggeredGridTile.count(
+                  //       crossAxisCellCount: 2,
+                  //       mainAxisCellCount: 1,
+                  //       // child: InkWell(
+                  //       //   onDoubleTap: () {
+                  //       //     if (pinnedWidgetIndex >= 0) {
+                  //       //       print(
+                  //       //           'pinnedwidget length: ${pinnedWidgetIndex}');
+                  //       //       setState(() {
+                  //       //         boxoflinks.delete(index);
+                  //       //         pinnedWidgets.removeAt(pinnedWidgetIndex);
+                  //       //         pinnedWidgets;
+                  //       //       });
+                  //       //     }
+                  //       //   },
+                  //       child: Padding(
+                  //         padding: const EdgeInsets.all(4.0),
+                  //         child: Stack(
+                  //           alignment: Alignment.topCenter,
+                  //           children: [
+                  //             Container(
+                  //               decoration: BoxDecoration(
+                  //                 // ignore: prefer_const_literals_to_create_immutables
+                  //                 boxShadow: [
+                  //                   BoxShadow(
+                  //                     blurRadius: 3.0,
+                  //                     spreadRadius: 0.5,
+                  //                     offset: Offset(1, 1),
+                  //                   ),
+                  //                 ],
+                  //               ),
+                  //               child: PinnedLink(
+                  //                   latestlink!.url,
+                  //                   latestlink.description,
+                  //                   index,
+                  //                   pinnedWidgetIndex),
+                  //             ),
+                  //             Image.asset(
+                  //               'assets/images/pin.png',
+                  //               width: 13,
+                  //               height: 13,
+                  //             ),
+                  //           ],
+                  //           // ),
+                  //         ),
+                  //       )),
+                  // );
+                  Provider.of<BoardStateController>(context, listen: false)
+                      .addBoardData(
+                    m.BoardData(
+                      position: BoxOfBoardData.getBoardData().length,
+                      data: ('${latestlink!.url}:${latestlink.description}'),
+                      isDone: false,
+                      type: 'link',
+                    ),
                   );
                   Navigator.push(
                     context,

@@ -10,7 +10,12 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:myboardapp/pages/homepage.dart';
 import 'package:myboardapp/pages/quotes/constants.dart';
 import 'package:myboardapp/pages/quotes/quotes_list.dart';
+import 'package:provider/provider.dart';
 import 'dart:math' as math;
+import 'package:myboardapp/models/myboard.dart' as m;
+
+import '../../boxes.dart';
+import '../boardState.dart';
 
 class Quotes extends StatefulWidget {
   const Quotes({Key? key}) : super(key: key);
@@ -19,7 +24,7 @@ class Quotes extends StatefulWidget {
   State<Quotes> createState() => _QuotesState();
 }
 
-var listOfRandomDegrees = [0];
+// var listOfRandomDegrees = [0];
 
 class _QuotesState extends State<Quotes> {
   final index1 = quotesList.length;
@@ -84,56 +89,72 @@ class _QuotesState extends State<Quotes> {
                       ),
                       ElevatedButton(
                         onPressed: () {
-                          pinnedWidgets.add(
-                            StaggeredGridTile.count(
-                              crossAxisCellCount: 2,
-                              mainAxisCellCount: (quotesList[index1][kAuthor])
-                                          .toString()
-                                          .length >
-                                      30
-                                  ? 2
-                                  : 1,
-                              child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Stack(
-                                  alignment: Alignment.topCenter,
-                                  children: [
-                                    Transform.rotate(
-                                      angle: -math.pi / 60,
-                                      child: Container(
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(8.0),
-                                          child: Text(
-                                            '"${quotesList[index1][kQuote]}"',
-                                            style: GoogleFonts.caveatBrush(
-                                              color: Colors.black,
-                                              fontSize: 8.5,
-                                            ),
-                                          ),
-                                        ),
-                                        decoration: BoxDecoration(
-                                          color: Colors.greenAccent,
-                                          boxShadow: [
-                                            BoxShadow(
-                                              blurRadius: 3.0,
-                                              spreadRadius: 0.5,
-                                              offset: Offset(1, 1),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                    Image.asset(
-                                      'assets/images/pin.png',
-                                      width: 13,
-                                      height: 13,
-                                    ),
-                                  ],
-                                ),
-                              ),
+                          // pinnedWidgets!.add(
+                          //   StaggeredGridTile.count(
+                          //     crossAxisCellCount: 2,
+                          //     mainAxisCellCount: (quotesList[index1][kAuthor])
+                          //                 .toString()
+                          //                 .length >
+                          //             30
+                          //         ? 2
+                          //         : 1,
+                          //     child: Padding(
+                          //       padding: const EdgeInsets.all(8.0),
+                          //       child: Stack(
+                          //         alignment: Alignment.topCenter,
+                          //         children: [
+                          //           Transform.rotate(
+                          //             angle: -math.pi / 60,
+                          //             child: Container(
+                          //               child: Padding(
+                          //                 padding: const EdgeInsets.all(8.0),
+                          //                 child: Text(
+                          //                   '"${quotesList[index1][kQuote]}"',
+                          //                   style: GoogleFonts.caveatBrush(
+                          //                     color: Colors.black,
+                          //                     fontSize: 8.5,
+                          //                   ),
+                          //                 ),
+                          //               ),
+                          //               decoration: BoxDecoration(
+                          //                 color: Colors.greenAccent,
+                          //                 boxShadow: [
+                          //                   BoxShadow(
+                          //                     blurRadius: 3.0,
+                          //                     spreadRadius: 0.5,
+                          //                     offset: Offset(1, 1),
+                          //                   ),
+                          //                 ],
+                          //               ),
+                          //             ),
+                          //           ),
+                          //           Image.asset(
+                          //             'assets/images/pin.png',
+                          //             width: 13,
+                          //             height: 13,
+                          //           ),
+                          //         ],
+                          //       ),
+                          //     ),
+                          //   ),
+                          // );
+                          Provider.of<BoardStateController>(context,
+                                  listen: false)
+                              .addBoardData(
+                            m.BoardData(
+                              position: BoxOfBoardData.getBoardData().length,
+                              // data: quotesList[index1][kQuote],
+                              data:
+                                  'quote data - problem in quoteesList[index1]',
+                              isDone: false,
+                              type: 'quote',
                             ),
                           );
-                          Navigator.pushNamed(context, '/homepage');
+                          setState(() {});
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => HomePage()));
                         },
                         child: Text(
                           'Pin',
@@ -172,14 +193,10 @@ class _QuotesState extends State<Quotes> {
 }
 
 class AddQuotesScreen extends StatelessWidget {
-  
   final _newQuoteController = TextEditingController();
-
 
   @override
   Widget build(BuildContext context) {
-    
-
     return Container(
       color: Color(0xff757575),
       child: Container(
@@ -224,7 +241,7 @@ class AddQuotesScreen extends StatelessWidget {
                 primary: Color.fromARGB(255, 10, 75, 107),
               ),
               onPressed: () {
-                pinnedWidgets.add(
+                pinnedWidgets!.add(
                   StaggeredGridTile.count(
                     crossAxisCellCount: 2,
                     mainAxisCellCount: 2,
@@ -242,7 +259,8 @@ class AddQuotesScreen extends StatelessWidget {
                             child: Container(
                               child: Padding(
                                 padding: const EdgeInsets.all(8.0),
-                                child: Text(_newQuoteController.text,
+                                child: Text(
+                                  _newQuoteController.text,
                                   style: GoogleFonts.caveatBrush(
                                     color: Colors.black,
                                     fontSize: 8.5,
@@ -271,6 +289,16 @@ class AddQuotesScreen extends StatelessWidget {
                     ),
                   ),
                 );
+                Provider.of<BoardStateController>(context, listen: false)
+                    .addBoardData(
+                  m.BoardData(
+                    position: BoxOfBoardData.getBoardData().length,
+                    data: _newQuoteController.text,
+                    isDone: false,
+                    type: 'voicetotext',
+                  ),
+                );
+
                 Navigator.pushNamed(context, '/homepage');
               },
             ),

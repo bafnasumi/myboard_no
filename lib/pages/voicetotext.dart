@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:myboardapp/boxes.dart';
+import 'package:myboardapp/pages/boardState.dart';
 import 'package:provider/provider.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'package:myboardapp/models/myboard.dart' as m;
@@ -148,50 +149,67 @@ class _SpeechScreenState extends State<SpeechScreen> {
                             text: localtext,
                           ),
                         );
+
                         final box = BoxOfVoiceToText.getVoiceToText();
                         final latestvoicetotext = box.getAt(box.length - 1);
                         var index = box.length - 1;
-                        print('pinnedwidget length: ${pinnedWidgets.length}');
-                        int pinnedWidgetIndex = pinnedWidgets.length;
-                        pinnedWidgets.add(
-                          StaggeredGridTile.count(
-                            crossAxisCellCount: 2,
-                            mainAxisCellCount:
-                                latestvoicetotext!.text!.length > 20 ? 2 : 1,
-                            child: Stack(
-                              alignment: Alignment.topCenter,
-                              children: [
-                                Container(
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: PinnedVoiceToText(
-                                        latestvoicetotext.text,
-                                        index,
-                                        pinnedWidgetIndex),
-                                  ),
-                                  // child: Image.file(
-                                  //     File(videopath.toString())),
-                                  decoration: BoxDecoration(
-                                    color: Colors.lightGreen,
-                                    // ignore: prefer_const_literals_to_create_immutables
-                                    boxShadow: [
-                                      BoxShadow(
-                                        blurRadius: 3.0,
-                                        spreadRadius: 0.5,
-                                        offset: Offset(1, 1),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                Image.asset(
-                                  'assets/images/pin.png',
-                                  width: 13,
-                                  height: 13,
-                                ),
-                              ],
-                            ),
+                        //print('pinnedwidget length: ${pinnedWidgets!.length}');
+                        //int pinnedWidgetIndex = pinnedWidgets!.length;
+                        // pinnedWidgets!.add(
+                        //   StaggeredGridTile.count(
+                        //     crossAxisCellCount: 2,
+                        //     mainAxisCellCount:
+                        //         latestvoicetotext!.text!.length > 20 ? 2 : 1,
+                        //     child: Stack(
+                        //       alignment: Alignment.topCenter,
+                        //       children: [
+                        //         Container(
+                        //           child: Padding(
+                        //             padding: const EdgeInsets.all(8.0),
+                        //             child: PinnedVoiceToText(
+                        //                 latestvoicetotext.text,
+                        //                 index,
+                        //                 pinnedWidgetIndex),
+                        //           ),
+                        //           // child: Image.file(
+                        //           //     File(videopath.toString())),
+                        //           decoration: BoxDecoration(
+                        //             color: Colors.lightGreen,
+                        //             // ignore: prefer_const_literals_to_create_immutables
+                        //             boxShadow: [
+                        //               BoxShadow(
+                        //                 blurRadius: 3.0,
+                        //                 spreadRadius: 0.5,
+                        //                 offset: Offset(1, 1),
+                        //               ),
+                        //             ],
+                        //           ),
+                        //         ),
+                        //         Image.asset(
+                        //           'assets/images/pin.png',
+                        //           width: 13,
+                        //           height: 13,
+                        //         ),
+                        //       ],
+                        //     ),
+                        //   ),
+                        // );
+                        // setState(() {
+                        //   if(pinPosition==null) pinPosition = 0;
+                        // });
+                        Provider.of<BoardStateController>(context,
+                                listen: false)
+                            .addBoardData(
+                          m.BoardData(
+                            position: BoxOfBoardData.getBoardData().length,
+                            data: localtext,
+                            isDone: false,
+                            type: 'voicetotext',
                           ),
                         );
+                        setState(() {
+                          
+                        });
                         Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -286,7 +304,7 @@ class _SpeechScreenState extends State<SpeechScreen> {
       ),
       onDoubleTap: () {
         boxofvoicetotext.delete(index);
-        pinnedWidgets.removeAt(pinnedWidgetIndex);
+        pinnedWidgets!.removeAt(pinnedWidgetIndex);
       },
     );
   }

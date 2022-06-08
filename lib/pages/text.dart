@@ -10,6 +10,8 @@ import 'package:myboardapp/models/myboard.dart' as m;
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'dart:core';
 
+import 'boardState.dart';
+
 class TextPage extends StatefulWidget {
   const TextPage({Key? key}) : super(key: key);
 
@@ -142,19 +144,28 @@ class _TextPageState extends State<TextPage> {
                   final box = BoxOfText.getText();
                   final latestText = box.getAt(box.length - 1);
                   var index = box.length - 1;
-                  print('pinnedwidget length: ${pinnedWidgets.length}');
-                  int pinnedWidgetIndex = pinnedWidgets.length;
+                  //print('pinnedwidget length: ${pinnedWidgets!.length}');
+                  //int pinnedWidgetIndex = pinnedWidgets!.length;
 
-                  pinnedWidgets.add(
-                    StaggeredGridTile.count(
-                      crossAxisCellCount: 2,
-                      mainAxisCellCount: (latestText!.text!.length > 10
-                          ? (latestText!.text!.length > 20 ? 3 : 2)
-                          : 1),
-                      child: PinnedText(
-                          latestText!.text, index, pinnedWidgetIndex),
+                  // StaggeredGridTile.count(
+                  //   crossAxisCellCount: 2,
+                  //   mainAxisCellCount: (latestText!.text!.length > 10
+                  //       ? (latestText!.text!.length > 20 ? 3 : 2)
+                  //       : 1),
+                  //   child:
+                  //       PinnedText(latestText!.text, index, pinnedWidgetIndex),
+                  // );
+
+                  Provider.of<BoardStateController>(context, listen: false)
+                      .addBoardData(
+                    m.BoardData(
+                      position: BoxOfBoardData.getBoardData().length,
+                      data: latestText!.text,
+                      isDone: false,
+                      type: 'text',
                     ),
                   );
+                  setState(() {});
                   Navigator.pushNamed(context, '/homepage');
                 },
                 child: Padding(
@@ -226,7 +237,7 @@ class _TextPageState extends State<TextPage> {
         ),
         onDoubleTap: () {
           boxofTextPage.delete(index);
-          pinnedWidgets.removeAt(pinnedWidgetIndex);
+          pinnedWidgets!.removeAt(pinnedWidgetIndex);
         },
       );
 

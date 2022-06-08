@@ -34,3 +34,7 @@ class BoxOfVoiceToText {
 class BoxOfText {
   static Box<Text> getText() => Hive.box<Text>('text');
 }
+
+class BoxOfBoardData {
+  static Box<BoardData> getBoardData() => Hive.box<BoardData>('boarddata');
+}

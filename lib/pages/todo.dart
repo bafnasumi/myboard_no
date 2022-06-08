@@ -9,6 +9,8 @@ import 'package:myboardapp/models/myboard.dart' as m;
 import 'package:myboardapp/boxes.dart';
 import 'package:hive/hive.dart';
 
+import 'boardState.dart';
+
 class ToDo extends StatefulWidget {
   @override
   State<ToDo> createState() => _ToDoState();
@@ -249,17 +251,26 @@ class AddTaskScreen extends StatelessWidget {
                 final box = BoxOfToDos.getToDos();
                 final latesttodo = box.getAt(box.length - 1);
                 var index = box.length - 1;
-                print(pinnedWidgets.length);
-                int pinnedWidgetIndex = pinnedWidgets.length;
+                //print(pinnedWidgets!.length);
+                //int pinnedWidgetIndex = pinnedWidgets!.length;
 
-                pinnedWidgets.add(
-                  StaggeredGridTile.count(
-                    crossAxisCellCount: 2,
-                    mainAxisCellCount: 1,
-                    child: PinnedToDo(latesttodo!.todo, latesttodo.isDone,
-                        index, pinnedWidgetIndex),
+                // StaggeredGridTile.count(
+                //   crossAxisCellCount: 2,
+                //   mainAxisCellCount: 1,
+                //   child: PinnedToDo(latesttodo!.todo, latesttodo.isDone, index,
+                //       pinnedWidgetIndex),
+                // );
+
+                Provider.of<BoardStateController>(context, listen: false)
+                    .addBoardData(
+                  m.BoardData(
+                    position: BoxOfBoardData.getBoardData().length,
+                    data: latesttodo!.todo,
+                    isDone: false,
+                    type: 'todo',
                   ),
                 );
+
                 Navigator.pushNamed(context, '/homepage');
               },
             ),
@@ -299,7 +310,7 @@ class AddTaskScreen extends StatelessWidget {
         onDoubleTap: () {
           isDone = true;
           boxoftodos.delete(index);
-          pinnedWidgets.removeAt(pinnedWidgetIndex);
+          pinnedWidgets!.removeAt(pinnedWidgetIndex);
         },
       );
 }

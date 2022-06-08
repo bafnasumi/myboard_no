@@ -8,15 +8,13 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:myboardapp/boxes.dart';
-import 'package:myboardapp/pages/remind/data/entity/task.dart';
 import 'package:myboardapp/pages/remind/notificationApi.dart';
-import 'package:myboardapp/pages/remind/reminder.dart';
 import 'package:provider/provider.dart';
+import '../../../boardState.dart';
 import '../../../homepage.dart';
 import '../../controller/task_controller.dart';
 import '../../data/entity/color_task_type.dart';
 import '../../data/entity/time_mode.dart';
-import '../../notificationAPI2.dart';
 import '../../ui/text_theme.dart';
 import '../../ui/widget/button.dart';
 import '../../ui/widget/input_field.dart';
@@ -46,7 +44,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
   String? hintText_startTime = DateFormat('hh:mm a')
       .format(
         DateTime.now().add(
-          Duration(minutes: 10),
+          Duration(minutes: 20),
         ),
       )
       .toString();
@@ -235,6 +233,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
               CustomButton(
                   label: 'Create Task',
                   onTap: () async {
+                    print(_selectDate);
                     DateTime? combinedDate = DateTime(
                       _selectDate!.year,
                       _selectDate!.month,
@@ -267,21 +266,22 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                         final box = BoxOfReminders.getReminders();
                         final latestreminder = box.getAt(box.length - 1);
                         var index = box.length - 1;
-                        print(pinnedWidgets.length);
-                        int pinnedWidgetIndex = pinnedWidgets.length;
+                        //print(pinnedWidgets!.length);
+                        //int pinnedWidgetIndex = pinnedWidgets!.length;
 
-                        pinnedWidgets.add(
-                          StaggeredGridTile.count(
-                            crossAxisCellCount: 2,
-                            mainAxisCellCount: 1,
-                            child: PinnedReminder(
-                                latestreminder!, index, pinnedWidgetIndex),
-                          ),
+                        // pinnedWidgets!.add(
+                        //   StaggeredGridTile.count(
+                        //     crossAxisCellCount: 2,
+                        //     mainAxisCellCount: 1,
+                        //     child: PinnedReminder(
+                        //         latestreminder!, index, pinnedWidgetIndex),
+                        //   ),
+                        // );
+                        print(
+                          ('month: : : ${int.parse(
+                            latestreminder!.startTime.toString().split(':')[0],
+                          )}'),
                         );
-                        print(('month: : : ${int.parse(
-                          latestreminder.startTime.toString().split(':')[0],
-                        )}'));
-
                         switch (_selectRepeats) {
                           case "None":
                             {
@@ -326,7 +326,32 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                             }
                             break;
                         }
+                        print('date: $_selectDate');
 
+                        Provider.of<BoardStateController>(context,
+                                listen: false)
+                            .addBoardData(
+                          m.BoardData(
+                            position: BoxOfBoardData.getBoardData().length,
+
+                            // title: titleController.text,
+                            // note: noteController.text,
+                            // date: _selectDate,
+                            // //color: colorController.text,
+                            // isCompleted: 0,  ---------------------------not added in board data----------------------------
+                            // startTime: hintText_startTime,
+                            // endTime: hintText_endTime,
+                            // reminder: int.parse(_selectReminder),
+                            // //int.tryParse(reminderController.text) ?? 100,
+                            // repeat: _selectRepeats,
+
+                            data:
+                                ('${titleController.text}*${noteController.text}*${_selectDate!.year}-${_selectDate!.month}-${_selectDate!.day}*${hintText_startTime}*${_selectReminder}*${_selectRepeats}'),
+                            isDone: false,
+                            type: 'reminder',
+                          ),
+                        );
+                        print('date: $_selectDate');
                         Navigator.pushNamed(context, '/homepage');
                       } else {
                         Get.snackbar('Oops',
@@ -399,7 +424,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
         ),
         onDoubleTap: () {
           boxofreminders.delete(index);
-          pinnedWidgets.removeAt(pinnedWidgetIndex);
+          pinnedWidgets!.removeAt(pinnedWidgetIndex);
         },
       );
 

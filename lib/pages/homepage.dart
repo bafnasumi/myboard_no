@@ -7,8 +7,10 @@ import 'dart:math';
 import 'package:colorful_safe_area/colorful_safe_area.dart';
 import 'package:flutter/services.dart';
 import 'package:myboardapp/boxes.dart';
+import 'package:myboardapp/main.dart';
 import 'package:myboardapp/pages/links.dart';
 import 'package:myboardapp/pages/myvideo.dart' as vid;
+import 'package:myboardapp/pages/quotes/quotes.dart';
 import 'package:myboardapp/pages/remind/notificationAPI2.dart';
 import 'package:myboardapp/pages/remind/notificationApi.dart';
 import 'package:myboardapp/pages/remind/reminder.dart';
@@ -30,14 +32,16 @@ import '../components/round_image_button.dart';
 import 'package:myboardapp/models/myboard.dart' as db;
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:myboardapp/models/myboard.dart' as m;
+import 'boardState.dart';
+import 'boardState/BoardDataList.dart';
 import 'todo.dart';
 import 'background.dart';
+import 'dart:math' as math;
 
-
-List<Widget> pinnedWidgets = [];
+List<Widget>? pinnedWidgets;
 
 class HomePage extends StatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
+  HomePage({Key? gridviewKey}) : super(key: gridviewKey);
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -90,6 +94,7 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     _boardController = StackBoardController();
+
     //NotificationApi.init();
     // Provider.of<NotificationService>(context, listen: false).initialize();
   }
@@ -117,9 +122,10 @@ class _HomePageState extends State<HomePage> {
 
   Future<FilePickerResult> selectPhotoOrVideo() async {
     final result = await FilePicker.platform.pickFiles(
-        type: FileType.custom,
-        allowMultiple: false,
-        allowedExtensions: ['jpeg', 'png', 'gif', 'mp4', 'mkv']);
+      type: FileType.custom,
+      allowMultiple: false,
+      allowedExtensions: ['jpeg', 'png', 'gif', 'mp4', 'mkv'],
+    );
     //if (result != null) return ;
 
     final path = result!.files.first.path!;
@@ -189,7 +195,8 @@ class _HomePageState extends State<HomePage> {
                 icon: Icon(Icons.delete),
                 onPressed: () {
                   setState(() {
-                    pinnedWidgets.clear();
+                    Provider.of<BoardStateController>(context, listen: false)
+                        .emptyBoardData();
                   });
                 },
               ),
@@ -279,21 +286,54 @@ class _HomePageState extends State<HomePage> {
               Padding(
                 padding: const EdgeInsets.all(11.0),
                 child: Container(
-                  decoration: imglink.isNotEmpty? networkimg: localimg,
+                  decoration: imglink.isNotEmpty ? networkimg : localimg,
                   height: MediaQuery.of(context).size.height * 0.65,
                   width: MediaQuery.of(context).size.width * 0.9,
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(10.0, 14.0, 10.0, 14.0),
-                    child: StaggeredGrid.count(
-                      //staggeredTileBuilder: (index) => StaggeredTile.fit(2),
-                      mainAxisSpacing: 2,
-                      //crossAxisSpacing: 3,
-                      crossAxisCount: 6,
-                      children: pinnedWidgets,
-                    ),
-                  ),
+                  child: BoardDataList(),
                 ),
               ),
+// StaggeredGrid.count(
+//                         //staggeredTileBuilder: (index) => StaggeredTile.fit(2),
+//                         mainAxisSpacing: 2,
+//                         //crossAxisSpacing: 3,
+//                         crossAxisCount: 6,
+//                         children: (for(var i = 0; i < boxofboardData.length; i++) {
+//                         boarddataController.addThings(boxofboardData.getAt(i)!, context);
+//                         print(boxofboardData.getAt(i)!.data);
+//                         }),
+//                       ),
+
+// <---
+// Consumer<TaskController>(
+//             builder: (context, taskData, child) {
+//               return ListView.builder(
+//                 reverse: true,
+//                 itemCount: boxoftodos.length,
+//                 itemBuilder: (context, index) {
+//                   final task = boxoftodos.getAt(index);
+//                   return TaskTile(
+//                     taskTitle: task!.todo,
+//                     isChecked: task.isDone,
+//                     checkboxCallback: (checkboxState) {
+//                       taskData.removeToDo(task.key);
+//                       setState(() {});
+//                       const snackBar = SnackBar(
+//                         content: Text('Todo deleted'),
+//                       );
+
+//                       ScaffoldMessenger.of(context).showSnackBar(snackBar);
+//                     },
+//                     // longPressCallback: () {
+//                     //   taskData.removeToDo(task);
+//                     //   setState(() {});
+//                     // },//TODO: on longpress: delete the todo
+//                   );
+//                 },
+//                 // itemCount: taskData.taskCount,
+//               );
+//             },
+//           );
+
               const SizedBox(
                 height: 10.0,
               ),
@@ -339,6 +379,7 @@ class _HomePageState extends State<HomePage> {
                                     context,
                                     MaterialPageRoute(
                                         builder: ((context) => TextPage())));
+                                setState(() {});
                               }),
 
                               buildCircleButton(
@@ -417,32 +458,43 @@ class _HomePageState extends State<HomePage> {
                                   double width = decodedImage.width.toDouble();
                                   double height =
                                       decodedImage.height.toDouble();
-                                  pinnedWidgets.add(
-                                    StaggeredGridTile.count(
-                                      crossAxisCellCount:
-                                          width > height ? 3 : 2,
-                                      mainAxisCellCount: width < height ? 3 : 2,
-                                      child: Stack(
-                                        alignment: Alignment.topCenter,
-                                        children: [
-                                          Container(
-                                            child: Image.file(finalImage),
-                                            decoration:
-                                                BoxDecoration(boxShadow: [
-                                              BoxShadow(
-                                                blurRadius: 3.0,
-                                                spreadRadius: 0.5,
-                                                offset: Offset(1, 1),
-                                              ),
-                                            ]),
-                                          ),
-                                          Image.asset(
-                                            'assets/images/pin.png',
-                                            width: 13,
-                                            height: 13,
-                                          ),
-                                        ],
-                                      ),
+                                  // pinnedWidgets!.add(
+                                  //   StaggeredGridTile.count(
+                                  //     crossAxisCellCount:
+                                  //         width > height ? 3 : 2,
+                                  //     mainAxisCellCount: width < height ? 3 : 2,
+                                  //     child: Stack(
+                                  //       alignment: Alignment.topCenter,
+                                  //       children: [
+                                  //         Container(
+                                  //           child: Image.file(finalImage),
+                                  //           decoration:
+                                  //               BoxDecoration(boxShadow: [
+                                  //             BoxShadow(
+                                  //               blurRadius: 3.0,
+                                  //               spreadRadius: 0.5,
+                                  //               offset: Offset(1, 1),
+                                  //             ),
+                                  //           ]),
+                                  //         ),
+                                  //         Image.asset(
+                                  //           'assets/images/pin.png',
+                                  //           width: 13,
+                                  //           height: 13,
+                                  //         ),
+                                  //       ],
+                                  //     ),
+                                  //   ),
+                                  // );
+                                  Provider.of<BoardStateController>(context,
+                                          listen: false)
+                                      .addBoardData(
+                                    m.BoardData(
+                                      position:
+                                          BoxOfBoardData.getBoardData().length,
+                                      data: finalImage.path,
+                                      isDone: false,
+                                      type: 'image',
                                     ),
                                   );
                                   //positioningCoordinates(true, width, height);
@@ -450,6 +502,8 @@ class _HomePageState extends State<HomePage> {
                                     () {},
                                   );
                                   Navigator.pop(context);
+                                  // print(pinnedWidgets!);
+                                  // print(pinnedWidgets![0]);
                                 },
                               ),
                               buildCircleButton(
@@ -468,55 +522,66 @@ class _HomePageState extends State<HomePage> {
                                     videosource: videopath,
                                   ));
                                   print(videobox.keys);
-                                  pinnedWidgets.add(
-                                    StaggeredGridTile.count(
-                                      crossAxisCellCount: 2,
-                                      mainAxisCellCount: 2,
-                                      child: InkWell(
-                                        onTap: (() {
-                                          print('tap on video catched');
-                                          print(localfile.path.toString());
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: ((context) => Video(
-                                                  localfile_path:
-                                                      localfile.path)),
-                                            ),
-                                          );
-                                        }),
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(8.0),
-                                          child: Stack(
-                                            alignment: Alignment.topCenter,
-                                            children: [
-                                              Container(
-                                                child: Text(
-                                                  'video link; ${videopath.toString()}',
-                                                  style: TextStyle(
-                                                    color: Colors.white,
-                                                  ),
-                                                ),
-                                                // child: Image.file(
-                                                //     File(videopath.toString())),
-                                                decoration:
-                                                    BoxDecoration(boxShadow: [
-                                                  BoxShadow(
-                                                    blurRadius: 3.0,
-                                                    spreadRadius: 0.5,
-                                                    offset: Offset(1, 1),
-                                                  ),
-                                                ]),
-                                              ),
-                                              Image.asset(
-                                                'assets/images/pin.png',
-                                                width: 13,
-                                                height: 13,
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
+                                  // pinnedWidgets!.add(
+                                  //   StaggeredGridTile.count(
+                                  //     crossAxisCellCount: 2,
+                                  //     mainAxisCellCount: 2,
+                                  //     child: InkWell(
+                                  //       onTap: (() {
+                                  //         print('tap on video catched');
+                                  //         print(localfile.path.toString());
+                                  //         Navigator.push(
+                                  //           context,
+                                  //           MaterialPageRoute(
+                                  //             builder: ((context) => Video(
+                                  //                 localfile_path:
+                                  //                     localfile.path)),
+                                  //           ),
+                                  //         );
+                                  //       }),
+                                  //       child: Padding(
+                                  //         padding: const EdgeInsets.all(8.0),
+                                  //         child: Stack(
+                                  //           alignment: Alignment.topCenter,
+                                  //           children: [
+                                  //             Container(
+                                  //               child: Text(
+                                  //                 'video link; ${videopath.toString()}',
+                                  //                 style: TextStyle(
+                                  //                   color: Colors.white,
+                                  //                 ),
+                                  //               ),
+                                  //               // child: Image.file(
+                                  //               //     File(videopath.toString())),
+                                  //               decoration:
+                                  //                   BoxDecoration(boxShadow: [
+                                  //                 BoxShadow(
+                                  //                   blurRadius: 3.0,
+                                  //                   spreadRadius: 0.5,
+                                  //                   offset: Offset(1, 1),
+                                  //                 ),
+                                  //               ]),
+                                  //             ),
+                                  //             Image.asset(
+                                  //               'assets/images/pin.png',
+                                  //               width: 13,
+                                  //               height: 13,
+                                  //             ),
+                                  //           ],
+                                  //         ),
+                                  //       ),
+                                  //     ),
+                                  //   ),
+                                  // );
+                                  Provider.of<BoardStateController>(context,
+                                          listen: false)
+                                      .addBoardData(
+                                    m.BoardData(
+                                      position:
+                                          BoxOfBoardData.getBoardData().length,
+                                      data: videopath.toString(),
+                                      isDone: false,
+                                      type: 'video',
                                     ),
                                   );
                                   setState(
@@ -547,7 +612,12 @@ class _HomePageState extends State<HomePage> {
                               ),
                               buildCircleButton(context, 'Quotes',
                                   'assets/images/quotes_new.png', () {
-                                Navigator.pushNamed(context, '/quotes');
+                                print(DateTime.now().toString());
+
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => Quotes()));
                               }),
                               buildCircleButton(
                                 context,
@@ -616,6 +686,225 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  PinnedToDo(String? todotext, int index, int pinnedWidgetIndex) => InkWell(
+        child: Container(
+          child: Wrap(
+            alignment: WrapAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(todotext!),
+              ),
+            ],
+          ),
+          decoration: BoxDecoration(
+            color: Colors.white70,
+            image: DecorationImage(
+              image: AssetImage('assets/images/todo_background.png'),
+              fit: BoxFit.contain,
+            ),
+            borderRadius: BorderRadius.circular(10.0),
+            border: Border.all(
+              color: Colors.black,
+              width: 2.0,
+            ),
+          ),
+        ),
+        onDoubleTap: () {
+          //isDone = true;
+          // boxoftodos.delete(index);
+          //pinnedWidgets!.removeAt(pinnedWidgetIndex);
+        },
+      );
+
+  PinnedReminder(m.ReminderTask? task, int index, int pinnedWidgetIndex) =>
+      InkWell(
+        child: Container(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            //alignment: WrapAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            //direction: Axis.horizontal,
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(8, 4, 0, 2),
+                child: Text(
+                  task!.title!,
+                  style: GoogleFonts.openSans(fontSize: 13.0),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(8, 0, 0, 4),
+                child: Text(
+                  task.note!,
+                  style: TextStyle(fontSize: 7.0),
+                ),
+              ),
+            ],
+          ),
+          decoration: BoxDecoration(
+            image: DecorationImage(
+                image: AssetImage('assets/images/reminder_backgroud.png')),
+            borderRadius: BorderRadius.circular(10.0),
+            border: Border.all(
+              color: Colors.black,
+              width: 2.0,
+            ),
+          ),
+        ),
+        onDoubleTap: () {
+          //boxofreminders.delete(index);
+          // pinnedWidgets!.removeAt(pinnedWidgetIndex);
+        },
+      );
+
+  PinnedLink(String? url, String? description, int index, int pinnedWidgetIndex,
+          context) =>
+      InkWell(
+        // onDoubleTap: () {},
+        child: GestureDetector(
+          onTap: () {
+            //TODO: launch url !
+            //launchUrl(url: url!);
+          },
+          child: Container(
+            height: MediaQuery.of(context).size.height * 0.3,
+            width: MediaQuery.of(context).size.width * 0.3,
+            child: Wrap(
+              alignment: WrapAlignment.spaceEvenly,
+              crossAxisAlignment: WrapCrossAlignment.start,
+              direction: Axis.vertical,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(8, 4, 0, 2),
+                  child: Text(
+                    description!,
+                    style: TextStyle(fontSize: 10.0),
+                  ),
+                ),
+                Wrap(
+                  //direction: Axis.horizontal,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(8, 0, 0, 4),
+                      child: Text(
+                        url!,
+                        style: TextStyle(fontSize: 5.0),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            decoration: BoxDecoration(
+              // ignore: prefer_const_literals_to_create_immutables
+              boxShadow: [
+                BoxShadow(
+                  blurRadius: 3.0,
+                  spreadRadius: 0.5,
+                  offset: Offset(1, 1),
+                ),
+              ],
+              image: DecorationImage(
+                image: AssetImage('assets/images/www.png'),
+                fit: BoxFit.cover,
+              ),
+              borderRadius: BorderRadius.circular(10.0),
+              // border: Border.all(
+              //   color: Colors.black,
+              //   width: 2.0,
+              // ),
+            ),
+          ),
+        ),
+      );
+
+  PinnedVoiceToText(String? localtext, int index, int pinnedWidgetIndex) {
+    return InkWell(
+      child: Container(
+        child: Wrap(
+          alignment: WrapAlignment.spaceBetween,
+          crossAxisAlignment: WrapCrossAlignment.start,
+          direction: Axis.horizontal,
+          children: [
+            Wrap(
+              //direction: Axis.horizontal,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(2, 5, 2, 2),
+                  child: Text(
+                    localtext!,
+                    style: TextStyle(fontSize: 10.0),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+      onDoubleTap: () {
+        //boxofvoicetotext.delete(index);
+        //pinnedWidgets!.removeAt(pinnedWidgetIndex);
+      },
+    );
+  }
+
+  PinnedText(String? mytext, int index, int pinnedWidgetIndex) => InkWell(
+        child: Stack(
+          alignment: Alignment.topCenter,
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.yellow[200],
+                borderRadius: BorderRadius.circular(10.0),
+                border: Border.all(
+                  color: Colors.black,
+                  width: 2.0,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    blurRadius: 3.0,
+                    spreadRadius: 0.5,
+                    offset: Offset(1, 1),
+                  ),
+                ],
+              ),
+              child: Wrap(
+                //direction: Axis.horizontal,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                alignment: WrapAlignment.center,
+
+                direction: Axis.horizontal,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(8, 10, 0, 4),
+                    child: Center(
+                      child: Text(
+                        mytext!,
+                        style: GoogleFonts.gloriaHallelujah(
+                          height: 0,
+                          fontSize: 10.0,
+                          color: Colors.black,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Image.asset(
+              'assets/images/pin.png',
+              width: 13,
+              height: 13,
+            ),
+          ],
+        ),
+        onDoubleTap: () {
+          //boxofTextPage.delete(index);
+          //pinnedWidgets!.removeAt(pinnedWidgetIndex);
+        },
+      );
+
   // ignore: non_constant_identifier_names
 
   Widget get _spacer => const SizedBox(width: 5);
@@ -671,7 +960,6 @@ var networkimg = BoxDecoration(
       image: NetworkImage(
         imglink,
       ),
-      
       fit: BoxFit.cover),
   boxShadow: [
     BoxShadow(
