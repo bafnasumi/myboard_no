@@ -96,13 +96,14 @@ class ReminderTaskAdapter extends TypeAdapter<ReminderTask> {
       reminder: fields[5] as int?,
       repeat: fields[6] as String?,
       isCompleted: fields[7] as int?,
+      alarm: fields[8] as bool?,
     );
   }
 
   @override
   void write(BinaryWriter writer, ReminderTask obj) {
     writer
-      ..writeByte(8)
+      ..writeByte(9)
       ..writeByte(0)
       ..write(obj.title)
       ..writeByte(1)
@@ -118,7 +119,9 @@ class ReminderTaskAdapter extends TypeAdapter<ReminderTask> {
       ..writeByte(6)
       ..write(obj.repeat)
       ..writeByte(7)
-      ..write(obj.isCompleted);
+      ..write(obj.isCompleted)
+      ..writeByte(8)
+      ..write(obj.alarm);
   }
 
   @override

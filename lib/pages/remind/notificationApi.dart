@@ -1,5 +1,6 @@
 // ignore_for_file: unused_field, unused_element, prefer_const_constructors, non_constant_identifier_names
 
+import 'package:flutter_alarm_clock/flutter_alarm_clock.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:rxdart/rxdart.dart';
@@ -51,16 +52,35 @@ class NotificationApi {
     required m.ReminderTask? latestreminder,
     required int? remindBefore,
   }) async {
+    List<String> starttime_in_int_in_24() {
+      if (latestreminder!.startTime!.substring(6) == 'AM') {
+        print(latestreminder!.startTime!.substring(0, 5).split(':'));
+        return latestreminder!.startTime!.substring(0, 5).split(':');
+      } else {
+        //var var_substring = latestreminder!.startTime!.substring(0)
+        var hour = int.parse(latestreminder!.startTime!.split(':')[0]);
+        var minute =
+            int.parse(latestreminder!.startTime!.split(':')[1].substring(0, 2));
+        hour = hour + 12;
+        print('hour from notification API');
+        print(hour.toString());
+        print('minute from notification API');
+
+        print(minute.toString());
+        return [hour.toString(), minute.toString()];
+      }
+    }
+
+    var var_starttime_in_int_in_24 = starttime_in_int_in_24();
+
+    var starttimein24 = latestreminder!.startTime!.substring(0, 5);
+    print(starttimein24);
     DateTime scheduledDate = DateTime(
       latestreminder!.date!.year,
       latestreminder.date!.month,
       latestreminder.date!.day,
-      int.parse(
-        latestreminder.startTime.toString().split(':')[0],
-      ),
-      int.parse(
-        latestreminder.startTime.toString().split(':')[1],
-      ),
+      int.parse(var_starttime_in_int_in_24[0]),
+      int.parse(var_starttime_in_int_in_24[1]),
     );
 
     print(
@@ -99,14 +119,27 @@ class NotificationApi {
     m.ReminderTask? remindertask,
     required int? remindBefore,
   }) async {
+    List<String> starttime_in_int_in_24() {
+      if (remindertask!.startTime!.substring(6) == 'AM') {
+        print(remindertask!.startTime!.substring(0, 5).split(':'));
+        return remindertask!.startTime!.substring(0, 5).split(':');
+      } else {
+        var hour = int.parse(remindertask!.startTime!.split(':')[0]);
+        var minute = int.parse(remindertask!.startTime!.split(':')[1]);
+        hour = hour + 12;
+        return [hour.toString(), minute.toString()];
+      }
+    }
+
+    var var_starttime_in_int_in_24 = starttime_in_int_in_24();
     _notifications.zonedSchedule(
       id,
       'Reminder Scheduled: ${remindertask!.title}',
       remindertask.note,
       _scheduleDaily(
         Time(
-          int.parse(remindertask.startTime.toString().split(':')[0]),
-          int.parse(remindertask.startTime.toString().split(':')[1]),
+          int.parse(var_starttime_in_int_in_24[0]),
+          int.parse(var_starttime_in_int_in_24[1]),
         ),
       ),
       await _notificationDetails(),
@@ -127,13 +160,26 @@ class NotificationApi {
     m.ReminderTask? remindertask,
     required int? remindBefore,
   }) async {
+    List<String> starttime_in_int_in_24() {
+      if (remindertask!.startTime!.substring(6) == 'AM') {
+        print(remindertask!.startTime!.substring(0, 5).split(':'));
+        return remindertask!.startTime!.substring(0, 5).split(':');
+      } else {
+        var hour = int.parse(remindertask!.startTime!.split(':')[0]);
+        var minute = int.parse(remindertask!.startTime!.split(':')[1]);
+        hour = hour + 12;
+        return [hour.toString(), minute.toString()];
+      }
+    }
+
+    var var_starttime_in_int_in_24 = starttime_in_int_in_24();
     final scheduledDates = _scheduleWeekly(
         Time(
-          int.parse(remindertask!.startTime.toString().split(':')[0]),
-          int.parse(remindertask.startTime.toString().split(':')[1]),
+          int.parse(var_starttime_in_int_in_24[0]),
+          int.parse(var_starttime_in_int_in_24[1]),
         ),
         days: [
-          remindertask.date!.weekday,
+          remindertask!.date!.weekday,
         ]);
 
     for (int i = 0; i < scheduledDates.length; i++) {
@@ -184,17 +230,26 @@ class NotificationApi {
     m.ReminderTask? latestreminder,
     required int? remindBefore,
   }) async {
+    List<String> starttime_in_int_in_24() {
+      if (latestreminder!.startTime!.substring(6) == 'AM') {
+        print(latestreminder!.startTime!.substring(0, 5).split(':'));
+        return latestreminder!.startTime!.substring(0, 5).split(':');
+      } else {
+        var hour = int.parse(latestreminder!.startTime!.split(':')[0]);
+        var minute = int.parse(latestreminder!.startTime!.split(':')[1]);
+        hour = hour + 12;
+        return [hour.toString(), minute.toString()];
+      }
+    }
+
+    var var_starttime_in_int_in_24 = starttime_in_int_in_24();
     for (int i = 0; i < 15; i++) {
       DateTime scheduledDate = DateTime(
         latestreminder!.date!.year + i,
         latestreminder.date!.month,
         latestreminder.date!.day,
-        int.parse(
-          latestreminder.startTime.toString().split(':')[0],
-        ),
-        int.parse(
-          latestreminder.startTime.toString().split(':')[1],
-        ),
+        int.parse(var_starttime_in_int_in_24[0]),
+        int.parse(var_starttime_in_int_in_24[1]),
       );
       print(scheduledDate.year);
 

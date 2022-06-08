@@ -15,6 +15,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "4.1.0"
+  android_alarm_manager_plus:
+    dependency: "direct main"
+    description:
+      name: android_alarm_manager_plus
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.5"
   animated_splash_screen:
     dependency: "direct main"
     description:
@@ -363,6 +370,13 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_alarm_clock:
+    dependency: "direct main"
+    description:
+      name: flutter_alarm_clock
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.0.2"
   flutter_blurhash:
     dependency: "direct main"
     description:
@@ -481,7 +495,7 @@ packages:
       name: flutter_staggered_grid_view
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.6.1"
+    version: "0.4.1"
   flutter_svg:
     dependency: "direct main"
     description:

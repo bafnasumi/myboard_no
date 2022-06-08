@@ -69,277 +69,277 @@ class BoardStateController extends ChangeNotifier {
   //   return [Container()];
   // }
 
-  Future<Widget> addThings(m.BoardData _boarddata, BuildContext context) async {
-    double screenHeight() {
-      return MediaQuery.of(context).size.height;
-    }
+  // Future<Widget> addThings(m.BoardData _boarddata, BuildContext context) async {
+  //   double screenHeight() {
+  //     return MediaQuery.of(context).size.height;
+  //   }
 
-    double screenWidth() {
-      return MediaQuery.of(context).size.width;
-    }
+  //   double screenWidth() {
+  //     return MediaQuery.of(context).size.width;
+  //   }
 
-    String? typee = _boarddata.type;
-    switch (typee) {
-      case 'image':
-        {
-          File finalImage = File(_boarddata.data!);
-          var decodedImage =
-              await decodeImageFromList(finalImage.readAsBytesSync());
-          double width = decodedImage.width.toDouble();
-          double height = decodedImage.height.toDouble();
-          return StaggeredGridTile.count(
-            crossAxisCellCount: width > height ? 3 : 2,
-            mainAxisCellCount: width < height ? 3 : 2,
-            child: Stack(
-              alignment: Alignment.topCenter,
-              children: [
-                Container(
-                  child: Image.file(finalImage),
-                  decoration: BoxDecoration(boxShadow: [
-                    BoxShadow(
-                      blurRadius: 3.0,
-                      spreadRadius: 0.5,
-                      offset: Offset(1, 1),
-                    ),
-                  ]),
-                ),
-                Image.asset(
-                  'assets/images/pin.png',
-                  width: 13,
-                  height: 13,
-                ),
-              ],
-            ),
-          );
-        }
-        break;
-      case 'video':
-        {
-          return StaggeredGridTile.count(
-            crossAxisCellCount: 2,
-            mainAxisCellCount: 2,
-            child: InkWell(
-              onTap: (() {
-                print('tap on video catched');
-                print(_boarddata.data);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: ((context) =>
-                        Video(localfile_path: _boarddata.data)),
-                  ),
-                );
-              }),
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Stack(
-                  alignment: Alignment.topCenter,
-                  children: [
-                    Container(
-                      child: Text(
-                        'video link; ${_boarddata.data}',
-                        style: TextStyle(
-                          color: Colors.white,
-                        ),
-                      ),
-                      // child: Image.file(
-                      //     File(videopath.toString())),
-                      decoration: BoxDecoration(boxShadow: [
-                        BoxShadow(
-                          blurRadius: 3.0,
-                          spreadRadius: 0.5,
-                          offset: Offset(1, 1),
-                        ),
-                      ]),
-                    ),
-                    Image.asset(
-                      'assets/images/pin.png',
-                      width: 13,
-                      height: 13,
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          );
-        }
-        break;
-      case 'todo':
-        {
-          return StaggeredGridTile.count(
-            crossAxisCellCount: 2,
-            mainAxisCellCount: 1,
-            child: PinnedToDo(_boarddata.data, 0, 0),
-          );
-        }
-        break;
-      case 'link':
-        {
-          return StaggeredGridTile.count(
-              crossAxisCellCount: 2,
-              mainAxisCellCount: 1,
-              child: Padding(
-                padding: const EdgeInsets.all(4.0),
-                child: Stack(
-                  alignment: Alignment.topCenter,
-                  children: [
-                    Container(
-                      decoration: BoxDecoration(
-                        // ignore: prefer_const_literals_to_create_immutables
-                        boxShadow: [
-                          BoxShadow(
-                            blurRadius: 3.0,
-                            spreadRadius: 0.5,
-                            offset: Offset(1, 1),
-                          ),
-                        ],
-                      ),
-                      child: PinnedLink(_boarddata.data!.split(':')[0],
-                          _boarddata.data!.split(':')[1], 0, 0, context),
-                    ),
-                    Image.asset(
-                      'assets/images/pin.png',
-                      width: 13,
-                      height: 13,
-                    ),
-                  ],
-                  // ),
-                ),
-              ));
-          break;
-        }
-      case 'voicetotext':
-        {
-          return StaggeredGridTile.count(
-            crossAxisCellCount: 2,
-            mainAxisCellCount: _boarddata.data!.length > 20 ? 2 : 1,
-            child: Stack(
-              alignment: Alignment.topCenter,
-              children: [
-                Container(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: PinnedVoiceToText(_boarddata.data, 0, 0),
-                  ),
-                  // child: Image.file(
-                  //     File(videopath.toString())),
-                  decoration: BoxDecoration(
-                    color: Colors.lightGreen,
-                    // ignore: prefer_const_literals_to_create_immutables
-                    boxShadow: [
-                      BoxShadow(
-                        blurRadius: 3.0,
-                        spreadRadius: 0.5,
-                        offset: Offset(1, 1),
-                      ),
-                    ],
-                  ),
-                ),
-                Image.asset(
-                  'assets/images/pin.png',
-                  width: 13,
-                  height: 13,
-                ),
-              ],
-            ),
-          );
-        }
-        break;
-      case 'text':
-        {
-          return StaggeredGridTile.count(
-            crossAxisCellCount: 2,
-            mainAxisCellCount: (_boarddata.data!.length > 10
-                ? (_boarddata.data!.length > 20 ? 3 : 2)
-                : 1),
-            child: PinnedText(_boarddata.data, 0, 0),
-          );
-        }
-        break;
-      case 'audio':
-        {
-          return StaggeredGridTile.count(
-            crossAxisCellCount: 2,
-            mainAxisCellCount: 1,
-            child: PinnedToDo(_boarddata.data, 0, 0),
-          );
-        }
-        break;
-      case 'quote':
-        {
-          return StaggeredGridTile.count(
-            crossAxisCellCount: 2,
-            mainAxisCellCount: 2,
-            // mainAxisCellCount:
-            //     (quotesList[index1][kAuthor]).toString().length > 30
-            //         ? 2
-            //         : 1,
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Stack(
-                alignment: Alignment.topCenter,
-                children: [
-                  Transform.rotate(
-                    angle: -math.pi / 60,
-                    child: Container(
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(
-                          _boarddata.data!,
-                          style: GoogleFonts.caveatBrush(
-                            color: Colors.black,
-                            fontSize: 8.5,
-                          ),
-                        ),
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.greenAccent,
-                        boxShadow: [
-                          BoxShadow(
-                            blurRadius: 3.0,
-                            spreadRadius: 0.5,
-                            offset: Offset(1, 1),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  Image.asset(
-                    'assets/images/pin.png',
-                    width: 13,
-                    height: 13,
-                  ),
-                ],
-              ),
-            ),
-          );
-        }
-        break;
-      case 'reminder':
-        {
-          List reminderdata = _boarddata.data!.split(':');
+  //   String? typee = _boarddata.type;
+  //   switch (typee) {
+  //     case 'image':
+  //       {
+  //         File finalImage = File(_boarddata.data!);
+  //         var decodedImage =
+  //             await decodeImageFromList(finalImage.readAsBytesSync());
+  //         double width = decodedImage.width.toDouble();
+  //         double height = decodedImage.height.toDouble();
+  //         // return StaggeredGridTile.count(
+  //         //   crossAxisCellCount: width > height ? 3 : 2,
+  //         //   mainAxisCellCount: width < height ? 3 : 2,
+  //         return Stack(
+  //           alignment: Alignment.topCenter,
+  //           children: [
+  //             Container(
+  //               child: Image.file(finalImage),
+  //               decoration: BoxDecoration(boxShadow: [
+  //                 BoxShadow(
+  //                   blurRadius: 3.0,
+  //                   spreadRadius: 0.5,
+  //                   offset: Offset(1, 1),
+  //                 ),
+  //               ]),
+  //             ),
+  //             Image.asset(
+  //               'assets/images/pin.png',
+  //               width: 13,
+  //               height: 13,
+  //             ),
+  //           ],
+  //           // ),
+  //         );
+  //       }
+  //       break;
+  //     case 'video':
+  //       {
+  //         return StaggeredGridTile.count(
+  //           crossAxisCellCount: 2,
+  //           mainAxisCellCount: 2,
+  //           child: InkWell(
+  //             onTap: (() {
+  //               print('tap on video catched');
+  //               print(_boarddata.data);
+  //               Navigator.push(
+  //                 context,
+  //                 MaterialPageRoute(
+  //                   builder: ((context) =>
+  //                       Video(localfile_path: _boarddata.data)),
+  //                 ),
+  //               );
+  //             }),
+  //             child: Padding(
+  //               padding: const EdgeInsets.all(8.0),
+  //               child: Stack(
+  //                 alignment: Alignment.topCenter,
+  //                 children: [
+  //                   Container(
+  //                     child: Text(
+  //                       'video link; ${_boarddata.data}',
+  //                       style: TextStyle(
+  //                         color: Colors.white,
+  //                       ),
+  //                     ),
+  //                     // child: Image.file(
+  //                     //     File(videopath.toString())),
+  //                     decoration: BoxDecoration(boxShadow: [
+  //                       BoxShadow(
+  //                         blurRadius: 3.0,
+  //                         spreadRadius: 0.5,
+  //                         offset: Offset(1, 1),
+  //                       ),
+  //                     ]),
+  //                   ),
+  //                   Image.asset(
+  //                     'assets/images/pin.png',
+  //                     width: 13,
+  //                     height: 13,
+  //                   ),
+  //                 ],
+  //               ),
+  //             ),
+  //           ),
+  //         );
+  //       }
+  //       break;
+  //     case 'todo':
+  //       {
+  //         return StaggeredGridTile.count(
+  //           crossAxisCellCount: 2,
+  //           mainAxisCellCount: 1,
+  //           child: PinnedToDo(_boarddata.data, 0, 0),
+  //         );
+  //       }
+  //       break;
+  //     case 'link':
+  //       {
+  //         return StaggeredGridTile.count(
+  //             crossAxisCellCount: 2,
+  //             mainAxisCellCount: 1,
+  //             child: Padding(
+  //               padding: const EdgeInsets.all(4.0),
+  //               child: Stack(
+  //                 alignment: Alignment.topCenter,
+  //                 children: [
+  //                   Container(
+  //                     decoration: BoxDecoration(
+  //                       // ignore: prefer_const_literals_to_create_immutables
+  //                       boxShadow: [
+  //                         BoxShadow(
+  //                           blurRadius: 3.0,
+  //                           spreadRadius: 0.5,
+  //                           offset: Offset(1, 1),
+  //                         ),
+  //                       ],
+  //                     ),
+  //                     child: PinnedLink(_boarddata.data!.split(':')[0],
+  //                         _boarddata.data!.split(':')[1], 0, 0, context),
+  //                   ),
+  //                   Image.asset(
+  //                     'assets/images/pin.png',
+  //                     width: 13,
+  //                     height: 13,
+  //                   ),
+  //                 ],
+  //                 // ),
+  //               ),
+  //             ));
+  //         break;
+  //       }
+  //     case 'voicetotext':
+  //       {
+  //         return StaggeredGridTile.count(
+  //           crossAxisCellCount: 2,
+  //           mainAxisCellCount: _boarddata.data!.length > 20 ? 2 : 1,
+  //           child: Stack(
+  //             alignment: Alignment.topCenter,
+  //             children: [
+  //               Container(
+  //                 child: Padding(
+  //                   padding: const EdgeInsets.all(8.0),
+  //                   child: PinnedVoiceToText(_boarddata.data, 0, 0),
+  //                 ),
+  //                 // child: Image.file(
+  //                 //     File(videopath.toString())),
+  //                 decoration: BoxDecoration(
+  //                   color: Colors.lightGreen,
+  //                   // ignore: prefer_const_literals_to_create_immutables
+  //                   boxShadow: [
+  //                     BoxShadow(
+  //                       blurRadius: 3.0,
+  //                       spreadRadius: 0.5,
+  //                       offset: Offset(1, 1),
+  //                     ),
+  //                   ],
+  //                 ),
+  //               ),
+  //               Image.asset(
+  //                 'assets/images/pin.png',
+  //                 width: 13,
+  //                 height: 13,
+  //               ),
+  //             ],
+  //           ),
+  //         );
+  //       }
+  //       break;
+  //     case 'text':
+  //       {
+  //         return StaggeredGridTile.count(
+  //           crossAxisCellCount: 2,
+  //           mainAxisCellCount: (_boarddata.data!.length > 10
+  //               ? (_boarddata.data!.length > 20 ? 3 : 2)
+  //               : 1),
+  //           child: PinnedText(_boarddata.data, 0, 0),
+  //         );
+  //       }
+  //       break;
+  //     case 'audio':
+  //       {
+  //         return StaggeredGridTile.count(
+  //           crossAxisCellCount: 2,
+  //           mainAxisCellCount: 1,
+  //           child: PinnedToDo(_boarddata.data, 0, 0),
+  //         );
+  //       }
+  //       break;
+  //     case 'quote':
+  //       {
+  //         return StaggeredGridTile.count(
+  //           crossAxisCellCount: 2,
+  //           mainAxisCellCount: 2,
+  //           // mainAxisCellCount:
+  //           //     (quotesList[index1][kAuthor]).toString().length > 30
+  //           //         ? 2
+  //           //         : 1,
+  //           child: Padding(
+  //             padding: const EdgeInsets.all(8.0),
+  //             child: Stack(
+  //               alignment: Alignment.topCenter,
+  //               children: [
+  //                 Transform.rotate(
+  //                   angle: -math.pi / 60,
+  //                   child: Container(
+  //                     child: Padding(
+  //                       padding: const EdgeInsets.all(8.0),
+  //                       child: Text(
+  //                         _boarddata.data!,
+  //                         style: GoogleFonts.caveatBrush(
+  //                           color: Colors.black,
+  //                           fontSize: 8.5,
+  //                         ),
+  //                       ),
+  //                     ),
+  //                     decoration: BoxDecoration(
+  //                       color: Colors.greenAccent,
+  //                       boxShadow: [
+  //                         BoxShadow(
+  //                           blurRadius: 3.0,
+  //                           spreadRadius: 0.5,
+  //                           offset: Offset(1, 1),
+  //                         ),
+  //                       ],
+  //                     ),
+  //                   ),
+  //                 ),
+  //                 Image.asset(
+  //                   'assets/images/pin.png',
+  //                   width: 13,
+  //                   height: 13,
+  //                 ),
+  //               ],
+  //             ),
+  //           ),
+  //         );
+  //       }
+  //       break;
+  //     case 'reminder':
+  //       {
+  //         List reminderdata = _boarddata.data!.split(':');
 
-          m.ReminderTask latestreminder = m.ReminderTask(
-            title: reminderdata[0],
-            note: reminderdata[1],
-            date: reminderdata[2],
-            startTime: reminderdata[3],
-            reminder: reminderdata[4],
-            repeat: reminderdata[5],
-          );
-          return StaggeredGridTile.count(
-            crossAxisCellCount: 2,
-            mainAxisCellCount: 1,
-            child: PinnedReminder(latestreminder!, 0, 0),
-          );
-        }
-        break;
+  //         m.ReminderTask latestreminder = m.ReminderTask(
+  //           title: reminderdata[0],
+  //           note: reminderdata[1],
+  //           date: reminderdata[2],
+  //           startTime: reminderdata[3],
+  //           reminder: reminderdata[4],
+  //           repeat: reminderdata[5],
+  //         );
+  //         return StaggeredGridTile.count(
+  //           crossAxisCellCount: 2,
+  //           mainAxisCellCount: 1,
+  //           child: PinnedReminder(latestreminder!, 0, 0),
+  //         );
+  //       }
+  //       break;
 
-      default:
-        return Container();
-    }
-    notifyListeners();
-  }
+  //     default:
+  //       return Container();
+  //   }
+  //   notifyListeners();
+  // }
 
   PinnedToDo(String? todotext, int index, int pinnedWidgetIndex) => InkWell(
         child: Container(

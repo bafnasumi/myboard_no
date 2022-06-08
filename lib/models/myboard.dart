@@ -60,8 +60,8 @@ class ReminderTask extends HiveObject with ChangeNotifier {
   String? repeat;
   @HiveField(7)
   int? isCompleted;
-  // @HiveField(8)
-  // String? color;
+  @HiveField(8)
+  bool? alarm;
 
   ReminderTask({
     @required this.title,
@@ -72,6 +72,7 @@ class ReminderTask extends HiveObject with ChangeNotifier {
     this.reminder,
     this.repeat,
     this.isCompleted,
+    @required this.alarm,
     // this.color,
   });
 
@@ -85,7 +86,8 @@ class ReminderTask extends HiveObject with ChangeNotifier {
         reminder = json['reminder'],
         repeat = json['repeat'],
         // color = json['color'],
-        isCompleted = json['isCompleted'];
+        isCompleted = json['isCompleted'],
+        alarm = json['alarm'];
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
@@ -99,6 +101,8 @@ class ReminderTask extends HiveObject with ChangeNotifier {
     data['endTime'] = endTime;
     data['reminder'] = reminder;
     data['repeat'] = repeat;
+    data['alarm'] = alarm;
+
     return data;
   }
 }
@@ -167,8 +171,15 @@ class BoardData extends HiveObject with ChangeNotifier {
   String? data;
   @HiveField(3)
   bool? isDone;
+  // @HiveField(4)
+  // bool? axisCount;
 
-  BoardData({this.position = 0, this.type, this.data, this.isDone = false});
+  BoardData({
+    this.position = 0,
+    this.type,
+    this.data,
+    this.isDone = false,
+  });
 
   void toggleDone() {
     isDone = isDone;

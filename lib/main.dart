@@ -76,6 +76,7 @@ Future main() async {
   await Hive.openBox<m.BoardData>('boarddata');
 
   await Firebase.initializeApp();
+  // await AndroidAlarmManager.initialize();
 
   runApp(const MyApp());
 }

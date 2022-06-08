@@ -1,8 +1,11 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
 import 'dart:io';
+// import 'dart:ui' as ui;
+// import 'package:vm_service/vm_service.dart';
 
 import 'package:flutter/material.dart';
+// import 'package:flutter/rendering.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -33,31 +36,22 @@ class _BoardDataListState extends State<BoardDataList> {
           ))
         : Consumer<BoardStateController>(
             builder: (context, boarddata, child) {
-              return GridView.builder(
-                  key: widget.key,
+              int crossAxisCount = 2;
+              double? mainAxisCount = 2.0;
+              return StaggeredGridView.countBuilder(
+                  // key: widget.key,
                   itemCount: boxofboarddata.length,
-                  gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-                    maxCrossAxisExtent: 200,
-                    childAspectRatio: 3 / 2,
-                    crossAxisSpacing: 3,
-                    mainAxisSpacing: 2,
-
-                    // crossAxisCount: 6,
-                  ),
-                  // itemCount: myProducts.length,
+                  crossAxisCount: 9,
+                  staggeredTileBuilder: (index) =>
+                      // StaggeredTile.count(crossAxisCount, mainAxisCount),
+                      StaggeredTile.fit(3),
+                  mainAxisSpacing: 6,
+                  padding: EdgeInsets.all(7),
+                  crossAxisSpacing: 8,
                   itemBuilder: (BuildContext context, index) {
                     final _boarddata = boxofboarddata.getAt(index);
+
                     return BoardTile(boarddata: _boarddata);
-                    // return TaskTile(
-                    //   taskTitle: boarddata!.data,
-                    //   isChecked: boarddata.isDone,
-                    //   checkboxCallback: (checkboxState) {
-                    //     taskData.removeToDo(task.key);
-                    //     setState(() {});
-                    //     const snackBar = SnackBar(
-                    //       content: Text('Todo deleted'),
-                    //     );
-                    //});
                   });
             },
           );
@@ -78,28 +72,43 @@ class BboardTileState extends State<BoardTile> {
     switch (widget.boarddata!.type) {
       case 'image':
         {
-          File finalImage = File(widget.boarddata!.data!);
+          File? finalImage = File(widget.boarddata!.data!);
           // var decodedImage =
           //     await decodeImageFromList(finalImage.readAsBytesSync());
           // double width = decodedImage.width.toDouble();
           // double height = decodedImage.height.toDouble();
-          return StaggeredGridTile.count(
-            // crossAxisCellCount: width > height ? 3 : 2,
-            // mainAxisCellCount: width < height ? 3 : 2,
-            crossAxisCellCount: 2,
-            mainAxisCellCount: 2,
-
+          // return StaggeredGridTile.count(
+          //   // crossAxisCellCount: width > height ? 3 : 2,
+          //   // mainAxisCellCount: width < height ? 3 : 2,
+          //   crossAxisCellCount: 2,
+          //   mainAxisCellCount: 2,
+          return Container(
+            // height: finalImage.readAsBytesSync(). > myimage.width!.toInt() ? 120 : 90,
+            // width: myimage.height! > myimage.width!.toInt() ? 70 : 100,
+            height: 160,
+            width: 70,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              color: Colors.transparent,
+              // boxShadow: [
+              //   BoxShadow(
+              //     blurRadius: 3.0,
+              //     spreadRadius: 0.5,
+              //     offset: Offset(1, 1),
+              //   ),
+              // ],
+            ),
             child: Stack(
               alignment: Alignment.topCenter,
               children: [
                 Container(
                   child: Image.file(finalImage),
                   decoration: BoxDecoration(boxShadow: [
-                    BoxShadow(
-                      blurRadius: 3.0,
-                      spreadRadius: 0.5,
-                      offset: Offset(1, 1),
-                    ),
+                    // BoxShadow(
+                    //   blurRadius: 3.0,
+                    //   spreadRadius: 0.5,
+                    //   offset: Offset(1, 1),
+                    // ),
                   ]),
                 ),
                 Image.asset(
@@ -110,120 +119,81 @@ class BboardTileState extends State<BoardTile> {
               ],
             ),
           );
+          // );
         }
         break;
       case 'video':
         {
-          return StaggeredGridTile.count(
-            crossAxisCellCount: 2,
-            mainAxisCellCount: 2,
-            child: InkWell(
-              onTap: (() {
-                print('tap on video catched');
-                print(widget.boarddata!.data);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: ((context) =>
-                        Video(localfile_path: widget.boarddata!.data!)),
-                  ),
-                );
-              }),
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Stack(
-                  alignment: Alignment.topCenter,
-                  children: [
-                    Container(
-                      child: Text(
-                        'video link; ${widget.boarddata!.data!}',
-                        style: TextStyle(
-                          color: Colors.white,
-                        ),
-                      ),
-                      // child: Image.file(
-                      //     File(videopath.toString())),
-                      decoration: BoxDecoration(boxShadow: [
-                        BoxShadow(
-                          blurRadius: 3.0,
-                          spreadRadius: 0.5,
-                          offset: Offset(1, 1),
-                        ),
-                      ]),
-                    ),
-                    Image.asset(
-                      'assets/images/pin.png',
-                      width: 13,
-                      height: 13,
-                    ),
-                  ],
+          // return StaggeredGridTile.count(
+          //   crossAxisCellCount: 2,
+          //   mainAxisCellCount: 2,
+          return InkWell(
+            onTap: (() {
+              print('tap on video catched');
+              print(widget.boarddata!.data);
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: ((context) =>
+                      Video(localfile_path: widget.boarddata!.data!)),
                 ),
+              );
+            }),
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Stack(
+                alignment: Alignment.topCenter,
+                children: [
+                  Container(
+                    child: Text(
+                      'video link; ${widget.boarddata!.data!}',
+                      style: TextStyle(
+                        color: Colors.white,
+                      ),
+                    ),
+                    // child: Image.file(
+                    //     File(videopath.toString())),
+                    decoration: BoxDecoration(boxShadow: [
+                      BoxShadow(
+                        blurRadius: 3.0,
+                        spreadRadius: 0.5,
+                        offset: Offset(1, 1),
+                      ),
+                    ]),
+                  ),
+                  Image.asset(
+                    'assets/images/pin.png',
+                    width: 13,
+                    height: 13,
+                  ),
+                ],
               ),
             ),
+            // ),
           );
         }
         break;
       case 'todo':
         {
-          return StaggeredGridTile.count(
-            crossAxisCellCount: 2,
-            mainAxisCellCount: 1,
-            child: PinnedToDo(widget.boarddata!.data!, 0, 0),
-          );
+          // return StaggeredGridTile.count(
+          // crossAxisCellCount: 2,
+          // mainAxisCellCount: 1,
+          return PinnedToDo(widget.boarddata!.data!, 0, 0);
+          // );
         }
         break;
       case 'link':
         {
-          return StaggeredGridTile.count(
-              crossAxisCellCount: 2,
-              mainAxisCellCount: 1,
-              child: Padding(
-                padding: const EdgeInsets.all(4.0),
-                child: Stack(
-                  alignment: Alignment.topCenter,
-                  children: [
-                    Container(
-                      decoration: BoxDecoration(
-                        // ignore: prefer_const_literals_to_create_immutables
-                        boxShadow: [
-                          BoxShadow(
-                            blurRadius: 3.0,
-                            spreadRadius: 0.5,
-                            offset: Offset(1, 1),
-                          ),
-                        ],
-                      ),
-                      child: PinnedLink(widget.boarddata!.data!.split(':')[0],
-                          widget.boarddata!.data!.split(':')[1], 0, 0, context),
-                    ),
-                    Image.asset(
-                      'assets/images/pin.png',
-                      width: 13,
-                      height: 13,
-                    ),
-                  ],
-                  // ),
-                ),
-              ));
-          break;
-        }
-      case 'voicetotext':
-        {
-          return StaggeredGridTile.count(
-            crossAxisCellCount: 2,
-            mainAxisCellCount: widget.boarddata!.data!.length > 20 ? 2 : 1,
+          // return StaggeredGridTile.count(
+          //     crossAxisCellCount: 2,
+          //     mainAxisCellCount: 1,
+          return Padding(
+            padding: const EdgeInsets.all(4.0),
             child: Stack(
               alignment: Alignment.topCenter,
               children: [
                 Container(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: PinnedVoiceToText(widget.boarddata!.data!, 0, 0),
-                  ),
-                  // child: Image.file(
-                  //     File(videopath.toString())),
                   decoration: BoxDecoration(
-                    color: Colors.lightGreen,
                     // ignore: prefer_const_literals_to_create_immutables
                     boxShadow: [
                       BoxShadow(
@@ -233,6 +203,8 @@ class BboardTileState extends State<BoardTile> {
                       ),
                     ],
                   ),
+                  child: PinnedLink(widget.boarddata!.data!.split(':')[0],
+                      widget.boarddata!.data!.split(':')[1], 0, 0, context),
                 ),
                 Image.asset(
                   'assets/images/pin.png',
@@ -240,74 +212,113 @@ class BboardTileState extends State<BoardTile> {
                   height: 13,
                 ),
               ],
+              // ),
             ),
+            // )
+          );
+          break;
+        }
+      case 'voicetotext':
+        {
+          // return StaggeredGridTile.count(
+          //   crossAxisCellCount: 2,
+          //   mainAxisCellCount: widget.boarddata!.data!.length > 20 ? 2 : 1,
+          return Stack(
+            alignment: Alignment.topCenter,
+            children: [
+              Container(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: PinnedVoiceToText(widget.boarddata!.data!, 0, 0),
+                ),
+                // child: Image.file(
+                //     File(videopath.toString())),
+                decoration: BoxDecoration(
+                  color: Colors.lightGreen,
+                  // ignore: prefer_const_literals_to_create_immutables
+                  boxShadow: [
+                    BoxShadow(
+                      blurRadius: 3.0,
+                      spreadRadius: 0.5,
+                      offset: Offset(1, 1),
+                    ),
+                  ],
+                ),
+              ),
+              Image.asset(
+                'assets/images/pin.png',
+                width: 13,
+                height: 13,
+              ),
+            ],
+            // ),
           );
         }
         break;
       case 'text':
         {
-          return StaggeredGridTile.count(
-            crossAxisCellCount: 2,
-            mainAxisCellCount: (widget.boarddata!.data!.length > 10
-                ? (widget.boarddata!.data!.length > 20 ? 3 : 2)
-                : 1),
-            child: PinnedText(widget.boarddata!.data!, 0, 0),
-          );
+          // return StaggeredGridTile.count(
+          //   crossAxisCellCount: 2,
+          //   mainAxisCellCount: (widget.boarddata!.data!.length > 10
+          // ? (widget.boarddata!.data!.length > 20 ? 3 : 2)
+          // : 1),
+          return PinnedText(widget.boarddata!.data!, 0, 0);
+          // );
         }
         break;
       case 'audio':
         {
-          return StaggeredGridTile.count(
-            crossAxisCellCount: 2,
-            mainAxisCellCount: 1,
-            child: PinnedToDo(widget.boarddata!.data!, 0, 0),
-          );
+          // return StaggeredGridTile.count(
+          //   crossAxisCellCount: 2,
+          //   mainAxisCellCount: 1,
+          return PinnedToDo(widget.boarddata!.data!, 0, 0);
+          // );
         }
         break;
       case 'quote':
         {
-          return StaggeredGridTile.count(
-            crossAxisCellCount: 2,
-            mainAxisCellCount: 2,
-            // mainAxisCellCount:
-            //     (quotesList[index1][kAuthor]).toString().length > 30
-            //         ? 2
-            //         : 1,
-            child: Stack(
-              alignment: Alignment.topCenter,
-              children: [
-                Transform.rotate(
-                  angle: -math.pi / 60,
-                  child: Container(
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Text(
-                        widget.boarddata!.data!,
-                        style: GoogleFonts.caveatBrush(
-                          color: Colors.black,
-                          fontSize: 8.5,
-                        ),
+          // return StaggeredGridTile.count(
+          //   crossAxisCellCount: 2,
+          //   mainAxisCellCount: 2,
+          // mainAxisCellCount:
+          //     (quotesList[index1][kAuthor]).toString().length > 30
+          //         ? 2
+          //         : 1,
+          return Stack(
+            alignment: Alignment.topCenter,
+            children: [
+              Transform.rotate(
+                angle: -math.pi / 60,
+                child: Container(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      widget.boarddata!.data!,
+                      style: GoogleFonts.caveatBrush(
+                        color: Colors.black,
+                        fontSize: 8.5,
                       ),
                     ),
-                    decoration: BoxDecoration(
-                      color: Colors.greenAccent,
-                      boxShadow: [
-                        BoxShadow(
-                          blurRadius: 3.0,
-                          spreadRadius: 0.5,
-                          offset: Offset(1, 1),
-                        ),
-                      ],
-                    ),
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.greenAccent,
+                    boxShadow: [
+                      BoxShadow(
+                        blurRadius: 3.0,
+                        spreadRadius: 0.5,
+                        offset: Offset(1, 1),
+                      ),
+                    ],
                   ),
                 ),
-                Image.asset(
-                  'assets/images/pin.png',
-                  width: 13,
-                  height: 13,
-                ),
-              ],
-            ),
+              ),
+              Image.asset(
+                'assets/images/pin.png',
+                width: 13,
+                height: 13,
+              ),
+            ],
+            // ),
           );
         }
         break;
@@ -319,22 +330,26 @@ class BboardTileState extends State<BoardTile> {
           final dateinString = reminderdata[2]!.split('-');
           DateTime? dateinDateTime = DateTime(int.parse(dateinString[0]),
               int.parse(dateinString[1]), int.parse(dateinString[2]));
+          print('reminderdata[3]');
+          print(reminderdata[3]!);
           print('reminderdata[4]');
           print(reminderdata[4]!);
+          String? starttime = reminderdata[3];
 
           m.ReminderTask latestreminder = m.ReminderTask(
             title: reminderdata[0],
             note: reminderdata[1],
             date: dateinDateTime!,
-            startTime: reminderdata[3],
+            startTime: starttime,
             reminder: int.parse(reminderdata[4]!),
             repeat: reminderdata[5],
+            alarm: reminderdata[6]! == 'true' ? true : false,
           );
-          return StaggeredGridTile.count(
-            crossAxisCellCount: 2,
-            mainAxisCellCount: 1,
-            child: PinnedReminder(latestreminder!, 0, 0),
-          );
+          // return StaggeredGridTile.count(
+          //   crossAxisCellCount: 2,
+          //   mainAxisCellCount: 1,
+          return PinnedReminder(latestreminder!, 0, 0);
+          // );
         }
         break;
 

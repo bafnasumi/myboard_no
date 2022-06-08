@@ -1,9 +1,10 @@
 // ignore_for_file: prefer_const_constructors, non_constant_identifier_names, avoid_print
 
 // import 'package:awesome_notifications/awesome_notifications.dart';
+import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:flutter_alarm_clock/flutter_alarm_clock.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
@@ -31,7 +32,33 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
   DateTime? _selectDate = DateTime.now();
   String startTime = DateFormat('hh:mm a').format(DateTime.now()).toString();
   DateTime? selectStartDate;
+
+  int? _alarmId = 0;
+  bool? value = false;
   //DateTime _selectEndDate = DateTime.now();
+
+  // static Future<void> callback() async {
+  //   // developer.log('Alarm fired!');
+  //   // // Get the previous cached count and increment it.
+  //   // final prefs = await SharedPreferences.getInstance();
+  //   // final currentCount = prefs.getInt(countKey) ?? 0;
+  //   // await prefs.setInt(countKey, currentCount + 1);
+
+  //   // // This will be null if we're running in the background.
+  //   // uiSendPort ??= IsolateNameServer.lookupPortByName(isolateName);
+  //   // uiSendPort?.send(null);
+  //   print('Alarm fired');
+  // }
+
+  callback_for_alarm(DateTime? combinedDate, String? title) {
+    if (_isAlarmEnabled!) {
+      FlutterAlarmClock.createAlarm(combinedDate!.hour, combinedDate.minute,
+          title: title!, skipUi: true);
+    } else {
+      print('ALarm mot enabledd');
+    }
+    // throw 'todo';
+  }
 
   String endTime = '12:00 AM';
   List<String> reminders = ['5', '10', '15', '30'];
@@ -39,12 +66,13 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
   List<String> repeats = ['None', 'Daily', 'Weekly', 'Yearly'];
   String _selectRepeats = 'None';
   ColorTaskType _selectColor = ColorTaskType.blue;
-  TimeOfDay _selectstarttime = TimeOfDay.now();
+  TimeOfDay? _selectstarttime =
+      TimeOfDay.fromDateTime(DateTime.now().add(Duration(minutes: 10)));
   TimeOfDay? _selectendtime;
   String? hintText_startTime = DateFormat('hh:mm a')
       .format(
         DateTime.now().add(
-          Duration(minutes: 20),
+          Duration(minutes: 10),
         ),
       )
       .toString();
@@ -62,21 +90,27 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
     // return repeats[repeatIndex];
   }
 
-  String getText(TimeOfDay newtime) {
-    if (_selectstarttime == null) {
-      return 'Select Time';
-    } else {
-      return '${newtime!.hour}:${newtime!.minute}';
-    }
+  int daysBetween(DateTime from, DateTime to) {
+    from = DateTime(from.year, from.month, from.day);
+    to = DateTime(to.year, to.month, to.day);
+    return (to.difference(from).inHours / 24).round();
   }
 
+  // String getText(TimeOfDay newtime) {
+  //   if (_selectstarttime == null) {
+  //     return 'Select Time';
+  //   } else {
+  //     return '${newtime!.hour}:${newtime!.minute}';
+  //   }
+  // }
+
   Future pickTime(BuildContext context) async {
-    final initialTime = TimeOfDay(
+    TimeOfDay initialTime = TimeOfDay(
         hour: DateTime.now().hour, minute: DateTime.now().minute + 10);
-    final newtime = await showTimePicker(
-        context: context, initialTime: _selectstarttime ?? initialTime);
+    final newtime =
+        await showTimePicker(context: context, initialTime: _selectstarttime!);
     setState(() {
-      _selectstarttime = initialTime;
+      _selectstarttime = newtime;
     });
     if (newtime != null && newtime != _selectstarttime) {
       setState(() => _selectstarttime = newtime);
@@ -125,6 +159,8 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
     // Provider.of<NotificationService>(context, listen: false).initialize();
   }
 
+  bool? _isAlarmEnabled;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -141,6 +177,27 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                 'Add Task',
                 style: CustomTextTheme().heading6Style,
               ),
+              // IconButton(
+              //   onPressed: () {
+              //     // AndroidAlarmManager.oneShotAt(
+              //     //     DateTime.now().add(
+              //     //       Duration(seconds: 2),
+              //     //     ),
+              //     //     0,
+              //     //     callback,
+              //     //     alarmClock: true,
+              //     //     wakeup: true);
+              //     FlutterAlarmClock.createAlarm(15, 49,
+              //         title: 'this is the title', skipUi: true);
+              //     var snackbar = SnackBar(
+              //       content: Text(
+              //         'alarm created',
+              //       ),
+              //     );
+              //     ScaffoldMessenger.of(context).showSnackBar(snackbar);
+              //   },
+              //   icon: Icon(Icons.alarm),
+              // ),
               const SizedBox(
                 height: 8,
               ),
@@ -227,6 +284,18 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                   isReminder: false,
                 ),
               ),
+
+              CheckboxListTile(
+                title: Text('Do you want to enable alarm for this task?'),
+                value: value,
+                onChanged: (bool? value1) {
+                  setState(() {
+                    this.value = value1;
+                    _isAlarmEnabled = value1;
+                  });
+                },
+              ),
+
               const SizedBox(
                 height: 18,
               ),
@@ -247,7 +316,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                       if (combinedDate.isAfter(DateTime.now())) {
                         //_validateInput();
                         // _validateDateTime(combinedDate);
-                        print(_selectDate);
+                        //print(_selectDate);
                         Provider.of<ReminderController>(context, listen: false)
                             .addReminder(
                           m.ReminderTask(
@@ -261,8 +330,10 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                             reminder: int.parse(_selectReminder),
                             //int.tryParse(reminderController.text) ?? 100,
                             repeat: _selectRepeats,
+                            alarm: _isAlarmEnabled,
                           ),
                         );
+
                         final box = BoxOfReminders.getReminders();
                         final latestreminder = box.getAt(box.length - 1);
                         var index = box.length - 1;
@@ -277,19 +348,19 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                         //         latestreminder!, index, pinnedWidgetIndex),
                         //   ),
                         // );
-                        print(
-                          ('month: : : ${int.parse(
-                            latestreminder!.startTime.toString().split(':')[0],
-                          )}'),
-                        );
+                        // print(
+                        //   ('month: : : ${int.parse(
+                        //     latestreminder!.startTime.toString().split(':')[0],
+                        //   )}'),
+                        // );
                         switch (_selectRepeats) {
                           case "None":
                             {
                               //Notification 1
                               NotificationApi.showScheduledNotification(
                                 latestreminder: latestreminder,
-                                title: latestreminder.title,
-                                body: latestreminder.note,
+                                title: latestreminder!.title,
+                                body: latestreminder!.note,
                                 remindBefore: int.parse(_selectReminder),
                               );
                             }
@@ -326,7 +397,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                             }
                             break;
                         }
-                        print('date: $_selectDate');
+                        //print('date: $_selectDate');
 
                         Provider.of<BoardStateController>(context,
                                 listen: false)
@@ -346,13 +417,41 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                             // repeat: _selectRepeats,
 
                             data:
-                                ('${titleController.text}*${noteController.text}*${_selectDate!.year}-${_selectDate!.month}-${_selectDate!.day}*${hintText_startTime}*${_selectReminder}*${_selectRepeats}'),
+                                ('${titleController.text}*${noteController.text}*${_selectDate!.year}-${_selectDate!.month}-${_selectDate!.day}*${hintText_startTime}*${_selectReminder}*${_selectRepeats}*$_isAlarmEnabled'),
                             isDone: false,
                             type: 'reminder',
                           ),
                         );
-                        print('date: $_selectDate');
-                        Navigator.pushNamed(context, '/homepage');
+                        print('hinttext_starttinme: $hintText_startTime');
+                        if (_isAlarmEnabled!) {
+                          Future.delayed(
+                              Duration(
+                                days: daysBetween(
+                                    DateTime.now().add(Duration(minutes: 10)),
+                                    combinedDate),
+                              ), () {
+                            callback_for_alarm(
+                                combinedDate, latestreminder!.title);
+                          });
+                        } else {
+                          print('Alarm no unabled');
+                        }
+
+                        // await AndroidAlarmManager.oneShotAt(
+                        //     // combinedDate.subtract(
+                        //     //   Duration(minutes: 5),
+                        //     combinedDate,
+                        //     // ),
+                        //     _alarmId!,
+                        //     callback_for_alarm(
+                        //         combinedDate, latestreminder.title));
+                        // setState(() {
+                        //   _alarmId = _alarmId! + 1;
+                        // });
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: ((context) => HomePage())));
                       } else {
                         Get.snackbar('Oops',
                             'Cannot choose a time that has already passed',
