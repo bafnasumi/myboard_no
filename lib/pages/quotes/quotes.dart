@@ -143,17 +143,7 @@ class _QuotesState extends State<Quotes> {
                               .addBoardData(
                             m.BoardData(
                               position: BoxOfBoardData.getBoardData().length,
-<<<<<<< HEAD
                               data: quotesList[index1][kQuote],
-                              // data:
-                              //     'quote data - problem in quoteesList[index1]',
-=======
-                              // data: quotesList[index1][kQuote],
-                              data: quotesList[index1][kQuote],
-<<<<<<< Updated upstream
-=======
->>>>>>> 5bc3f073b9b8441f93c6615c2e77e874433817cf
->>>>>>> Stashed changes
                               isDone: false,
                               type: 'quote',
                             ),
