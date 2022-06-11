@@ -13,6 +13,7 @@ import 'package:flutter/painting.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:myboardapp/boxes.dart';
+import 'package:myboardapp/pages/imageControlller.dart';
 import 'package:myboardapp/pages/remind/controller/task_controller.dart';
 import 'package:myboardapp/pages/todo.dart';
 import 'package:provider/provider.dart';
@@ -83,6 +84,7 @@ class _BoardDataListState extends State<BoardDataList> {
 class BoardTile extends StatefulWidget {
   m.BoardData? boarddata;
   var particularData;
+  var previousImagePaths;
 
   BoardTile({Key? key, this.boarddata, this.particularData}) : super(key: key);
 
@@ -93,62 +95,145 @@ class BoardTile extends StatefulWidget {
 class BboardTileState extends State<BoardTile> {
   bool isPause = false;
   bool startonce = false;
+  bool _repeated = false;
 
   @override
   Widget build(BuildContext context) {
     switch (widget.boarddata!.type) {
       case 'image':
         {
-          File? finalImage = File(widget.boarddata!.data!);
-          // var decodedImage =
-          //     await decodeImageFromList(finalImage.readAsBytesSync());
-          // double width = decodedImage.width.toDouble();
-          // double height = decodedImage.height.toDouble();
-          // return StaggeredGridTile.count(
-          //   // crossAxisCellCount: width > height ? 3 : 2,
-          //   // mainAxisCellCount: width < height ? 3 : 2,
-          //   crossAxisCellCount: 2,
-          //   mainAxisCellCount: 2,
-          return GestureDetector(
-            child: Container(
-              // height: finalImage.readAsBytesSync(). > myimage.width!.toInt() ? 120 : 90,
-              // width: myimage.height! > myimage.width!.toInt() ? 70 : 100,
-              height: 160,
-              width: 70,
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                color: Colors.transparent,
-                // boxShadow: [
-                //   BoxShadow(
-                //     blurRadius: 3.0,
-                //     spreadRadius: 0.5,
-                //     offset: Offset(1, 1),
-                //   ),
-                // ],
+          var imagePath = (widget.boarddata!.data!).split('*');
+          print('imagepath11111111111111111');
+          print(imagePath[0]);
+
+          var boxofImages = BoxofImage.getImages();
+          // print('boxofImages');
+          // print(boxofImages.getAt(index)!.imagesource);
+          // print('length of box ========  ${boxofImages}');
+          m.Images previousImagePaths;
+          // for (previousImagePaths in boxofImages.toMap().values) {
+          for (var index = 0; index < boxofImages.length; index++) {
+            // print(boxofImages.getAt(index)!.imagesource!);
+
+            if (identical(imagePath[0].trim(),
+                boxofImages.getAt(index)!.imagesource!.trim())) {
+              print(
+                  '${imagePath[0]} == ${boxofImages.getAt(index)!.imagesource}');
+              setState(() {
+                _repeated = true;
+              });
+            }
+          }
+          print('_repeated = $_repeated');
+
+          if (!_repeated) {
+            File? finalImage = File(imagePath[0]);
+            // var decodedImage =
+            //     await decodeImageFromList(finalImage.readAsBytesSync());
+            // double width = decodedImage.width.toDouble();
+            // double height = decodedImage.height.toDouble();
+            // return StaggeredGridTile.count(
+            //   // crossAxisCellCount: width > height ? 3 : 2,
+            //   // mainAxisCellCount: width < height ? 3 : 2,
+            //   crossAxisCellCount: 2,
+            //   mainAxisCellCount: 2,
+            return GestureDetector(
+              child: Container(
+                // height: finalImage.readAsBytesSync(). > myimage.width!.toInt() ? 120 : 90,
+                // width: myimage.height! > myimage.width!.toInt() ? 70 : 100,
+                height: 160,
+                width: 70,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  color: Colors.transparent,
+                  // boxShadow: [
+                  //   BoxShadow(
+                  //     blurRadius: 3.0,
+                  //     spreadRadius: 0.5,
+                  //     offset: Offset(1, 1),
+                  //   ),
+                  // ],
+                ),
+                child: Stack(
+                  alignment: Alignment.topCenter,
+                  children: [
+                    Container(
+                      child: Image.file(finalImage),
+                      decoration: BoxDecoration(boxShadow: [
+                        // BoxShadow(
+                        //   blurRadius: 3.0,
+                        //   spreadRadius: 0.5,
+                        //   offset: Offset(1, 1),
+                        // ),
+                      ]),
+                    ),
+                    Image.asset(
+                      'assets/images/pin.png',
+                      width: 13,
+                      height: 13,
+                    ),
+                  ],
+                ),
               ),
-              child: Stack(
-                alignment: Alignment.topCenter,
-                children: [
-                  Container(
-                    child: Image.file(finalImage),
-                    decoration: BoxDecoration(boxShadow: [
-                      // BoxShadow(
-                      //   blurRadius: 3.0,
-                      //   spreadRadius: 0.5,
-                      //   offset: Offset(1, 1),
-                      // ),
-                    ]),
-                  ),
-                  Image.asset(
-                    'assets/images/pin.png',
-                    width: 13,
-                    height: 13,
-                  ),
-                ],
-              ),
-            ),
-            onDoubleTap: () {},
-          );
+              onLongPress: () {
+                var alert = AlertDialog(
+                  title: Text("Do you want really want to delete it?"),
+                  //content: Text("You won't be able to "),
+                  actions: [
+                    TextButton(
+                      child: Text("Cancel"),
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                    ),
+                    TextButton(
+                      child: Text("Delete"),
+                      onPressed: () {
+                        var boardcontroller = Provider.of<BoardStateController>(
+                          context,
+                          listen: false,
+                        );
+                        var imageController = Provider.of<ImageController>(
+                          context,
+                          listen: false,
+                        );
+                        boardcontroller.removeBoardData(widget.boarddata!.key);
+                        imageController.removeImage(imagePath[1]);
+
+                        setState(() {});
+                        Navigator.pop(context);
+                      },
+                    ),
+                  ],
+                );
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return alert;
+                  },
+                );
+              },
+            );
+          } else {
+            // var snackBar = SnackBar(
+            //   content: Text('Image already on board'),
+            // );
+            // ScaffoldMessenger.of(context).showSnackBar(snackBar);
+            // // showDialog(
+            //     context: context,
+            //     builder: (context) {
+            //       return Dialog(
+            //           shape: RoundedRectangleBorder(
+            //               borderRadius: BorderRadius.circular(40)),
+            //           elevation: 16,
+            //           child: Text('ALready on board'));
+            //     });
+            return SizedBox(
+              width: .1,
+              height: .1,
+            );
+          }
+
           // );
         }
         break;
@@ -687,7 +772,6 @@ class BboardTileState extends State<BoardTile> {
                   size: 40,
                   color: Colors.white,
                 ),
-                
               ],
             ),
             onTap: () async {

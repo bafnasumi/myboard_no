@@ -10,6 +10,7 @@ import 'package:flutter/services.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:myboardapp/boxes.dart';
 import 'package:myboardapp/main.dart';
+import 'package:myboardapp/pages/imageControlller.dart';
 import 'package:myboardapp/pages/links.dart';
 import 'package:myboardapp/pages/myvideo.dart' as vid;
 import 'package:myboardapp/pages/quotes/quotes.dart';
@@ -206,6 +207,8 @@ class _HomePageState extends State<HomePage> {
                   setState(() {
                     Provider.of<BoardStateController>(context, listen: false)
                         .emptyBoardData();
+                    Provider.of<ImageController>(context, listen: false)
+                        .emptyImage();
                   });
                 },
               ),
@@ -551,13 +554,24 @@ class _HomePageState extends State<HomePage> {
                                   //     ),
                                   //   ),
                                   // );
+                                  Provider.of<ImageController>(context,
+                                          listen: false)
+                                      .addImage(
+                                    m.Images(
+                                      imagesource: finalImage.path,
+                                    ),
+                                  );
+
+                                  var latestImage =
+                                      boxofImages.getAt(boxofImages.length - 1);
                                   Provider.of<BoardStateController>(context,
                                           listen: false)
                                       .addBoardData(
                                     m.BoardData(
                                       position:
                                           BoxOfBoardData.getBoardData().length,
-                                      data: finalImage.path,
+                                      data:
+                                          '${finalImage.path}*${latestImage!.key}',
                                       isDone: false,
                                       type: 'image',
                                     ),
@@ -567,7 +581,7 @@ class _HomePageState extends State<HomePage> {
                                     () {},
                                   );
                                   Navigator.pop(context);
-                                  
+
                                   // print(pinnedWidgets!);
                                   // print(pinnedWidgets![0]);
                                 },

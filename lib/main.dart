@@ -10,6 +10,7 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:myboardapp/boxes.dart';
 import 'package:myboardapp/pages/boardState.dart';
+import 'package:myboardapp/pages/imageControlller.dart';
 import 'package:myboardapp/pages/recorder/audio/audio.dart';
 import 'package:myboardapp/pages/recorder/audiorecorder.dart';
 import 'package:myboardapp/pages/background.dart' as bg;
@@ -696,6 +697,9 @@ class _MyAppState extends State<MyApp> {
         ),
         ChangeNotifierProvider(
           create: (context) => bg.BackgroundController(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => ImageController(),
         ),
       ],
       child: GetMaterialApp(
