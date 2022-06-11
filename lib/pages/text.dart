@@ -56,28 +56,35 @@ class _TextPageState extends State<TextPage> {
         centerTitle: true,
         title: Padding(
           padding: const EdgeInsets.all(8.0),
-          child: Row(
-            children: [
-              // IconButton(
-              //   icon: Icon(Icons.arrow_back_outlined),
-              //   color: Colors.black,
-              //   onPressed: () {
-              //     Navigator.pop(context);
-              //   },
-              //   iconSize: 40.0,
-              // ),
-              // SizedBox(
-              //   height: 10.0,
-              // ),
-              Text(
-                'Text',
-                style: GoogleFonts.italiana(
-                  color: Colors.black87,
-                  fontSize: screenHeight() * 0.05,
-                ),
-              ),
-            ],
+          child: Text(
+            'Text',
+            style: GoogleFonts.italiana(
+              color: Colors.black87,
+              fontSize: screenHeight() * 0.05,
+            ),
           ),
+          // child: Row(
+          //   children: [
+          //     // IconButton(
+          //     //   icon: Icon(Icons.arrow_back_outlined),
+          //     //   color: Colors.black,
+          //     //   onPressed: () {
+          //     //     Navigator.pop(context);
+          //     //   },
+          //     //   iconSize: 40.0,
+          //     // ),
+          //     // SizedBox(
+          //     //   height: 10.0,
+          //     // ),
+          //     Text(
+          //       'Text',
+          //       style: GoogleFonts.italiana(
+          //         color: Colors.black87,
+          //         fontSize: screenHeight() * 0.05,
+          //       ),
+          //     ),
+          //   ],
+          // ),
         ),
         backgroundColor: Color.fromARGB(255, 255, 255, 255),
         elevation: 0.0,
@@ -237,7 +244,7 @@ class _TextPageState extends State<TextPage> {
         ),
         onDoubleTap: () {
           boxofTextPage.delete(index);
-          pinnedWidgets!.removeAt(pinnedWidgetIndex);
+          // pinnedWidgets!.removeAt(pinnedWidgetIndex);
         },
       );
 

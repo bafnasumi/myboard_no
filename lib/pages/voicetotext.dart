@@ -207,9 +207,7 @@ class _SpeechScreenState extends State<SpeechScreen> {
                             type: 'voicetotext',
                           ),
                         );
-                        setState(() {
-                          
-                        });
+                        setState(() {});
                         Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -304,7 +302,7 @@ class _SpeechScreenState extends State<SpeechScreen> {
       ),
       onDoubleTap: () {
         boxofvoicetotext.delete(index);
-        pinnedWidgets!.removeAt(pinnedWidgetIndex);
+        //pinnedWidgets!.removeAt(pinnedWidgetIndex);
       },
     );
   }

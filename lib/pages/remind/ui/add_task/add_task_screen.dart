@@ -4,6 +4,7 @@
 import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_alarm_clock/flutter_alarm_clock.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -156,10 +157,11 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
   @override
   void initState() {
     super.initState();
+    SystemChannels.textInput.invokeMethod('TextInput.hide');
     // Provider.of<NotificationService>(context, listen: false).initialize();
   }
 
-  bool? _isAlarmEnabled;
+  bool? _isAlarmEnabled = false;
 
   @override
   Widget build(BuildContext context) {
@@ -206,11 +208,15 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                 hint: 'Enter Title Here.',
                 controller: titleController,
               ),
-              CustomInputField(
-                title: 'Note',
-                hint: 'Enter Note Here.',
-                controller: noteController,
+              GestureDetector(
+                //onTap: FocusScope.of(context).requestFocus(FocusNode()),
+                child: CustomInputField(
+                  title: 'Note',
+                  hint: 'Enter Note Here.',
+                  controller: noteController,
+                ),
               ),
+
               CustomInputField(
                 title: 'Date',
                 //controller: dateController,
@@ -417,7 +423,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                             // repeat: _selectRepeats,
 
                             data:
-                                ('${titleController.text}*${noteController.text}*${_selectDate!.year}-${_selectDate!.month}-${_selectDate!.day}*${hintText_startTime}*${_selectReminder}*${_selectRepeats}*$_isAlarmEnabled'),
+                                ('${titleController.text}*${noteController.text}*${_selectDate!.year}-${_selectDate!.month}-${_selectDate!.day}*${hintText_startTime}*${_selectReminder}*${_selectRepeats}*$_isAlarmEnabled*${latestreminder!.key}'),
                             isDone: false,
                             type: 'reminder',
                           ),
@@ -449,9 +455,11 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                         //   _alarmId = _alarmId! + 1;
                         // });
                         Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: ((context) => HomePage())));
+                          context,
+                          MaterialPageRoute(
+                            builder: ((context) => HomePage()),
+                          ),
+                        );
                       } else {
                         Get.snackbar('Oops',
                             'Cannot choose a time that has already passed',
@@ -523,7 +531,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
         ),
         onDoubleTap: () {
           boxofreminders.delete(index);
-          pinnedWidgets!.removeAt(pinnedWidgetIndex);
+          //pinnedWidgets!.removeAt(pinnedWidgetIndex);
         },
       );
 

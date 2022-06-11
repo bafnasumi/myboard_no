@@ -83,7 +83,13 @@ class _VideoState extends State<Video> {
       );
     } else {
       return Center(
-        child: Text('Media not initialized'),
+        child: Text(
+          'Media not initialized',
+          style: TextStyle(
+            color: Colors.black,
+            fontSize: 5,
+          ),
+        ),
       );
     }
   }

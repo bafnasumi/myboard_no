@@ -2,10 +2,12 @@
 
 //import 'dart:html';
 import 'dart:math';
+import 'dart:typed_data';
 
 // import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:colorful_safe_area/colorful_safe_area.dart';
 import 'package:flutter/services.dart';
+import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:myboardapp/boxes.dart';
 import 'package:myboardapp/main.dart';
 import 'package:myboardapp/pages/links.dart';
@@ -25,12 +27,15 @@ import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:pinningtrialpackage/pinningtrialpackage.dart';
+import 'package:share_plus/share_plus.dart';
+import 'package:wallpaper_manager_flutter/wallpaper_manager_flutter.dart';
+import '../components/innerShadow.dart';
 import '../components/round_image_button.dart';
 import 'package:myboardapp/models/myboard.dart' as db;
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:myboardapp/models/myboard.dart' as m;
 import 'boardState.dart';
 import 'boardState/BoardDataList.dart';
@@ -38,7 +43,7 @@ import 'todo.dart';
 import 'background.dart';
 import 'dart:math' as math;
 
-List<Widget>? pinnedWidgets;
+// List<Widget>? pinnedWidgets;
 
 class HomePage extends StatefulWidget {
   HomePage({Key? gridviewKey}) : super(key: gridviewKey);
@@ -137,8 +142,12 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    BackgroundController imageController =
+        Provider.of<BackgroundController>(context, listen: false);
     var scaffoldKey;
-    //var todoprovider = Provider.of<TaskController>(context);
+    // var boardprovider = Provider.of<BoardStateController>(context);
+    var boxofboarddata = BoxOfBoardData.getBoardData();
+    Key containerKey;
     return ColorfulSafeArea(
       overflowRules: OverflowRules.all(true),
       child: Scaffold(
@@ -243,7 +252,8 @@ class _HomePageState extends State<HomePage> {
                 leading: Icon(Icons.change_circle_sharp),
                 title: Text("Change Background"),
                 onTap: () {
-                  Navigator.pushNamed(context, '/background');
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => Background()));
                 },
               ),
               ListTile(
@@ -267,6 +277,32 @@ class _HomePageState extends State<HomePage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
+              (boxofboarddata.length == 1000)
+                  ? GestureDetector(
+                      onTap: () async {
+                        final image =
+                            await screenshotController.captureFromWidget(board(
+                          imageController: imageController,
+                          height: MediaQuery.of(context).size.height,
+                          width: MediaQuery.of(context).size.width,
+                        ));
+                        final imagepath = await saveAndShare(image);
+                        // int location = WallpaperManager.HOME_SCREEN;
+                        // var result =
+                        //     await WallpaperManager.setWallpaperFromAsset(
+                        //         imagepath, location);
+                        int location = WallpaperManagerFlutter.HOME_SCREEN;
+                        print(imagepath);
+                        var result = WallpaperManagerFlutter()
+                            .setwallpaperfromFile(File(imagepath), location);
+                      },
+                      child: Container(
+                        child: Text('Set as home screen wallpaper'),
+                      ),
+                    )
+                  : SizedBox(
+                      height: 1,
+                    ),
               Stack(
                 children: [
                   Center(
@@ -283,14 +319,43 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ],
               ),
-              Padding(
-                padding: const EdgeInsets.all(11.0),
-                child: Container(
-                  decoration: imglink.isNotEmpty ? networkimg : localimg,
-                  height: MediaQuery.of(context).size.height * 0.65,
-                  width: MediaQuery.of(context).size.width * 0.9,
-                  child: BoardDataList(),  ////******************************************************** */
+              // board(
+              //   imageController: imageController,
+              //   height: MediaQuery.of(context).size.height,
+              //   width: MediaQuery.of(context).size.width,
+              // ),
+              Container(
+                // key: containerKey,
+                // decoration: imglink.isNotEmpty ? networkimg : localimg,
+                decoration: BoxDecoration(
+                  boxShadow: [
+                    // BoxShadow(
+                    //   color: your_shadow_color,
+                    // ),
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.5),
+                      spreadRadius: 3.0,
+                      blurRadius: 3.0,
+                      offset: Offset(
+                        2.0,
+                        2.0,
+                      ),
+                    ),
+                  ],
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(
+                    color: Colors.black.withOpacity(0.5),
+                    width: 8.0,
+                  ),
+                  image: DecorationImage(
+                    image: NetworkImage(imageController!.imgLink),
+                    fit: BoxFit.cover,
+                  ),
                 ),
+                height: MediaQuery.of(context).size.height! * 0.65,
+                width: MediaQuery.of(context).size.width! * 0.9,
+                child:
+                    BoardDataList(), ////******************************************************** */
               ),
 // StaggeredGrid.count(
 //                         //staggeredTileBuilder: (index) => StaggeredTile.fit(2),
@@ -502,6 +567,7 @@ class _HomePageState extends State<HomePage> {
                                     () {},
                                   );
                                   Navigator.pop(context);
+                                  
                                   // print(pinnedWidgets!);
                                   // print(pinnedWidgets![0]);
                                 },
@@ -923,6 +989,87 @@ class _HomePageState extends State<HomePage> {
   // }
 }
 
+class board extends StatefulWidget {
+  // final Key? containerKey;
+  final BackgroundController? imageController;
+  final double? height;
+  final double? width;
+
+  const board({
+    Key? key,
+    this.imageController,
+    this.height,
+    this.width,
+  }) : super(key: key);
+
+  @override
+  State<board> createState() => _boardState();
+}
+
+class _boardState extends State<board> {
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      child: Container(
+        // key: containerKey,
+        // decoration: imglink.isNotEmpty ? networkimg : localimg,
+        decoration: BoxDecoration(
+          boxShadow: [
+            // BoxShadow(
+            //   color: your_shadow_color,
+            // ),
+            BoxShadow(
+              color: Colors.black.withOpacity(0.5),
+              spreadRadius: 3.0,
+              blurRadius: 3.0,
+              offset: Offset(
+                2.0,
+                2.0,
+              ),
+            ),
+          ],
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(
+            color: Colors.black.withOpacity(0.5),
+            width: 8.0,
+          ),
+          image: DecorationImage(
+            image: NetworkImage(widget.imageController!.imgLink),
+            fit: BoxFit.cover,
+          ),
+        ),
+        height: widget.height! * 0.65,
+        width: widget.width! * 0.9,
+        child:
+            BoardDataList(), ////******************************************************** */
+      ),
+    );
+  }
+}
+
+Future<String> saveAndShare(Uint8List bytes) async {
+  final directory = await getApplicationDocumentsDirectory();
+  final image = File('${directory.path}/flutter.png');
+  image.writeAsBytesSync(bytes);
+
+  final text = 'Shared From Facebook';
+  await Share.shareFiles([image.path], text: text);
+  return '${directory.path}/flutter.png';
+}
+
+Future<String> saveImage(Uint8List bytes) async {
+  await [Permission.storage].request();
+
+  final time = DateTime.now()
+      .toIso8601String()
+      .replaceAll('.', '-')
+      .replaceAll(':', '-');
+  final name = 'screenshot_$time';
+  final result = await ImageGallerySaver.saveImage(bytes, name: name);
+
+  return result['filePath'];
+}
+
 void openFile(File file) {
   Dialog(
     child: Image.file(file),
@@ -958,7 +1105,7 @@ var localimg = BoxDecoration(
 var networkimg = BoxDecoration(
   image: DecorationImage(
       image: NetworkImage(
-        imglink,
+        'https://media.navyasfashion.com/catalog/product/cache/184a226590f48e7f268fa34c124ed9e1/_/d/_dsc0087.jpg',
       ),
       fit: BoxFit.cover),
   boxShadow: [

@@ -1,15 +1,24 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, avoid_print, non_constant_identifier_names
 
 import 'dart:io';
 // import 'dart:ui' as ui;
 // import 'package:vm_service/vm_service.dart';
 
+// import 'package:audioplayers/audioplayers.dart';
+import 'package:audio_waveforms/audio_waveforms.dart';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/painting.dart';
 // import 'package:flutter/rendering.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:myboardapp/boxes.dart';
+import 'package:myboardapp/pages/remind/controller/task_controller.dart';
+import 'package:myboardapp/pages/todo.dart';
 import 'package:provider/provider.dart';
+import 'package:video_thumbnail/video_thumbnail.dart';
 
+import '../../components/audio_widgets.dart';
 import '../boardState.dart';
 import '../video.dart';
 import 'package:myboardapp/models/myboard.dart' as m;
@@ -23,6 +32,17 @@ class BoardDataList extends StatefulWidget {
 }
 
 class _BoardDataListState extends State<BoardDataList> {
+//  Future videothumbnail(String? videofile_path) async {
+// final uint8list = await VideoThumbnail.thumbnailData(
+//   video: videofile_path!,
+//   imageFormat: ImageFormat.JPEG,
+//   maxWidth: 128, // specify the width of the thumbnail, let the height auto-scaled to keep the source aspect ratio
+//   quality: 25,
+// );
+// return uint8list;
+//   }
+  late Future<int> dataFuture;
+
   @override
   Widget build(BuildContext context) {
     return boxofboarddata.length == 0
@@ -51,7 +71,9 @@ class _BoardDataListState extends State<BoardDataList> {
                   itemBuilder: (BuildContext context, index) {
                     final _boarddata = boxofboarddata.getAt(index);
 
-                    return BoardTile(boarddata: _boarddata);
+                    return BoardTile(
+                      boarddata: _boarddata,
+                    );
                   });
             },
           );
@@ -60,13 +82,18 @@ class _BoardDataListState extends State<BoardDataList> {
 
 class BoardTile extends StatefulWidget {
   m.BoardData? boarddata;
-  BoardTile({Key? key, this.boarddata}) : super(key: key);
+  var particularData;
+
+  BoardTile({Key? key, this.boarddata, this.particularData}) : super(key: key);
 
   @override
   State<BoardTile> createState() => BboardTileState();
 }
 
 class BboardTileState extends State<BoardTile> {
+  bool isPause = false;
+  bool startonce = false;
+
   @override
   Widget build(BuildContext context) {
     switch (widget.boarddata!.type) {
@@ -82,42 +109,45 @@ class BboardTileState extends State<BoardTile> {
           //   // mainAxisCellCount: width < height ? 3 : 2,
           //   crossAxisCellCount: 2,
           //   mainAxisCellCount: 2,
-          return Container(
-            // height: finalImage.readAsBytesSync(). > myimage.width!.toInt() ? 120 : 90,
-            // width: myimage.height! > myimage.width!.toInt() ? 70 : 100,
-            height: 160,
-            width: 70,
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              color: Colors.transparent,
-              // boxShadow: [
-              //   BoxShadow(
-              //     blurRadius: 3.0,
-              //     spreadRadius: 0.5,
-              //     offset: Offset(1, 1),
-              //   ),
-              // ],
+          return GestureDetector(
+            child: Container(
+              // height: finalImage.readAsBytesSync(). > myimage.width!.toInt() ? 120 : 90,
+              // width: myimage.height! > myimage.width!.toInt() ? 70 : 100,
+              height: 160,
+              width: 70,
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                color: Colors.transparent,
+                // boxShadow: [
+                //   BoxShadow(
+                //     blurRadius: 3.0,
+                //     spreadRadius: 0.5,
+                //     offset: Offset(1, 1),
+                //   ),
+                // ],
+              ),
+              child: Stack(
+                alignment: Alignment.topCenter,
+                children: [
+                  Container(
+                    child: Image.file(finalImage),
+                    decoration: BoxDecoration(boxShadow: [
+                      // BoxShadow(
+                      //   blurRadius: 3.0,
+                      //   spreadRadius: 0.5,
+                      //   offset: Offset(1, 1),
+                      // ),
+                    ]),
+                  ),
+                  Image.asset(
+                    'assets/images/pin.png',
+                    width: 13,
+                    height: 13,
+                  ),
+                ],
+              ),
             ),
-            child: Stack(
-              alignment: Alignment.topCenter,
-              children: [
-                Container(
-                  child: Image.file(finalImage),
-                  decoration: BoxDecoration(boxShadow: [
-                    // BoxShadow(
-                    //   blurRadius: 3.0,
-                    //   spreadRadius: 0.5,
-                    //   offset: Offset(1, 1),
-                    // ),
-                  ]),
-                ),
-                Image.asset(
-                  'assets/images/pin.png',
-                  width: 13,
-                  height: 13,
-                ),
-              ],
-            ),
+            onDoubleTap: () {},
           );
           // );
         }
@@ -127,6 +157,7 @@ class BboardTileState extends State<BoardTile> {
           // return StaggeredGridTile.count(
           //   crossAxisCellCount: 2,
           //   mainAxisCellCount: 2,
+          var thumbnail = videothumbnail(widget.boarddata!.data);
           return InkWell(
             onTap: (() {
               print('tap on video catched');
@@ -145,11 +176,14 @@ class BboardTileState extends State<BoardTile> {
                 alignment: Alignment.topCenter,
                 children: [
                   Container(
-                    child: Text(
-                      'video link; ${widget.boarddata!.data!}',
-                      style: TextStyle(
-                        color: Colors.white,
-                      ),
+                    child: FutureBuilder<Widget>(
+                      future: videothumbnail(widget.boarddata!.data!),
+                      builder: (BuildContext context,
+                          AsyncSnapshot<Widget> snapshot) {
+                        if (snapshot.hasData) return snapshot.data!;
+
+                        return Container(child: CircularProgressIndicator());
+                      },
                     ),
                     // child: Image.file(
                     //     File(videopath.toString())),
@@ -170,6 +204,44 @@ class BboardTileState extends State<BoardTile> {
               ),
             ),
             // ),
+            onLongPress: () {
+              // var boxofboarddata = BoxOfBoardData.getBoardData();
+              // setState(() {
+              //   boxofboarddata.delete();
+              // });
+              // set up the AlertDialog
+
+              var alert = AlertDialog(
+                title: Text("Do you want really want to delete it?"),
+                //content: Text("You won't be able to "),
+                actions: [
+                  TextButton(
+                    child: Text("Cancel"),
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                  ),
+                  TextButton(
+                    child: Text("Delete"),
+                    onPressed: () {
+                      var boardcontroller = Provider.of<BoardStateController>(
+                        context,
+                        listen: false,
+                      );
+                      boardcontroller.removeBoardData(widget.boarddata!.key);
+                      setState(() {});
+                      Navigator.pop(context);
+                    },
+                  ),
+                ],
+              );
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return alert;
+                },
+              );
+            },
           );
         }
         break;
@@ -178,7 +250,57 @@ class BboardTileState extends State<BoardTile> {
           // return StaggeredGridTile.count(
           // crossAxisCellCount: 2,
           // mainAxisCellCount: 1,
-          return PinnedToDo(widget.boarddata!.data!, 0, 0);
+          var allData = widget.boarddata!.data!.split(':');
+          return InkWell(
+            child: PinnedToDo(
+              allData[0],
+              0,
+              0,
+            ),
+            onLongPress: () {
+              // var boxofboarddata = BoxOfBoardData.getBoardData();
+              // setState(() {
+              //   boxofboarddata.delete();
+              // });
+              // set up the AlertDialog
+
+              var alert = AlertDialog(
+                title: Text("Done?"),
+                //content: Text("You won't be able to "),
+                actions: [
+                  TextButton(
+                    child: Text("Cancel"),
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                  ),
+                  TextButton(
+                    child: Text("Yes, delete"),
+                    onPressed: () {
+                      var boardcontroller = Provider.of<BoardStateController>(
+                        context,
+                        listen: false,
+                      );
+                      boardcontroller.removeBoardData(widget.boarddata!.key);
+                      var todocontroller = Provider.of<TaskController>(
+                        context,
+                        listen: false,
+                      );
+                      todocontroller.removeToDo(int.parse(allData[1]));
+                      setState(() {});
+                      Navigator.pop(context);
+                    },
+                  ),
+                ],
+              );
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return alert;
+                },
+              );
+            },
+          );
           // );
         }
         break;
@@ -187,22 +309,17 @@ class BboardTileState extends State<BoardTile> {
           // return StaggeredGridTile.count(
           //     crossAxisCellCount: 2,
           //     mainAxisCellCount: 1,
-          return Padding(
-            padding: const EdgeInsets.all(4.0),
+          return InkWell(
             child: Stack(
               alignment: Alignment.topCenter,
               children: [
                 Container(
+                  height: 50,
+                  width: 110,
                   decoration: BoxDecoration(
-                    // ignore: prefer_const_literals_to_create_immutables
-                    boxShadow: [
-                      BoxShadow(
-                        blurRadius: 3.0,
-                        spreadRadius: 0.5,
-                        offset: Offset(1, 1),
+                      // ignore: prefer_const_literals_to_create_immutables
+
                       ),
-                    ],
-                  ),
                   child: PinnedLink(widget.boarddata!.data!.split(':')[0],
                       widget.boarddata!.data!.split(':')[1], 0, 0, context),
                 ),
@@ -214,7 +331,50 @@ class BboardTileState extends State<BoardTile> {
               ],
               // ),
             ),
-            // )
+            onTap: () {},
+            onLongPress: () {
+              // var boxofboarddata = BoxOfBoardData.getBoardData();
+              // setState(() {
+              //   boxofboarddata.delete();
+              // });
+              // set up the AlertDialog
+
+              var alert = AlertDialog(
+                title: Text("Do you want really want to delete it?"),
+                //content: Text("You won't be able to "),
+                actions: [
+                  TextButton(
+                    child: Text("Cancel"),
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                  ),
+                  TextButton(
+                    child: Text("Yes, delete"),
+                    onPressed: () {
+                      var boardcontroller = Provider.of<BoardStateController>(
+                        context,
+                        listen: false,
+                      );
+                      boardcontroller.removeBoardData(widget.boarddata!.key);
+                      // var todocontroller = Provider.of<TaskController>(
+                      //   context,
+                      //   listen: false,
+                      // );
+                      // todocontroller.removeToDo(int.parse(allData[1]));
+                      setState(() {});
+                      Navigator.pop(context);
+                    },
+                  ),
+                ],
+              );
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return alert;
+                },
+              );
+            },
           );
           break;
         }
@@ -223,35 +383,80 @@ class BboardTileState extends State<BoardTile> {
           // return StaggeredGridTile.count(
           //   crossAxisCellCount: 2,
           //   mainAxisCellCount: widget.boarddata!.data!.length > 20 ? 2 : 1,
-          return Stack(
-            alignment: Alignment.topCenter,
-            children: [
-              Container(
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: PinnedVoiceToText(widget.boarddata!.data!, 0, 0),
+          return InkWell(
+            child: Stack(
+              alignment: Alignment.topCenter,
+              children: [
+                Container(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: PinnedVoiceToText(widget.boarddata!.data!, 0, 0),
+                  ),
+                  // child: Image.file(
+                  //     File(videopath.toString())),
+                  decoration: BoxDecoration(
+                    color: Colors.lightGreen,
+                    // ignore: prefer_const_literals_to_create_immutables
+                    boxShadow: [
+                      BoxShadow(
+                        blurRadius: 3.0,
+                        spreadRadius: 0.5,
+                        offset: Offset(1, 1),
+                      ),
+                    ],
+                  ),
                 ),
-                // child: Image.file(
-                //     File(videopath.toString())),
-                decoration: BoxDecoration(
-                  color: Colors.lightGreen,
-                  // ignore: prefer_const_literals_to_create_immutables
-                  boxShadow: [
-                    BoxShadow(
-                      blurRadius: 3.0,
-                      spreadRadius: 0.5,
-                      offset: Offset(1, 1),
-                    ),
-                  ],
+                Image.asset(
+                  'assets/images/pin.png',
+                  width: 13,
+                  height: 13,
                 ),
-              ),
-              Image.asset(
-                'assets/images/pin.png',
-                width: 13,
-                height: 13,
-              ),
-            ],
-            // ),
+              ],
+              // ),
+            ),
+            onLongPress: () {
+              // var boxofboarddata = BoxOfBoardData.getBoardData();
+              // setState(() {
+              //   boxofboarddata.delete();
+              // });
+              // set up the AlertDialog
+
+              var alert = AlertDialog(
+                title: Text("Do you want really want to delete it?"),
+                //content: Text("You won't be able to "),
+                actions: [
+                  TextButton(
+                    child: Text("Cancel"),
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                  ),
+                  TextButton(
+                    child: Text("Yes, delete"),
+                    onPressed: () {
+                      var boardcontroller = Provider.of<BoardStateController>(
+                        context,
+                        listen: false,
+                      );
+                      boardcontroller.removeBoardData(widget.boarddata!.key);
+                      // var todocontroller = Provider.of<TaskController>(
+                      //   context,
+                      //   listen: false,
+                      // );
+                      // todocontroller.removeToDo(int.parse(allData[1]));
+                      setState(() {});
+                      Navigator.pop(context);
+                    },
+                  ),
+                ],
+              );
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return alert;
+                },
+              );
+            },
           );
         }
         break;
@@ -262,16 +467,245 @@ class BboardTileState extends State<BoardTile> {
           //   mainAxisCellCount: (widget.boarddata!.data!.length > 10
           // ? (widget.boarddata!.data!.length > 20 ? 3 : 2)
           // : 1),
-          return PinnedText(widget.boarddata!.data!, 0, 0);
+          return InkWell(
+            child: PinnedText(widget.boarddata!.data!, 0, 0),
+            onLongPress: () {
+              // var boxofboarddata = BoxOfBoardData.getBoardData();
+              // setState(() {
+              //   boxofboarddata.delete();
+              // });
+              // set up the AlertDialog
+
+              var alert = AlertDialog(
+                title: Text("Do you want really want to delete it?"),
+                //content: Text("You won't be able to "),
+                actions: [
+                  TextButton(
+                    child: Text("Cancel"),
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                  ),
+                  TextButton(
+                    child: Text("Yes, delete"),
+                    onPressed: () {
+                      var boardcontroller = Provider.of<BoardStateController>(
+                        context,
+                        listen: false,
+                      );
+                      boardcontroller.removeBoardData(widget.boarddata!.key);
+                      // var todocontroller = Provider.of<TaskController>(
+                      //   context,
+                      //   listen: false,
+                      // );
+                      // todocontroller.removeToDo(int.parse(allData[1]));
+                      setState(() {});
+                      Navigator.pop(context);
+                    },
+                  ),
+                ],
+              );
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return alert;
+                },
+              );
+            },
+          );
           // );
         }
         break;
       case 'audio':
         {
+// FutureBuilder<int>(
+//                     future: getDuration(widget.boarddata!.data!, audioPlayer),
+//                     builder: (context, snapshot) {
+//                       // print(snapshot.data);
+
+//                       if (snapshot.hasData) {
+//                         return TweenAnimationBuilder(
+//                           tween: Tween(
+//                             begin: 0.0,
+//                             end: 1.0,
+//                           ),
+//                           duration: Duration(seconds: snapshot.data!),
+//                           builder: (context, value, _) {
+//                             // print(snapshot.data);
+//                             return SizedBox(
+//                               height: 60,
+//                               width: 60,
+//                               child: CircularProgressIndicator(
+//                                 value: double.parse(value.toString()),
+//                                 backgroundColor: Colors.grey,
+//                                 strokeWidth: 6,
+//                               ),
+//                             );
+//                           },
+//                         );
+//                       } else if (snapshot.hasError) {
+//                         return Padding(
+//                           padding: const EdgeInsets.only(top: 16),
+//                           child: Text(
+//                             'Error: ${snapshot.error}',
+//                             style: TextStyle(
+//                               fontSize: 10,
+//                               color: Colors.white,
+//                             ),
+//                           ),
+//                         );
+//                       } else {
+//                         return Padding(
+//                           padding: EdgeInsets.only(top: 16),
+//                           child: Text(
+//                             'Awaiting result...',
+//                             style: TextStyle(
+//                               fontSize: 10,
+//                               color: Colors.white,
+//                             ),
+//                           ),
+//                         );
+//                       }
+
+//                       // return snapshot.hasData
+//                       //     ? TweenAnimationBuilder(
+//                       //         tween: Tween(
+//                       //           begin: 0,
+//                       //           end: 1,
+//                       //         ),
+//                       //         duration: Duration(seconds: snapshot.data as int),
+//                       //         builder: (context, value, _) {
+//                       //           print(snapshot.data);
+//                       //           return SizedBox(
+//                       //             height: 100,
+//                       //             width: 100,
+//                       //             child: CircularProgressIndicator(
+//                       //               value: value as double?,
+//                       //               backgroundColor: Colors.grey,
+//                       //               strokeWidth: 6,
+//                       //             ),
+//                       //           );
+//                       //         },
+//                       //       )
+//                       //     : Text(
+//                       //         'snapshot has no data',
+//                       //         style:
+//                       //             TextStyle(fontSize: 10, color: Colors.white),
+//                       //       );
+//                     }),
+
           // return StaggeredGridTile.count(
           //   crossAxisCellCount: 2,
           //   mainAxisCellCount: 1,
-          return PinnedToDo(widget.boarddata!.data!, 0, 0);
+          //return PinnedToDo(widget.boarddata!.data!, 0, 0);
+          AudioPlayer audioPlayer = AudioPlayer();
+          TimerController timerController = TimerController();
+          final PlayerController playerController = PlayerController();
+          var timercontroller = TimerWidget(controller: timerController);
+
+          // return InkWell(
+          //   child: Icon(Icons.record_voice_over),
+          //   onTap: () {
+          //     AudioPlayer audioPlayer = AudioPlayer();
+          //     audioPlayer.play(widget.boarddata!.data!, isLocal: true);
+          //   },
+          // );
+          //var myduration = getDuration(widget.boarddata!.data!, audioPlayer);
+          //var duration = await audioPlayer.setUrl('file.mp3');
+          return InkWell(
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                // FutureBuilder<int>(
+//                     future: getDuration(widget.boarddata!.data!, audioPlayer),
+//                     builder: (context, snapshot) {
+//                       // print(snapshot.data);
+
+//                       if (snapshot.hasData) {
+//                         return TweenAnimationBuilder(
+//                           tween: Tween(
+//                             begin: 0.0,
+//                             end: 1.0,
+//                           ),
+//                           duration: Duration(seconds: snapshot.data!),
+//                           builder: (context, value, _) {
+//                             // print(snapshot.data);
+//                             return SizedBox(
+//                               height: 60,
+//                               width: 60,
+//                               child: CircularProgressIndicator(
+//                                 value: double.parse(value.toString()),
+//                                 backgroundColor: Colors.grey,
+//                                 strokeWidth: 6,
+//                               ),
+//                             );
+//                           },
+//                         );
+//                       } else if (snapshot.hasError) {
+//                         return Padding(
+//                           padding: const EdgeInsets.only(top: 16),
+//                           child: Text(
+//                             'Error: ${snapshot.error}',
+//                             style: TextStyle(
+//                               fontSize: 10,
+//                               color: Colors.white,
+//                             ),
+//                           ),
+//                         );
+//                       } else {
+//                         return Padding(
+//                           padding: EdgeInsets.only(top: 16),
+//                           child: Text(
+//                             'Awaiting result...',
+//                             style: TextStyle(
+//                               fontSize: 10,
+//                               color: Colors.white,
+//                             ),
+//                           ),
+//                         );
+//                       }
+
+                // SizedBox(
+                //   // height: 10,
+                //   width: 6,
+                // ),
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade400,
+                    borderRadius: BorderRadius.circular(20.0),
+                  ),
+                  child: AudioFileWaveforms(
+                    size: Size(
+                      MediaQuery.of(context).size.width * 0.25,
+                      MediaQuery.of(context).size.height * 0.12,
+                    ),
+                    playerController: playerController,
+                  ),
+                ),
+                Icon(
+                  !isPause ? Icons.play_arrow : Icons.pause,
+                  size: 40,
+                  color: Colors.white,
+                ),
+                
+              ],
+            ),
+            onTap: () async {
+              // if (startonce) {
+              //   audioPlayer.play(widget.boarddata!.data!, isLocal: true);
+              // }
+              // !isPause ? audioPlayer.resume() : audioPlayer.pause();
+              // startonce = true;
+              // setState(() {
+              //   isPause = (isPause == true) ? false : true;
+              // });
+              await playerController.preparePlayer(widget.boarddata!.data!);
+              await playerController.startPlayer();
+              setState(() {
+                isPause = (isPause == true) ? false : true;
+              });
+            },
+          );
           // );
         }
         break;
@@ -284,41 +718,86 @@ class BboardTileState extends State<BoardTile> {
           //     (quotesList[index1][kAuthor]).toString().length > 30
           //         ? 2
           //         : 1,
-          return Stack(
-            alignment: Alignment.topCenter,
-            children: [
-              Transform.rotate(
-                angle: -math.pi / 60,
-                child: Container(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                      widget.boarddata!.data!,
-                      style: GoogleFonts.caveatBrush(
-                        color: Colors.black,
-                        fontSize: 8.5,
+          return InkWell(
+            child: Stack(
+              alignment: Alignment.topCenter,
+              children: [
+                Transform.rotate(
+                  angle: -math.pi / 60,
+                  child: Container(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(
+                        widget.boarddata!.data!,
+                        style: GoogleFonts.caveatBrush(
+                          color: Colors.black,
+                          fontSize: 8.5,
+                        ),
                       ),
                     ),
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.greenAccent,
-                    boxShadow: [
-                      BoxShadow(
-                        blurRadius: 3.0,
-                        spreadRadius: 0.5,
-                        offset: Offset(1, 1),
-                      ),
-                    ],
+                    decoration: BoxDecoration(
+                      color: Colors.greenAccent,
+                      boxShadow: [
+                        BoxShadow(
+                          blurRadius: 3.0,
+                          spreadRadius: 0.5,
+                          offset: Offset(1, 1),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-              Image.asset(
-                'assets/images/pin.png',
-                width: 13,
-                height: 13,
-              ),
-            ],
-            // ),
+                Image.asset(
+                  'assets/images/pin.png',
+                  width: 13,
+                  height: 13,
+                ),
+              ],
+              // ),
+            ),
+            onLongPress: () {
+              // var boxofboarddata = BoxOfBoardData.getBoardData();
+              // setState(() {
+              //   boxofboarddata.delete();
+              // });
+              // set up the AlertDialog
+
+              var alert = AlertDialog(
+                title: Text("Do you want really want to delete it?"),
+                //content: Text("You won't be able to "),
+                actions: [
+                  TextButton(
+                    child: Text("Cancel"),
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                  ),
+                  TextButton(
+                    child: Text("Yes, delete"),
+                    onPressed: () {
+                      var boardcontroller = Provider.of<BoardStateController>(
+                        context,
+                        listen: false,
+                      );
+                      boardcontroller.removeBoardData(widget.boarddata!.key);
+                      // var todocontroller = Provider.of<TaskController>(
+                      //   context,
+                      //   listen: false,
+                      // );
+                      // todocontroller.removeToDo(int.parse(allData[1]));
+                      setState(() {});
+                      Navigator.pop(context);
+                    },
+                  ),
+                ],
+              );
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return alert;
+                },
+              );
+            },
           );
         }
         break;
@@ -348,7 +827,53 @@ class BboardTileState extends State<BoardTile> {
           // return StaggeredGridTile.count(
           //   crossAxisCellCount: 2,
           //   mainAxisCellCount: 1,
-          return PinnedReminder(latestreminder!, 0, 0);
+          return InkWell(
+            child: PinnedReminder(latestreminder!, 0, 0, context),
+            onLongPress: () {
+              // var boxofboarddata = BoxOfBoardData.getBoardData();
+              // setState(() {
+              //   boxofboarddata.delete();
+              // });
+              // set up the AlertDialog
+
+              var alert = AlertDialog(
+                title: Text("Do you want really want to delete it?"),
+                //content: Text("You won't be able to "),
+                actions: [
+                  TextButton(
+                    child: Text("Cancel"),
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                  ),
+                  TextButton(
+                    child: Text("Yes, delete"),
+                    onPressed: () {
+                      var boardcontroller = Provider.of<BoardStateController>(
+                        context,
+                        listen: false,
+                      );
+                      boardcontroller.removeBoardData(widget.boarddata!.key);
+                      var remindercontroller = Provider.of<ReminderController>(
+                        context,
+                        listen: false,
+                      );
+                      remindercontroller
+                          .removeReminder(int.parse(reminderdata[7]!));
+                      setState(() {});
+                      Navigator.pop(context);
+                    },
+                  ),
+                ],
+              );
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return alert;
+                },
+              );
+            },
+          );
           // );
         }
         break;
@@ -357,128 +882,70 @@ class BboardTileState extends State<BoardTile> {
         return Container();
     }
   }
+
+  Future<Widget> videothumbnail(videofile_path) async {
+    final uint8list = await VideoThumbnail.thumbnailData(
+      video: videofile_path!,
+      imageFormat: ImageFormat.JPEG,
+      maxWidth:
+          128, // specify the width of the thumbnail, let the height auto-scaled to keep the source aspect ratio
+      quality: 25,
+    );
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        Image.memory(
+          uint8list!,
+          fit: BoxFit.cover,
+        ),
+        Center(
+          child: Icon(
+            Icons.play_arrow,
+            color: Colors.white,
+            size: MediaQuery.of(context).size.width * 0.2,
+            shadows: [
+              BoxShadow(
+                blurRadius: 2.0,
+                spreadRadius: 6,
+                offset: Offset(2, 1),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
 }
 
-PinnedToDo(String? todotext, int index, int pinnedWidgetIndex) => InkWell(
-      child: Container(
-        child: Wrap(
-          alignment: WrapAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text(todotext!),
-            ),
-          ],
-        ),
-        decoration: BoxDecoration(
-          color: Colors.white70,
-          image: DecorationImage(
-            image: AssetImage('assets/images/todo_background.png'),
-            fit: BoxFit.contain,
-          ),
-          borderRadius: BorderRadius.circular(10.0),
-          border: Border.all(
-            color: Colors.black,
-            width: 2.0,
-          ),
-        ),
-      ),
-      onDoubleTap: () {
-        //isDone = true;
-        // boxoftodos.delete(index);
-        //pinnedWidgets!.removeAt(pinnedWidgetIndex);
-      },
-    );
-PinnedReminder(m.ReminderTask? task, int index, int pinnedWidgetIndex) =>
-    InkWell(
-      child: Container(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          //alignment: WrapAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          //direction: Axis.horizontal,
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(8, 4, 0, 2),
-              child: Text(
-                task!.title!,
-                style: GoogleFonts.openSans(fontSize: 13.0),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(8, 0, 0, 4),
-              child: Text(
-                task.note!,
-                style: TextStyle(fontSize: 7.0),
-              ),
-            ),
-          ],
-        ),
-        decoration: BoxDecoration(
-          image: DecorationImage(
-              image: AssetImage('assets/images/reminder_backgroud.png')),
-          borderRadius: BorderRadius.circular(10.0),
-          border: Border.all(
-            color: Colors.black,
-            width: 2.0,
-          ),
-        ),
-      ),
-      onDoubleTap: () {
-        //boxofreminders.delete(index);
-        // pinnedWidgets!.removeAt(pinnedWidgetIndex);
-      },
-    );
+Future<int> getDuration(String s, AudioPlayer audioPlayer) async {
+  int duration = await audioPlayer.setUrl(s);
+  return duration;
+}
 
-PinnedLink(String? url, String? description, int index, int pinnedWidgetIndex,
-        context) =>
-    InkWell(
-      // onDoubleTap: () {},
-      child: GestureDetector(
-        onTap: () {
-          //TODO: launch url !
-          //launchUrl(url: url!);
-        },
-        child: Container(
-          height: MediaQuery.of(context).size.height * 0.3,
-          width: MediaQuery.of(context).size.width * 0.3,
+PinnedToDo(String? todotext, int index, int pinnedWidgetIndex) => Stack(
+      alignment: Alignment.topCenter,
+      children: [
+        Container(
+          height: 50,
+          width: 110,
           child: Wrap(
-            alignment: WrapAlignment.spaceEvenly,
-            crossAxisAlignment: WrapCrossAlignment.start,
-            direction: Axis.vertical,
+            alignment: WrapAlignment.start,
+            direction: Axis.horizontal,
+            crossAxisAlignment: WrapCrossAlignment.center,
             children: [
               Padding(
-                padding: const EdgeInsets.fromLTRB(8, 4, 0, 2),
+                padding: const EdgeInsets.fromLTRB(4.0, 6.0, 4, 4),
                 child: Text(
-                  description!,
-                  style: TextStyle(fontSize: 10.0),
+                  todotext!,
+                  style: TextStyle(fontSize: 12),
                 ),
-              ),
-              Wrap(
-                //direction: Axis.horizontal,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(8, 0, 0, 4),
-                    child: Text(
-                      url!,
-                      style: TextStyle(fontSize: 5.0),
-                    ),
-                  ),
-                ],
               ),
             ],
           ),
           decoration: BoxDecoration(
-            // ignore: prefer_const_literals_to_create_immutables
-            boxShadow: [
-              BoxShadow(
-                blurRadius: 3.0,
-                spreadRadius: 0.5,
-                offset: Offset(1, 1),
-              ),
-            ],
+            color: Colors.white70,
             image: DecorationImage(
-              image: AssetImage('assets/images/www.png'),
+              image: AssetImage('assets/images/todo_background.png'),
               fit: BoxFit.cover,
             ),
             borderRadius: BorderRadius.circular(10.0),
@@ -488,6 +955,118 @@ PinnedLink(String? url, String? description, int index, int pinnedWidgetIndex,
             // ),
           ),
         ),
+        Image.asset(
+          'assets/images/pin.png',
+          width: 13,
+          height: 13,
+        ),
+      ],
+    );
+PinnedReminder(m.ReminderTask? task, int index, int pinnedWidgetIndex,
+        BuildContext context) =>
+    InkWell(
+      child: Stack(
+        alignment: Alignment.topCenter,
+        children: [
+          Container(
+            width: MediaQuery.of(context).size.width * .3,
+            height: MediaQuery.of(context).size.width * .13,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              //alignment: WrapAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              //direction: Axis.horizontal,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(8, 4, 0, 2),
+                  child: Text(
+                    task!.title!,
+                    style: GoogleFonts.openSans(fontSize: 13.0),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(8, 0, 0, 4),
+                  child: Text(
+                    task.note!,
+                    style: TextStyle(fontSize: 7.0),
+                  ),
+                ),
+              ],
+            ),
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage('assets/images/reminder_backgroud.png'),
+                fit: BoxFit.cover,
+              ),
+              borderRadius: BorderRadius.circular(10.0),
+              border: Border.all(
+                color: Colors.black,
+                width: 2.0,
+              ),
+            ),
+          ),
+          Image.asset(
+            'assets/images/pin.png',
+            width: 13,
+            height: 13,
+          ),
+        ],
+      ),
+      onDoubleTap: () {
+        //boxofreminders.delete(index);
+        // pinnedWidgets!.removeAt(pinnedWidgetIndex);
+      },
+    );
+
+PinnedLink(String? url, String? description, int index, int pinnedWidgetIndex,
+        context) =>
+    Container(
+      height: MediaQuery.of(context).size.height * 0.3,
+      width: MediaQuery.of(context).size.width * 0.3,
+      child: Wrap(
+        alignment: WrapAlignment.spaceEvenly,
+        crossAxisAlignment: WrapCrossAlignment.start,
+        direction: Axis.vertical,
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(8, 4, 0, 2),
+            child: Text(
+              description!,
+              style: TextStyle(fontSize: 10.0),
+            ),
+          ),
+          Wrap(
+            //direction: Axis.horizontal,
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(8, 0, 0, 4),
+                child: Text(
+                  url!,
+                  style: TextStyle(fontSize: 5.0),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+      decoration: BoxDecoration(
+        // ignore: prefer_const_literals_to_create_immutables
+        boxShadow: [
+          BoxShadow(
+            blurRadius: 3.0,
+            spreadRadius: 0.5,
+            offset: Offset(1, 1),
+          ),
+        ],
+        image: DecorationImage(
+          image: AssetImage('assets/images/www.png'),
+          fit: BoxFit.cover,
+        ),
+        borderRadius: BorderRadius.circular(10.0),
+        // border: Border.all(
+        //   color: Colors.black,
+        //   width: 2.0,
+        // ),
       ),
     );
 

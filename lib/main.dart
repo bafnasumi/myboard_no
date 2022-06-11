@@ -10,9 +10,10 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:myboardapp/boxes.dart';
 import 'package:myboardapp/pages/boardState.dart';
+import 'package:myboardapp/pages/recorder/audio/audio.dart';
 import 'package:myboardapp/pages/recorder/audiorecorder.dart';
 import 'package:myboardapp/pages/background.dart' as bg;
-import 'package:myboardapp/pages/boardeditpage.dart';
+// import 'package:myboardapp/pages/boardeditpage.dart';
 import 'package:myboardapp/pages/homepage.dart';
 import 'package:myboardapp/pages/links.dart';
 import 'package:myboardapp/pages/loginpage.dart';
@@ -23,7 +24,7 @@ import 'package:myboardapp/pages/remind/notificationAPI2.dart';
 import 'package:myboardapp/pages/remind/notificationApi.dart';
 import 'package:myboardapp/pages/remind/reminder.dart';
 import 'package:myboardapp/pages/screenshots.dart';
-import 'package:myboardapp/pages/screentime.dart';
+import 'package:myboardapp/pages/audio.dart';
 import 'package:myboardapp/pages/settingspage.dart';
 import 'package:myboardapp/pages/signuppage.dart';
 import 'package:myboardapp/pages/text.dart';
@@ -33,6 +34,7 @@ import 'package:myboardapp/pages/video.dart';
 import 'package:myboardapp/pages/voicetotext.dart';
 import 'package:myboardapp/pages/welcomescreen.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 // import 'package:firebase_core/firebase_core.dart';
 import 'models/myboard.dart' as m;
 import 'services/google_sign_in.dart';
@@ -90,11 +92,17 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   //final gridviewKey = GlobalKey<_MyAppState>();
+  String myImglink = '';
+  late SharedPreferences preferences;
 
   @override
   void dispose() {
     Hive.close();
     super.dispose();
+  }
+
+  Future init() async {
+    preferences = await SharedPreferences.getInstance();
   }
 
   @override
@@ -686,9 +694,9 @@ class _MyAppState extends State<MyApp> {
         ChangeNotifierProvider(
           create: (context) => BoardStateController(),
         ),
-        // ChangeNotifierProvider(
-        //   create: (context) => NotificationService(),
-        // ),
+        ChangeNotifierProvider(
+          create: (context) => bg.BackgroundController(),
+        ),
       ],
       child: GetMaterialApp(
         debugShowCheckedModeBanner: false,
@@ -708,11 +716,11 @@ class _MyAppState extends State<MyApp> {
           '/memories': (context) => const Memories(),
           '/screenshots': (context) => const Screenshots(),
           '/links': (context) => const Links(),
-          '/screentime': (context) => const ScreenTime(),
+          // '/screentime': (context) => const ScreenTime(),
           '/quotes': (context) => const Quotes(),
           '/video': (context) => Video(),
-          '/audio': (context) => const Audio(),
-          '/boardeditpage': (context) => const BoardEditPage(),
+          '/audio': (context) => MyAudio(),
+          // '/boardeditpage': (context) => const BoardEditPage(),
           '/setting': (context) => const SettingsScreen(),
           '/background': (context) => const bg.Background(),
         },

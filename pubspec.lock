@@ -50,6 +50,20 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.8.2"
+  audio_waveforms:
+    dependency: "direct main"
+    description:
+      name: audio_waveforms
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.1.1"
+  audioplayers:
+    dependency: "direct main"
+    description:
+      name: audioplayers
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.20.1"
   avatar_glow:
     dependency: "direct main"
     description:
@@ -377,6 +391,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.0.2"
+  flutter_audio_recorder2:
+    dependency: "direct main"
+    description:
+      name: flutter_audio_recorder2
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.0.2"
   flutter_blurhash:
     dependency: "direct main"
     description:
@@ -454,27 +475,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.1"
-  flutter_sound_lite:
-    dependency: "direct main"
-    description:
-      name: flutter_sound_lite
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "8.5.0"
-  flutter_sound_platform_interface:
-    dependency: transitive
-    description:
-      name: flutter_sound_platform_interface
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "8.5.0"
-  flutter_sound_web:
-    dependency: transitive
-    description:
-      name: flutter_sound_web
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "8.5.0"
   flutter_spinkit:
     dependency: "direct main"
     description:
@@ -695,13 +695,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.1"
-  logger:
-    dependency: transitive
-    description:
-      name: logger
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.1.0"
   logging:
     dependency: transitive
     description:
@@ -947,13 +940,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "3.1.0"
-  recase:
-    dependency: transitive
-    description:
-      name: recase
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "4.0.0"
   rxdart:
     dependency: "direct main"
     description:
@@ -968,6 +954,48 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.2.3"
+  share_plus:
+    dependency: "direct main"
+    description:
+      name: share_plus
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "4.0.7"
+  share_plus_linux:
+    dependency: transitive
+    description:
+      name: share_plus_linux
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "3.0.0"
+  share_plus_macos:
+    dependency: transitive
+    description:
+      name: share_plus_macos
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "3.0.1"
+  share_plus_platform_interface:
+    dependency: transitive
+    description:
+      name: share_plus_platform_interface
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "3.0.3"
+  share_plus_web:
+    dependency: transitive
+    description:
+      name: share_plus_web
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "3.0.1"
+  share_plus_windows:
+    dependency: transitive
+    description:
+      name: share_plus_windows
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "3.0.1"
   shared_preferences:
     dependency: "direct main"
     description:
@@ -1134,13 +1162,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.1.0"
-  synchronized:
-    dependency: transitive
-    description:
-      name: synchronized
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "3.0.0+2"
   term_glyph:
     dependency: transitive
     description:
@@ -1295,6 +1316,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.10"
+  video_thumbnail:
+    dependency: "direct main"
+    description:
+      name: video_thumbnail
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.5.0"
   vm_service:
     dependency: transitive
     description:
@@ -1302,6 +1330,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "8.3.0"
+  wallpaper_manager_flutter:
+    dependency: "direct main"
+    description:
+      name: wallpaper_manager_flutter
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.0.2"
   watcher:
     dependency: transitive
     description:

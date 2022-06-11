@@ -265,7 +265,7 @@ class AddTaskScreen extends StatelessWidget {
                     .addBoardData(
                   m.BoardData(
                     position: BoxOfBoardData.getBoardData().length,
-                    data: latesttodo!.todo,
+                    data: '${latesttodo!.todo}:${latesttodo.key}',
                     isDone: false,
                     type: 'todo',
                   ),
@@ -310,7 +310,7 @@ class AddTaskScreen extends StatelessWidget {
         onDoubleTap: () {
           isDone = true;
           boxoftodos.delete(index);
-          pinnedWidgets!.removeAt(pinnedWidgetIndex);
+          //pinnedWidgets!.removeAt(pinnedWidgetIndex);
         },
       );
 }
