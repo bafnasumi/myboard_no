@@ -143,11 +143,7 @@ class _QuotesState extends State<Quotes> {
                               .addBoardData(
                             m.BoardData(
                               position: BoxOfBoardData.getBoardData().length,
-
                               data: quotesList[index1][kQuote],
-                              // data:
-                              //     'quote data - problem in quoteesList[index1]',
-
                               isDone: false,
                               type: 'quote',
                             ),
