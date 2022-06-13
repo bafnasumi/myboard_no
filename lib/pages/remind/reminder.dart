@@ -161,6 +161,7 @@ class _ReminderState extends State<Reminder> {
         : Consumer<ReminderController>(builder: (context, reminderData, child) {
             return ListView.builder(
               reverse: true,
+              shrinkWrap: true,
               padding: EdgeInsets.all(8),
               itemCount: boxofreminders.length,
               itemBuilder: (BuildContext context, int index) {

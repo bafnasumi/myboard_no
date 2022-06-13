@@ -3,10 +3,12 @@
 import 'dart:ffi';
 
 import 'package:flutter/material.dart';
+import 'package:myboardapp/boxes.dart';
 import 'package:myboardapp/pages/boardState.dart';
 import 'package:provider/provider.dart';
+import 'package:myboardapp/models/myboard.dart' as m;
 
-var imglink = '';
+// var imglink;
 
 class Background extends StatelessWidget {
   const Background({Key? key}) : super(key: key);
@@ -115,7 +117,7 @@ class GridBox extends StatefulWidget {
 class _GridBoxState extends State<GridBox> {
   @override
   Widget build(BuildContext context) {
-    var imageController = Provider.of<BackgroundController>(widget.mycontext);
+    // var imageController = Provider.of<BackgroundController>(widget.mycontext);
 
     return Container(
       height: 175,
@@ -127,9 +129,13 @@ class _GridBoxState extends State<GridBox> {
       child: GestureDetector(
         onTap: () {
           setState(() {
-            imageController.setImage(widget.link);
-            imglink = widget.link;
+            Provider.of<BackgroundController>(context, listen: false)
+                .setImage(widget.link);
+            // imageController.addImage(widget.link);
+            // imglink = widget.link;
           });
+          var boxofbackgroundimage = BoxOfBackgroundImage.getBgImage();
+          print(boxofbackgroundimage.values);
 
           Navigator.pushNamed(context, '/homepage');
 
@@ -195,31 +201,37 @@ class _GridBoxState extends State<GridBox> {
 //   }
 // }
 
-//var boxoftodos = BoxOfToDos.getToDos();
+var boxofbackgroundimage = BoxOfBackgroundImage.getBgImage();
 
 // TASK DATA
 class BackgroundController with ChangeNotifier {
-  late String imgLink;
+  late m.BackgroundImage imgLink;
 
   BackgroundController() {
-    imgLink =
-        'https://media.navyasfashion.com/catalog/product/cache/184a226590f48e7f268fa34c124ed9e1/_/d/_dsc0087.jpg';
+    imgLink = m.BackgroundImage(
+        imgurl:
+            'https://media.navyasfashion.com/catalog/product/cache/184a226590f48e7f268fa34c124ed9e1/_/d/_dsc0087.jpg');
   }
 
 //getters
-  String get newImage => imgLink;
+  m.BackgroundImage get newImage => imgLink;
 
 //setters
-  void setImage(String newImage) {
-    imgLink = newImage;
+  void setImage(String newImagelink) {
+    imgLink.imgurl = newImagelink;
     notifyListeners();
   }
 
-  // void addToDo(String todo) {
-  //   // boxodtodos = BoxOfToDos.getToDos();
-  //   boxoftodos.add(todo);
-  //   notifyListeners();
-  // }
+  String? getImage() {
+    return imgLink.imgurl;
+    // notifyListeners();
+  }
+
+  void addImage(String imageurl) {
+    // boxodtodos = BoxOfToDos.getToDos();
+    boxofbackgroundimage.add(m.BackgroundImage(imgurl: imageurl));
+    notifyListeners();
+  }
 
   // void removeToDo(int todoKey) {
   //   boxoftodos = BoxOfToDos.getToDos();
@@ -227,9 +239,9 @@ class BackgroundController with ChangeNotifier {
   //   notifyListeners();
   // }
 
-  // void emptyToDo() async {
-  //   boxoftodos = BoxOfToDos.getToDos();
-  //   await boxoftodos.clear();
-  //   notifyListeners();
-  // }
+  void emptyToDo() async {
+    boxofbackgroundimage = BoxOfBackgroundImage.getBgImage();
+    await boxofbackgroundimage.clear();
+    notifyListeners();
+  }
 }

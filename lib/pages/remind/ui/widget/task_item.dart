@@ -61,13 +61,13 @@ class TaskItem extends StatelessWidget {
                                     fontSize: 13,
                                   ),
                             ),
-                            Text(
-                              '${task.endTime!}',
-                              style: CustomTextTheme().body2Style.copyWith(
-                                    color: Colors.white,
-                                    fontSize: 13,
-                                  ),
-                            ),
+                            // Text(
+                            //   '${task.endTime!}',
+                            //   style: CustomTextTheme().body2Style.copyWith(
+                            //         color: Colors.white,
+                            //         fontSize: 13,
+                            //       ),
+                            // ),
                           ],
                         ),
                       ],

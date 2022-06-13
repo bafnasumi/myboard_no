@@ -154,11 +154,11 @@ class VoiceToText extends HiveObject with ChangeNotifier {
 }
 
 @HiveType(typeId: 8)
-class PinnedWidgets extends HiveObject with ChangeNotifier {
+class BackgroundImage extends HiveObject with ChangeNotifier {
   @HiveField(0)
-  late String? text;
+  late String? imgurl;
 
-  PinnedWidgets({this.text});
+  BackgroundImage({this.imgurl});
 }
 
 @HiveType(typeId: 10)

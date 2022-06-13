@@ -3,12 +3,13 @@
 // // ignore_for_file: prefer_const_constructors
 //
 //USING AUDIO_WAVEFORMS
-// ignore_for_file: prefer_const_constructors
+// ignore_for_file: prefer_const_constructors, unused_local_variable
 
 import 'package:audio_waveforms/audio_waveforms.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:myboardapp/boxes.dart';
 import 'package:myboardapp/pages/boardState.dart';
+import 'package:myboardapp/pages/homepage.dart';
 import 'package:provider/provider.dart';
 
 import '../models/myboard.dart' as m;
@@ -90,147 +91,310 @@ class _MyAudioState extends State<MyAudio> {
         iconTheme: IconThemeData(color: Colors.black),
       ),
       body: Center(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          // mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            SizedBox(
-              height: 40,
-            ),
-            Container(
-              height: MediaQuery.of(context).size.height * 0.3,
-              width: MediaQuery.of(context).size.width * 0.7,
-              decoration: BoxDecoration(
-                color: Colors.grey.shade400,
-                borderRadius: BorderRadius.circular(20.0),
-              ),
-              child: AudioWaveforms(
-                size: Size(MediaQuery.of(context).size.width, 200.0),
-                recorderController: recorderController,
-              ),
-            ),
-            SizedBox(
-              height: 30,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                IconButton(
-                  disabledColor: Colors.grey,
-                  onPressed: !_isRecorded
-                      ? () async {
-                          !_isRecording
-                              ? await recorderController.record()
-                              : ScaffoldMessenger.of(context)
-                                  .showSnackBar(mysnackbar);
-                          setState(
-                            () {
-                              _isRecording = true;
-                            },
-                          );
-                        }
-                      : null,
-                  icon: Icon(
-                    Icons.mic,
-                    color: Colors.red,
+        child: !_isRecorded
+            ? Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                // mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SizedBox(
+                    height: 40,
                   ),
-                ),
-                SizedBox(
-                  height: 10,
-                ),
-                // IconButton(
-                //   onPressed: () async {
-                //     // _isRecordPause?
-                //     await recorderController.pause();
-                //     _isRecordPause = true;
-                //   },
-                //   icon: Icon(
-                //     _isRecordPause ? Icons.play_arrow : Icons.pause,
-                //   ),
-                // ),
-                _isRecording
-                    ? IconButton(
-                        disabledColor: Colors.grey,
-                        onPressed: !_isRecorded
-                            ? () async {
-                                path = await recorderController.stop();
-                                await playerController.preparePlayer(path);
-
-                                var boxofboarddata =
-                                    BoxOfBoardData.getBoardData();
-                                boxofboarddata.add(
-                                  m.BoardData(
-                                    data: path,
-                                    position: boxofboarddata.length,
-                                    type: 'audio',
-                                  ),
-                                );
-
-                                setState(() {
-                                  _isRecorded = true;
-                                  _isRecording = false;
-                                });
-                              }
-                            : null,
-                        icon: Icon(
-                          Icons.stop,
-                          color: Colors.red,
-                        ),
-                      )
-                    : Container(),
-              ],
-            ),
-            _isRecorded
-                ? Column(
+                  Container(
+                    height: MediaQuery.of(context).size.height * 0.3,
+                    width: MediaQuery.of(context).size.width * 0.7,
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade400,
+                      borderRadius: BorderRadius.circular(20.0),
+                    ),
+                    child: AudioWaveforms(
+                      size: Size(
+                        MediaQuery.of(context).size.height * 0.3,
+                        MediaQuery.of(context).size.width * 0.7,
+                      ),
+                      recorderController: recorderController,
+                    ),
+                  ),
+                  SizedBox(
+                    height: 40,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
+                      Container(
+                        height: 60,
+                        width: 60,
+                        decoration: BoxDecoration(
+                          color: Colors.red,
+                          shape: BoxShape.rectangle,
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: IconButton(
+                          disabledColor: Colors.grey,
+                          onPressed: !_isRecorded
+                              ? () async {
+                                  !_isRecording
+                                      ? await recorderController.record()
+                                      : ScaffoldMessenger.of(context)
+                                          .showSnackBar(mysnackbar);
+                                  setState(
+                                    () {
+                                      _isRecording = true;
+                                    },
+                                  );
+                                }
+                              : null,
+                          icon: Icon(
+                            Icons.mic,
+                            color: Colors.white,
+                            size: 35,
+                          ),
+                        ),
+                      ),
+                      SizedBox(
+                        width: 12,
+                      ),
                       // IconButton(
                       //   onPressed: () async {
-                      //     await playerController.preparePlayer(path);
+                      //     // _isRecordPause?
+                      //     await recorderController.pause();
+                      //     _isRecordPause = true;
                       //   },
                       //   icon: Icon(
-                      //     Icons.color_lens,
+                      //     _isRecordPause ? Icons.play_arrow : Icons.pause,
                       //   ),
                       // ),
+                      // _isRecording
+                      //     ?
+
                       Container(
+                        height: 60,
+                        width: 60,
                         decoration: BoxDecoration(
-                          color: Colors.grey.shade400,
-                          borderRadius: BorderRadius.circular(20.0),
+                          color: Colors.red,
+                          shape: BoxShape.rectangle,
+                          borderRadius: BorderRadius.circular(20),
                         ),
-                        child: AudioFileWaveforms(
-                          size: Size(
-                            MediaQuery.of(context).size.width * 0.7,
-                            100.0,
+                        child: IconButton(
+                          // disabledColor: Colors.grey,
+                          onPressed: () async {
+                            path = await recorderController.stop();
+                            await playerController.preparePlayer(path);
+
+                            // var boxofboarddata =
+                            //     BoxOfBoardData.getBoardData();
+                            // boxofboarddata.add(
+                            //   m.BoardData(
+                            //     data: path,
+                            //     position: boxofboarddata.length,
+                            //     type: 'audio',
+                            //   ),
+                            // );
+
+                            setState(() {
+                              _isRecorded = true;
+                              _isRecording = false;
+                            });
+                          },
+
+                          icon: Icon(
+                            Icons.stop,
+                            color: Colors.white,
+                            size: 35,
                           ),
-                          playerController: playerController,
                         ),
-                      ),
-                      IconButton(
-                        onPressed: () async {
-                          await playerController.startPlayer();
-                        },
-                        icon: Icon(Icons.play_arrow),
-                      ),
-                      IconButton(
-                        onPressed: () async {
-                          await playerController.stopPlayer();
-                          setState(() {
-                            _isRecorded = false;
-                            _isRecording = false;
-                          });
-                        },
-                        icon: Icon(Icons.stop),
-                      ),
+                      )
+                      // : Container(),
                     ],
-                  )
-                : SizedBox(
-                    width: 1,
                   ),
-          ],
-        ),
+                ],
+              )
+            : Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                // mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  // IconButton(
+                  //   onPressed: () async {
+                  //     await playerController.preparePlayer(path);
+                  //   },
+                  //   icon: Icon(
+                  //     Icons.color_lens,
+                  //   ),
+                  // ),
+
+                  SizedBox(
+                    height: 40,
+                  ),
+                  Container(
+                    height: MediaQuery.of(context).size.height * 0.3,
+                    width: MediaQuery.of(context).size.width * 0.7,
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade400,
+                      borderRadius: BorderRadius.circular(20.0),
+                    ),
+                    child: AudioFileWaveforms(
+                      size: Size(
+                        MediaQuery.of(context).size.height * 0.3,
+                        MediaQuery.of(context).size.width * 0.7,
+                      ),
+                      playerController: playerController,
+                    ),
+                  ),
+                  SizedBox(
+                    height: 40,
+                  ),
+                  Center(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                          height: 60,
+                          width: 60,
+                          decoration: BoxDecoration(
+                            color: Colors.red,
+                            shape: BoxShape.rectangle,
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: IconButton(
+                            onPressed: () async {
+                              await playerController.startPlayer();
+                            },
+                            icon: Icon(
+                              Icons.play_arrow,
+                              color: Colors.white,
+                              size: 35,
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                          width: 12,
+                        ),
+                        Container(
+                          height: 60,
+                          width: 60,
+                          decoration: BoxDecoration(
+                            color: Colors.red,
+                            shape: BoxShape.rectangle,
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: IconButton(
+                            onPressed: () async {
+                              await playerController.stopPlayer();
+
+                              setState(() {
+                                _isRecorded = false;
+                                _isRecording = false;
+                              });
+                            },
+                            icon: Icon(
+                              Icons.delete,
+                              color: Colors.white,
+                              size: 30,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
+
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.32,
+                    height: MediaQuery.of(context).size.width * 0.12,
+                    child: TextButton(
+                      style: ElevatedButton.styleFrom(
+                        primary: Color.fromARGB(255, 10, 75, 107),
+                      ),
+                      onPressed: () async {
+                        await playerController.stopPlayer();
+                        // setState(() {
+                        //   // _isRecorded = false;
+                        //   _isRecording = false;
+                        // });
+                        var boxofboarddata = BoxOfBoardData.getBoardData();
+                        var boxofaudio = BoxOfAudios.getAudios();
+                        Provider.of<BoardStateController>(context,
+                                listen: false)
+                            .addBoardData(
+                          m.BoardData(
+                            data: path,
+                            position: boxofboarddata.length,
+                            type: 'audio',
+                          ),
+                        );
+                        Provider.of<AudioController>(context, listen: false)
+                            .addAudio(
+                          m.Audio(
+                            audiosource: path,
+                          ),
+                        );
+
+                        // setState(() {});
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: ((context) => HomePage()),
+                          ),
+                        );
+                        _isRecorded = false;
+                      },
+                      child: Text(
+                        'Pin to Board',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
       ),
     ));
   }
 }
+
+var boxofaudio = BoxOfAudios.getAudios();
+
+// TASK DATA
+class AudioController with ChangeNotifier {
+  late m.Audio _audio;
+
+  AudioController() {
+    _audio = m.Audio(
+      audiosource: '_',
+    );
+  }
+
+//getters
+  m.Audio get audio => _audio;
+
+//setters
+  void setAudio(m.Audio audio) {
+    _audio = audio;
+    notifyListeners();
+  }
+
+  void addAudio(m.Audio audio) {
+    // boxodtodos = BoxOfToDos.getToDos();
+    boxofaudio.add(audio);
+    notifyListeners();
+  }
+
+  void removeAudio(int audioKey) {
+    boxofaudio = BoxOfAudios.getAudios();
+    boxofaudio.delete(audioKey);
+    notifyListeners();
+  }
+
+  void emptyAudio() async {
+    boxofaudio = BoxOfAudios.getAudios();
+    await boxofaudio.clear();
+    notifyListeners();
+  }
+}
+
+
+
+
 
 //
 //

@@ -67,6 +67,7 @@ Future main() async {
   Hive.registerAdapter(m.VoiceToTextAdapter());
   Hive.registerAdapter(m.TextAdapter());
   Hive.registerAdapter(m.BoardDataAdapter());
+  Hive.registerAdapter(m.BackgroundImageAdapter());
 
   await Hive.openBox<m.Images>('images');
   await Hive.openBox<m.Link>('links');
@@ -77,6 +78,7 @@ Future main() async {
   await Hive.openBox<m.VoiceToText>('voicetotext');
   await Hive.openBox<m.Text>('text');
   await Hive.openBox<m.BoardData>('boarddata');
+  await Hive.openBox<m.BackgroundImage>('backgroundimage');
 
   await Firebase.initializeApp();
   // await AndroidAlarmManager.initialize();
@@ -93,8 +95,8 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   //final gridviewKey = GlobalKey<_MyAppState>();
-  String myImglink = '';
-  late SharedPreferences preferences;
+  // String myImglink = '';
+  // late SharedPreferences preferences;
 
   @override
   void dispose() {
@@ -102,9 +104,9 @@ class _MyAppState extends State<MyApp> {
     super.dispose();
   }
 
-  Future init() async {
-    preferences = await SharedPreferences.getInstance();
-  }
+  // Future init() async {
+  //   // preferences = await SharedPreferences.getInstance();
+  // }
 
   @override
   void initState() {
@@ -700,6 +702,9 @@ class _MyAppState extends State<MyApp> {
         ),
         ChangeNotifierProvider(
           create: (context) => ImageController(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => AudioController(),
         ),
       ],
       child: GetMaterialApp(

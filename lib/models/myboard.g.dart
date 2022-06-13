@@ -308,27 +308,27 @@ class VoiceToTextAdapter extends TypeAdapter<VoiceToText> {
           typeId == other.typeId;
 }
 
-class PinnedWidgetsAdapter extends TypeAdapter<PinnedWidgets> {
+class BackgroundImageAdapter extends TypeAdapter<BackgroundImage> {
   @override
   final int typeId = 8;
 
   @override
-  PinnedWidgets read(BinaryReader reader) {
+  BackgroundImage read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return PinnedWidgets(
-      text: fields[0] as String?,
+    return BackgroundImage(
+      imgurl: fields[0] as String?,
     );
   }
 
   @override
-  void write(BinaryWriter writer, PinnedWidgets obj) {
+  void write(BinaryWriter writer, BackgroundImage obj) {
     writer
       ..writeByte(1)
       ..writeByte(0)
-      ..write(obj.text);
+      ..write(obj.imgurl);
   }
 
   @override
@@ -337,7 +337,7 @@ class PinnedWidgetsAdapter extends TypeAdapter<PinnedWidgets> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is PinnedWidgetsAdapter &&
+      other is BackgroundImageAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }

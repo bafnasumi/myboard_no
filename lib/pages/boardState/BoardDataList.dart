@@ -6,7 +6,8 @@ import 'dart:io';
 
 // import 'package:audioplayers/audioplayers.dart';
 import 'package:audio_waveforms/audio_waveforms.dart';
-import 'package:audioplayers/audioplayers.dart';
+import 'package:audioplayers/audioplayers.dart' as audi;
+import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 // import 'package:flutter/rendering.dart';
@@ -93,9 +94,10 @@ class BoardTile extends StatefulWidget {
 }
 
 class BboardTileState extends State<BoardTile> {
-  bool isPause = false;
+  bool isPause = true;
   bool startonce = false;
   bool _repeated = false;
+  bool isStop = false;
 
   @override
   Widget build(BuildContext context) {
@@ -683,7 +685,7 @@ class BboardTileState extends State<BoardTile> {
           //   crossAxisCellCount: 2,
           //   mainAxisCellCount: 1,
           //return PinnedToDo(widget.boarddata!.data!, 0, 0);
-          AudioPlayer audioPlayer = AudioPlayer();
+          // audi.AudioPlayer audioPlayer = audi.AudioPlayer();
           TimerController timerController = TimerController();
           final PlayerController playerController = PlayerController();
           var timercontroller = TimerWidget(controller: timerController);
@@ -698,10 +700,41 @@ class BboardTileState extends State<BoardTile> {
           //var myduration = getDuration(widget.boarddata!.data!, audioPlayer);
           //var duration = await audioPlayer.setUrl('file.mp3');
           return InkWell(
+            onTap: () async {
+              // if (startonce) {
+              //   audioPlayer.play(widget.boarddata!.data!, isLocal: true);
+              // }
+              // !isPause ? audioPlayer.resume() : audioPlayer.pause();
+              // startonce = true;
+              // setState(() {
+              //   isPause = (isPause == true) ? false : true;
+              // });
+              await playerController.preparePlayer(widget.boarddata!.data!);
+              await playerController.startPlayer();
+              setState(() {
+                isPause = (isPause == true) ? false : true;
+              });
+              // audioPlayer.onPlayerCompletion.listen((event) {
+              //   onComplete();
+              //   setState(() {
+              //     position = duration;
+              //   });
+              // });
+              if (playerController.playerState == PlayerState.stopped) {
+                // audioPlayer.onPlayerCompletion.listen((event) {
+                setState(() {
+                  isStop = true;
+                  isPause = true;
+                });
+                // });
+              }
+            },
             child: Stack(
-              alignment: Alignment.center,
+              alignment: Alignment.topCenter,
               children: [
-                // FutureBuilder<int>(
+                Column(
+                  children: [
+                    // FutureBuilder<int>(
 //                     future: getDuration(widget.boarddata!.data!, audioPlayer),
 //                     builder: (context, snapshot) {
 //                       // print(snapshot.data);
@@ -750,44 +783,101 @@ class BboardTileState extends State<BoardTile> {
 //                         );
 //                       }
 
-                // SizedBox(
-                //   // height: 10,
-                //   width: 6,
-                // ),
-                Container(
-                  decoration: BoxDecoration(
-                    color: Colors.grey.shade400,
-                    borderRadius: BorderRadius.circular(20.0),
-                  ),
-                  child: AudioFileWaveforms(
-                    size: Size(
-                      MediaQuery.of(context).size.width * 0.25,
-                      MediaQuery.of(context).size.height * 0.12,
+                    // SizedBox(
+                    //   // height: 10,
+                    //   width: 6,
+                    // ),
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.grey.shade400,
+                        borderRadius: BorderRadius.only(
+                          // topLeft: Radius.circular(10),
+                          topRight: Radius.circular(10),
+                        ),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Icon(
+                          isPause ? Icons.play_arrow : Icons.pause,
+                          size: 40,
+                          color: Colors.white,
+                        ),
+                      ),
                     ),
-                    playerController: playerController,
-                  ),
+                    // Text(
+                    //   'collapsed',
+                    //   softWrap: true,
+                    //   maxLines: 2,
+                    //   style: TextStyle(color: Colors.transparent),
+                    //   overflow: TextOverflow.ellipsis,
+                    // ),
+                    Container(
+                      height: 30,
+                      decoration: BoxDecoration(
+                        color: Colors.grey.shade400,
+                        // borderRadius: BorderRadius.circular(20.0),
+                      ),
+                      child: AudioFileWaveforms(
+                        size: Size(
+                          MediaQuery.of(context).size.width * 0.25,
+                          MediaQuery.of(context).size.height * 0.12,
+                        ),
+                        playerController: playerController,
+                      ),
+                    ),
+                    // tapHeaderToExpand: true,
+                    // hasIcon: true,
+                  ],
                 ),
-                Icon(
-                  !isPause ? Icons.play_arrow : Icons.pause,
-                  size: 40,
-                  color: Colors.white,
+                Image.asset(
+                  'assets/images/pin.png',
+                  width: 13,
+                  height: 13,
                 ),
               ],
             ),
-            onTap: () async {
-              // if (startonce) {
-              //   audioPlayer.play(widget.boarddata!.data!, isLocal: true);
-              // }
-              // !isPause ? audioPlayer.resume() : audioPlayer.pause();
-              // startonce = true;
+            onDoubleTap: () {
+              // var boxofboarddata = BoxOfBoardData.getBoardData();
               // setState(() {
-              //   isPause = (isPause == true) ? false : true;
+              //   boxofboarddata.delete();
               // });
-              await playerController.preparePlayer(widget.boarddata!.data!);
-              await playerController.startPlayer();
-              setState(() {
-                isPause = (isPause == true) ? false : true;
-              });
+              // set up the AlertDialog
+
+              var alert = AlertDialog(
+                title: Text("Do you want really want to delete it?"),
+                //content: Text("You won't be able to "),
+                actions: [
+                  TextButton(
+                    child: Text("Cancel"),
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                  ),
+                  TextButton(
+                    child: Text("Yes, delete"),
+                    onPressed: () {
+                      var boardcontroller = Provider.of<BoardStateController>(
+                        context,
+                        listen: false,
+                      );
+                      boardcontroller.removeBoardData(widget.boarddata!.key);
+                      // var todocontroller = Provider.of<TaskController>(
+                      //   context,
+                      //   listen: false,
+                      // );
+                      // todocontroller.removeToDo(int.parse(allData[1]));
+                      setState(() {});
+                      Navigator.pop(context);
+                    },
+                  ),
+                ],
+              );
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return alert;
+                },
+              );
             },
           );
           // );
@@ -1001,7 +1091,7 @@ class BboardTileState extends State<BoardTile> {
   }
 }
 
-Future<int> getDuration(String s, AudioPlayer audioPlayer) async {
+Future<int> getDuration(String s, audi.AudioPlayer audioPlayer) async {
   int duration = await audioPlayer.setUrl(s);
   return duration;
 }

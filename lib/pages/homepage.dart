@@ -33,11 +33,13 @@ import 'package:provider/provider.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:pinningtrialpackage/pinningtrialpackage.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wallpaper_manager_flutter/wallpaper_manager_flutter.dart';
 import '../components/innerShadow.dart';
 import '../components/round_image_button.dart';
 import 'package:myboardapp/models/myboard.dart' as db;
 import 'package:myboardapp/models/myboard.dart' as m;
+import 'audio.dart';
 import 'boardState.dart';
 import 'boardState/BoardDataList.dart';
 import 'todo.dart';
@@ -59,30 +61,22 @@ class _HomePageState extends State<HomePage> {
   late final StackBoardController _boardController;
   Color trialcolor = Colors.lightGreenAccent;
 
-  double screenHeight() {
-    return MediaQuery.of(context).size.height;
-  }
-
-  double screenWidth() {
-    return MediaQuery.of(context).size.width;
-  }
-
   //list of widgets
 
   //Screenshot controller
   final screenshotController = ScreenshotController();
   final gridviewcontroller = ScrollController();
 
-  Future _checkConnection() async {
-    final arguments = {'sumi': 'flutter'};
-    try {
-      int batterylevel =
-          await batteryChannel.invokeMethod('isConnected', arguments);
-      setState(() => batterylevel = newbatterylevel);
-    } on PlatformException catch (e) {
-      print(e);
-    }
-  }
+  // Future _checkConnection() async {
+  //   final arguments = {'sumi': 'flutter'};
+  //   try {
+  //     int batterylevel =
+  //         await batteryChannel.invokeMethod('isConnected', arguments);
+  //     setState(() => batterylevel = newbatterylevel);
+  //   } on PlatformException catch (e) {
+  //     print(e);
+  //   }
+  // }
 
   var box;
   ValueNotifier<db.Images> myImages = ValueNotifier<db.Images>(db.Images());
@@ -143,9 +137,32 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    double screenHeight() {
+      return MediaQuery.of(context).size.height;
+    }
+
+    double screenWidth() {
+      return MediaQuery.of(context).size.width;
+    }
+
+    Future<String?> getStringFromSharedPref() async {
+      final prefs = await SharedPreferences.getInstance();
+      return prefs.getString('imgurl');
+    }
+
     BackgroundController imageController =
         Provider.of<BackgroundController>(context, listen: false);
     var scaffoldKey;
+    final box = BoxOfBackgroundImage.getBgImage();
+    box.add(m.BackgroundImage(
+        imgurl:
+            'https://media.navyasfashion.com/catalog/product/cache/184a226590f48e7f268fa34c124ed9e1/_/d/_dsc0087.jpg'));
+    var latestImage = box.getAt(box.length > 0 ? box.length - 1 : 0);
+
+    // var imgPath = latestImage!.imgurl;
+    // var imgPath = imageController.imgLink;
+    // var myimage = imgPath
+
     // var boardprovider = Provider.of<BoardStateController>(context);
     var boxofboarddata = BoxOfBoardData.getBoardData();
     Key containerKey;
@@ -327,39 +344,45 @@ class _HomePageState extends State<HomePage> {
               //   height: MediaQuery.of(context).size.height,
               //   width: MediaQuery.of(context).size.width,
               // ),
-              Container(
-                // key: containerKey,
-                // decoration: imglink.isNotEmpty ? networkimg : localimg,
-                decoration: BoxDecoration(
-                  boxShadow: [
-                    // BoxShadow(
-                    //   color: your_shadow_color,
-                    // ),
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.5),
-                      spreadRadius: 3.0,
-                      blurRadius: 3.0,
-                      offset: Offset(
-                        2.0,
-                        2.0,
+              Consumer<BackgroundController>(
+                builder: ((context, value, child) {
+                  return Container(
+                    // key: containerKey,
+                    // decoration: imglink.isNotEmpty ? networkimg : localimg,
+                    decoration: BoxDecoration(
+                      boxShadow: [
+                        // BoxShadow(
+                        //   color: your_shadow_color,
+                        // ),
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.5),
+                          spreadRadius: 3.0,
+                          blurRadius: 3.0,
+                          offset: Offset(
+                            2.0,
+                            2.0,
+                          ),
+                        ),
+                      ],
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(
+                        color: Colors.black.withOpacity(0.5),
+                        width: 8.0,
+                      ),
+                      image: DecorationImage(
+                        image: NetworkImage(value.imgLink.imgurl ??
+                            'https://media.navyasfashion.com/catalog/product/cache/184a226590f48e7f268fa34c124ed9e1/_/d/_dsc0087.jpg'),
+                        fit: BoxFit.cover,
                       ),
                     ),
-                  ],
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(
-                    color: Colors.black.withOpacity(0.5),
-                    width: 8.0,
-                  ),
-                  image: DecorationImage(
-                    image: NetworkImage(imageController!.imgLink),
-                    fit: BoxFit.cover,
-                  ),
-                ),
-                height: MediaQuery.of(context).size.height! * 0.65,
-                width: MediaQuery.of(context).size.width! * 0.9,
-                child:
-                    BoardDataList(), ////******************************************************** */
+                    height: MediaQuery.of(context).size.height * 0.65,
+                    width: MediaQuery.of(context).size.width * 0.9,
+                    child:
+                        BoardDataList(), ////****************************************************BOARD DATA LIST**** */
+                  );
+                }),
               ),
+
 // StaggeredGrid.count(
 //                         //staggeredTileBuilder: (index) => StaggeredTile.fit(2),
 //                         mainAxisSpacing: 2,
@@ -675,7 +698,10 @@ class _HomePageState extends State<HomePage> {
                                 'Audio',
                                 'assets/images/audio_new.png',
                                 () {
-                                  Navigator.pushNamed(context, '/audio');
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => MyAudio()));
                                 },
                               ),
 
@@ -1048,7 +1074,7 @@ class _boardState extends State<board> {
             width: 8.0,
           ),
           image: DecorationImage(
-            image: NetworkImage(widget.imageController!.imgLink),
+            image: NetworkImage(widget.imageController!.imgLink.imgurl!),
             fit: BoxFit.cover,
           ),
         ),
@@ -1090,53 +1116,53 @@ void openFile(File file) {
   );
 }
 
-var localimg = BoxDecoration(
-  image: DecorationImage(
-      // image: NetworkImage(
-      //   'https://media.istockphoto.com/photos/blue-color-velvet-texture-background-picture-id587220352?b=1&k=20&m=587220352&s=170667a&w=0&h=aznCAcatYJ2kORIffDkNOVD3QWezdkd-d-X8Ms9DCss=',
-      // ),
-      image: ExactAssetImage('assets/images/board.jpg'),
-      fit: BoxFit.cover),
-  boxShadow: [
-    BoxShadow(
-      color: Colors.black87,
-      spreadRadius: 2.0,
-      blurRadius: 3.0,
-      offset: Offset(
-        2.0,
-        2.0,
-      ),
-    )
-  ],
-  border: Border.all(
-    color: Colors.black38,
-    width: 9.0,
-  ),
-  borderRadius: BorderRadius.circular(20.0),
-  color: Colors.blue,
-);
+// var localimg = BoxDecoration(
+//   image: DecorationImage(
+//       // image: NetworkImage(
+//       //   'https://media.istockphoto.com/photos/blue-color-velvet-texture-background-picture-id587220352?b=1&k=20&m=587220352&s=170667a&w=0&h=aznCAcatYJ2kORIffDkNOVD3QWezdkd-d-X8Ms9DCss=',
+//       // ),
+//       image: ExactAssetImage('assets/images/board.jpg'),
+//       fit: BoxFit.cover),
+//   boxShadow: [
+//     BoxShadow(
+//       color: Colors.black87,
+//       spreadRadius: 2.0,
+//       blurRadius: 3.0,
+//       offset: Offset(
+//         2.0,
+//         2.0,
+//       ),
+//     )
+//   ],
+//   border: Border.all(
+//     color: Colors.black38,
+//     width: 9.0,
+//   ),
+//   borderRadius: BorderRadius.circular(20.0),
+//   color: Colors.blue,
+// );
 
-var networkimg = BoxDecoration(
-  image: DecorationImage(
-      image: NetworkImage(
-        'https://media.navyasfashion.com/catalog/product/cache/184a226590f48e7f268fa34c124ed9e1/_/d/_dsc0087.jpg',
-      ),
-      fit: BoxFit.cover),
-  boxShadow: [
-    BoxShadow(
-      color: Colors.black87,
-      spreadRadius: 2.0,
-      blurRadius: 3.0,
-      offset: Offset(
-        2.0,
-        2.0,
-      ),
-    )
-  ],
-  border: Border.all(
-    color: Colors.black38,
-    width: 9.0,
-  ),
-  borderRadius: BorderRadius.circular(20.0),
-  color: Colors.blue,
-);
+// var networkimg = BoxDecoration(
+//   image: DecorationImage(
+//       image: NetworkImage(
+        
+//       ),
+//       fit: BoxFit.cover),
+//   boxShadow: [
+//     BoxShadow(
+//       color: Colors.black87,
+//       spreadRadius: 2.0,
+//       blurRadius: 3.0,
+//       offset: Offset(
+//         2.0,
+//         2.0,
+//       ),
+//     )
+//   ],
+//   border: Border.all(
+//     color: Colors.black38,
+//     width: 9.0,
+//   ),
+//   borderRadius: BorderRadius.circular(20.0),
+//   color: Colors.blue,
+// );

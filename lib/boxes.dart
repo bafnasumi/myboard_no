@@ -38,3 +38,8 @@ class BoxOfText {
 class BoxOfBoardData {
   static Box<BoardData> getBoardData() => Hive.box<BoardData>('boarddata');
 }
+
+class BoxOfBackgroundImage {
+  static Box<BackgroundImage> getBgImage() =>
+      Hive.box<BackgroundImage>('backgroundimage');
+}

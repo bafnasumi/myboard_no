@@ -68,18 +68,23 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
   String _selectRepeats = 'None';
   ColorTaskType _selectColor = ColorTaskType.blue;
   TimeOfDay? _selectstarttime =
-      TimeOfDay.fromDateTime(DateTime.now().add(Duration(minutes: 10)));
-  TimeOfDay? _selectendtime;
-  String? hintText_startTime = DateFormat('hh:mm a')
-      .format(
-        DateTime.now().add(
-          Duration(minutes: 10),
-        ),
-      )
-      .toString();
+      // TimeOfDay.fromDateTime(DateTime.now().add(Duration(minutes: 10)));
+      TimeOfDay.fromDateTime(DateTime.now());
 
-  String? hintText_endTime =
+  TimeOfDay? _selectendtime;
+  // String? hintText_startTime = DateFormat('hh:mm a')
+  //     .format(
+  //       DateTime.now().add(
+  //         Duration(minutes: 10),
+  //       ),
+  //     )
+  //     .toString();
+
+  String? hintText_startTime =
       DateFormat('hh:mm a').format(DateTime.now()).toString();
+
+  // String? hintText_endTime =
+  //     DateFormat('hh:mm a').format(DateTime.now()).toString();
 
   final TextEditingController titleController = TextEditingController();
   final TextEditingController noteController = TextEditingController();
@@ -107,9 +112,12 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
 
   Future pickTime(BuildContext context) async {
     TimeOfDay initialTime = TimeOfDay(
-        hour: DateTime.now().hour, minute: DateTime.now().minute + 10);
+        // hour: DateTime.now().hour, minute: DateTime.now().minute + 10);
+        hour: DateTime.now().hour,
+        minute: DateTime.now().minute);
+
     final newtime =
-        await showTimePicker(context: context, initialTime: _selectstarttime!);
+        await showTimePicker(context: context, initialTime: initialTime!);
     setState(() {
       _selectstarttime = newtime;
     });
@@ -143,16 +151,16 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
     return str;
   }
 
-  Future pickEndTime(BuildContext context) async {
-    final initialTime = TimeOfDay(hour: 9, minute: 0);
-    final newendtime = await showTimePicker(
-        context: context, initialTime: _selectendtime ?? initialTime);
-    if (newendtime == null) return;
-    setState(() {
-      hintText_endTime = '${newendtime.hour}:${newendtime.minute}';
-    });
-    return hintText_endTime;
-  }
+  // Future pickEndTime(BuildContext context) async {
+  //   final initialTime = TimeOfDay(hour: 9, minute: 0);
+  //   final newendtime = await showTimePicker(
+  //       context: context, initialTime: _selectendtime ?? initialTime);
+  //   if (newendtime == null) return;
+  //   setState(() {
+  //     hintText_endTime = '${newendtime.hour}:${newendtime.minute}';
+  //   });
+  //   return hintText_endTime;
+  // }
 
   @override
   void initState() {
@@ -314,8 +322,9 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                       _selectDate!.month,
                       _selectDate!.day,
                       _selectstarttime!.hour,
-                      _selectstarttime!.minute - int.parse(_selectReminder),
+                      // _selectstarttime!.minute - int.parse(_selectReminder),
                       _selectstarttime!.minute,
+                      0,
                     );
 
                     if (_validateInput(_selectstarttime)) {
@@ -332,7 +341,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                             //color: colorController.text,
                             isCompleted: 0,
                             startTime: hintText_startTime,
-                            endTime: hintText_endTime,
+                            // endTime: hintText_endTime,
                             reminder: int.parse(_selectReminder),
                             //int.tryParse(reminderController.text) ?? 100,
                             repeat: _selectRepeats,
@@ -342,7 +351,12 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
 
                         final box = BoxOfReminders.getReminders();
                         final latestreminder = box.getAt(box.length - 1);
-                        var index = box.length - 1;
+                        var index = box.length > 0 ? box.length - 1 : 0;
+                        // if (box.length != 0) {
+                        //   var index = box.length - 1;
+                        // } else {
+                        //   var index = 0;
+                        // }
                         //print(pinnedWidgets!.length);
                         //int pinnedWidgetIndex = pinnedWidgets!.length;
 
@@ -433,15 +447,59 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                           Future.delayed(
                               Duration(
                                 days: daysBetween(
-                                    DateTime.now().add(Duration(minutes: 10)),
+                                    DateTime.now().add(Duration(minutes: 5)),
+                                    combinedDate),
+                              ), () {
+                            callback_for_alarm(
+                                combinedDate.subtract(
+                                  Duration(
+                                    minutes: int.parse(
+                                      _selectReminder,
+                                    ),
+                                  ),
+                                ),
+                                latestreminder!.title);
+                            print('Alarm unabled');
+                          });
+                          Future.delayed(
+                              Duration(
+                                days: daysBetween(
+                                    DateTime.now().add(Duration(minutes: 5)),
                                     combinedDate),
                               ), () {
                             callback_for_alarm(
                                 combinedDate, latestreminder!.title);
+                            print('Alarm unabled');
                           });
                         } else {
                           print('Alarm no unabled');
                         }
+                        print('outside future.delayed');
+                        Future.delayed(
+                            Duration(
+                              days: daysBetween(
+                                  DateTime.now().add(Duration(minutes: 5)),
+                                  combinedDate),
+                              hours: combinedDate.hour,
+                              minutes: combinedDate.minute,
+                              seconds: combinedDate.second,
+                            ), () {
+                          print('inside future.delayed');
+
+                          print(
+                              'BoxOfBoardData.getBoardData().length - 1 = ${BoxOfBoardData.getBoardData().length - 1}-----------Before');
+                          Provider.of<BoardStateController>(context,
+                                  listen: false)
+                              .removeBoardData(
+                                  BoxOfBoardData.getBoardData().length - 1);
+                          print(
+                              'BoxOfBoardData.getBoardData().length - 1 = ${BoxOfBoardData.getBoardData().length - 1} -------- After');
+                          print('reminder index before ============   $index');
+                          Provider.of<ReminderController>(context,
+                                  listen: false)
+                              .removeReminder(index);
+                          print('reminder index after ============   $index');
+                        });
 
                         // await AndroidAlarmManager.oneShotAt(
                         //     // combinedDate.subtract(
