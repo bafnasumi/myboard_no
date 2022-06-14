@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, avoid_print, non_constant_identifier_names
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, avoid_print, non_constant_identifier_names, dead_code
 
 import 'dart:io';
 // import 'dart:ui' as ui;
@@ -23,6 +23,7 @@ import 'package:provider/provider.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
 import '../../components/audio_widgets.dart';
 import '../boardState.dart';
+import '../links.dart';
 import '../video.dart';
 import 'package:myboardapp/models/myboard.dart' as m;
 import 'dart:math' as math;
@@ -411,7 +412,7 @@ class BboardTileState extends State<BoardTile> {
           );
           // );
         }
-        break;
+
       case 'link':
         {
           // return StaggeredGridTile.count(
@@ -424,10 +425,7 @@ class BboardTileState extends State<BoardTile> {
                 Container(
                   height: 50,
                   width: 110,
-                  decoration: BoxDecoration(
-                      // ignore: prefer_const_literals_to_create_immutables
-
-                      ),
+                  decoration: BoxDecoration(),
                   child: PinnedLink(widget.boarddata!.data!.split(':')[0],
                       widget.boarddata!.data!.split(':')[1], 0, 0, context),
                 ),
@@ -440,7 +438,7 @@ class BboardTileState extends State<BoardTile> {
               // ),
             ),
             onTap: () {
-              
+              launchUrl(url: widget.boarddata!.data!.split(':')[0]);
             },
             onLongPress: () {
               // var boxofboarddata = BoxOfBoardData.getBoardData();
@@ -486,7 +484,6 @@ class BboardTileState extends State<BoardTile> {
               );
             },
           );
-          break;
         }
       case 'voicetotext':
         {

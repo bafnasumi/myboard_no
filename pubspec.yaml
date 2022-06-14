@@ -119,6 +119,7 @@ dependencies:
   #wallpaper_manager: ^1.0.10
   wallpaper_manager_flutter: ^0.0.2
   share_plus: ^4.0.7
+  scribble: ^0.4.0
 
 
 
