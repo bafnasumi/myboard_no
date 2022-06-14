@@ -44,7 +44,61 @@ class NotificationApi {
         payload: payload,
       );
 
-  static Future showScheduledNotification({
+  static Future showScheduledNotification_onTime({
+    int id = 5,
+    String? title,
+    String? body,
+    String? payload,
+    required m.ReminderTask? latestreminder,
+    required int? remindBefore,
+  }) async {
+    List<String> starttime_in_int_in_24() {
+      if (latestreminder!.startTime!.substring(6) == 'AM') {
+        print(latestreminder!.startTime!.substring(0, 5).split(':'));
+        return latestreminder!.startTime!.substring(0, 5).split(':');
+      } else {
+        //var var_substring = latestreminder!.startTime!.substring(0)
+        var hour = int.parse(latestreminder!.startTime!.split(':')[0]);
+        var minute =
+        int.parse(latestreminder!.startTime!.split(':')[1].substring(0, 2));
+        hour = hour + 12;
+        print('hour from notification API');
+        print(hour.toString());
+        print('minute from notification API');
+
+        print(minute.toString());
+        return [hour.toString(), minute.toString()];
+      }
+    }
+
+    var var_starttime_in_int_in_24 = starttime_in_int_in_24();
+
+    var starttimein24 = latestreminder!.startTime!.substring(0, 5);
+    print(starttimein24);
+    DateTime scheduledDate = DateTime(
+      latestreminder!.date!.year,
+      latestreminder.date!.month,
+      latestreminder.date!.day,
+      int.parse(var_starttime_in_int_in_24[0]),
+      int.parse(var_starttime_in_int_in_24[1]),
+    );
+
+    print(
+        'from schedule notification funtion call ${scheduledDate.toString()}');
+    return _notifications.zonedSchedule(
+      id,
+      title,
+      body,
+      tz.TZDateTime.from(scheduledDate, tz.local),
+      await _notificationDetails(),
+      payload: payload,
+      androidAllowWhileIdle: true,
+      uiLocalNotificationDateInterpretation:
+      UILocalNotificationDateInterpretation.absoluteTime,
+    );
+  }
+
+  static Future showScheduledNotification_beforetime({
     int id = 5,
     String? title,
     String? body,
@@ -80,7 +134,7 @@ class NotificationApi {
       latestreminder.date!.month,
       latestreminder.date!.day,
       int.parse(var_starttime_in_int_in_24[0]),
-      int.parse(var_starttime_in_int_in_24[1]),
+      int.parse(var_starttime_in_int_in_24[1]) - remindBefore!,
     );
 
     print(

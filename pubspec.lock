@@ -398,13 +398,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.0.2"
-  flutter_audio_recorder2:
-    dependency: "direct main"
-    description:
-      name: flutter_audio_recorder2
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.0.2"
   flutter_blurhash:
     dependency: "direct main"
     description:
@@ -884,6 +877,20 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "5.0.0"
+  photo_view:
+    dependency: "direct main"
+    description:
+      name: photo_view
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.14.0"
+  pinch_zoom:
+    dependency: "direct main"
+    description:
+      name: pinch_zoom
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.0"
   pinningtrialpackage:
     dependency: "direct main"
     description:

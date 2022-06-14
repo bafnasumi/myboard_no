@@ -116,12 +116,13 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
         hour: DateTime.now().hour,
         minute: DateTime.now().minute);
 
-    final newtime =
-        await showTimePicker(context: context, initialTime: initialTime!);
+    final newtime = await showTimePicker(
+        context: context, initialTime: _selectstarttime ?? initialTime!);
     setState(() {
       _selectstarttime = newtime;
     });
-    if (newtime != null && newtime != _selectstarttime) {
+    // if (newtime != null && newtime != _selectstarttime) {
+    if (newtime != null) {
       setState(() => _selectstarttime = newtime);
       print(newtime);
       final AMorPM = newtime.hour > 12 ? 'PM' : 'AM';
@@ -377,7 +378,13 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                           case "None":
                             {
                               //Notification 1
-                              NotificationApi.showScheduledNotification(
+                              NotificationApi.showScheduledNotification_beforetime(
+                                latestreminder: latestreminder,
+                                title: latestreminder!.title,
+                                body: latestreminder!.note,
+                                remindBefore: int.parse(_selectReminder),
+                              );
+                              NotificationApi.showScheduledNotification_onTime(
                                 latestreminder: latestreminder,
                                 title: latestreminder!.title,
                                 body: latestreminder!.note,

@@ -7,6 +7,7 @@ import 'dart:typed_data';
 // import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:colorful_safe_area/colorful_safe_area.dart';
 import 'package:flutter/services.dart';
+import 'package:get/get.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:myboardapp/boxes.dart';
 import 'package:myboardapp/main.dart';
@@ -111,13 +112,16 @@ class _HomePageState extends State<HomePage> {
 
   dynamic path;
 
-  Future<File> saveFilePermanently(PlatformFile file) async {
+  Future saveFilePermanently(PlatformFile file) async {
     //final File file_File = File(file.path);
     //final PlatformFile file_PlatformFile = file;
     final appStorage = await getApplicationDocumentsDirectory();
     final newFile = File('${appStorage.path}/${file.name}');
 
-    return File(file.path!).copy(newFile.path);
+    return [
+      File(file.path!).copy(newFile.path),
+      '${appStorage.path}/${file.name}'
+    ];
   }
 
   Future<FilePickerResult> selectPhotoOrVideo() async {
@@ -539,16 +543,16 @@ class _HomePageState extends State<HomePage> {
                                   print(oneFile.size);
                                   //Navigator.pushNamed(context, '/memories');
                                   // ImageProvider gotFile = Get.arguments();
-                                  File finalImage =
+                                  var finalImage =
                                       await saveFilePermanently(oneFile);
                                   print('from ' + oneFile.path.toString());
-                                  print('to ' + finalImage.path);
+                                  print('to ' + finalImage[1]);
 
-                                  var decodedImage = await decodeImageFromList(
-                                      finalImage.readAsBytesSync());
-                                  double width = decodedImage.width.toDouble();
-                                  double height =
-                                      decodedImage.height.toDouble();
+                                  // var decodedImage = await decodeImageFromList(
+                                  //     finalImage[0].readAsBytesSync());
+                                  // double width = decodedImage.width.toDouble();
+                                  // double height =
+                                  //     decodedImage.height.toDouble();
                                   // pinnedWidgets!.add(
                                   //   StaggeredGridTile.count(
                                   //     crossAxisCellCount:
@@ -577,32 +581,76 @@ class _HomePageState extends State<HomePage> {
                                   //     ),
                                   //   ),
                                   // );
-                                  Provider.of<ImageController>(context,
-                                          listen: false)
-                                      .addImage(
-                                    m.Images(
-                                      imagesource: finalImage.path,
-                                    ),
-                                  );
+                                  m.Images previousImagePaths;
+                                  var _repeated = false;
+                                  // for (previousImagePaths in boxofImages.toMap().values) {
+                                  if (boxofImages.length > 0) {
+                                    for (var index = 0;
+                                        index < boxofImages.length;
+                                        index++) {
+                                      print(finalImage[1].trim());
+                                      print((boxofImages
+                                          .getAt(index)!
+                                          .imagesource!
+                                          .trim()));
+                                      print(boxofImages
+                                          .getAt(index)!
+                                          .imagesource!
+                                          .split('/')[6]);
+                                      print((finalImage[1].trim()).contains(
+                                          boxofImages
+                                              .getAt(index)!
+                                              .imagesource!
+                                              .split('/')[6]));
 
-                                  var latestImage =
-                                      boxofImages.getAt(boxofImages.length - 1);
-                                  Provider.of<BoardStateController>(context,
-                                          listen: false)
-                                      .addBoardData(
-                                    m.BoardData(
-                                      position:
-                                          BoxOfBoardData.getBoardData().length,
-                                      data:
-                                          '${finalImage.path}*${latestImage!.key}',
-                                      isDone: false,
-                                      type: 'image',
-                                    ),
-                                  );
-                                  //positioningCoordinates(true, width, height);
-                                  setState(
-                                    () {},
-                                  );
+                                      // boxofImages.getAt(index)!.imagesource!.trim()));
+
+                                      if ((finalImage[1].trim()).contains(
+                                          boxofImages
+                                              .getAt(index)!
+                                              .imagesource!
+                                              .split('/')[6])) {
+                                        print(
+                                            '${finalImage[1]} == ${boxofImages.getAt(index)!.imagesource}');
+                                        setState(() {
+                                          _repeated = true;
+                                        });
+                                      }
+                                    }
+                                  }
+                                  print('_repeated = $_repeated');
+                                  if (!_repeated) {
+                                    Provider.of<ImageController>(context,
+                                            listen: false)
+                                        .addImage(
+                                      m.Images(
+                                        imagesource: finalImage[1],
+                                      ),
+                                    );
+
+                                    var latestImage = boxofImages
+                                        .getAt(boxofImages.length - 1);
+                                    Provider.of<BoardStateController>(context,
+                                            listen: false)
+                                        .addBoardData(
+                                      m.BoardData(
+                                        position: BoxOfBoardData.getBoardData()
+                                            .length,
+                                        data:
+                                            '${finalImage[1]}*${latestImage!.key}',
+                                        isDone: false,
+                                        type: 'image',
+                                      ),
+                                    );
+                                    //positioningCoordinates(true, width, height);
+                                    setState(
+                                      () {},
+                                    );
+                                  } else {
+                                    Get.snackbar(
+                                        'Oops', 'Item already on board');
+                                  }
+
                                   Navigator.pop(context);
 
                                   // print(pinnedWidgets!);

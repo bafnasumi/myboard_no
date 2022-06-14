@@ -7,6 +7,7 @@ import 'dart:io';
 // import 'package:audioplayers/audioplayers.dart';
 import 'package:audio_waveforms/audio_waveforms.dart';
 import 'package:audioplayers/audioplayers.dart' as audi;
+// import 'package:easy_image_viewer/easy_image_viewer.dart';
 import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
@@ -17,9 +18,9 @@ import 'package:myboardapp/boxes.dart';
 import 'package:myboardapp/pages/imageControlller.dart';
 import 'package:myboardapp/pages/remind/controller/task_controller.dart';
 import 'package:myboardapp/pages/todo.dart';
+import 'package:pinch_zoom/pinch_zoom.dart';
 import 'package:provider/provider.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
-
 import '../../components/audio_widgets.dart';
 import '../boardState.dart';
 import '../video.dart';
@@ -107,6 +108,8 @@ class BboardTileState extends State<BoardTile> {
           var imagePath = (widget.boarddata!.data!).split('*');
           print('imagepath11111111111111111');
           print(imagePath[0]);
+          print('image key');
+          print(imagePath[1]);
 
           var boxofImages = BoxofImage.getImages();
           // print('boxofImages');
@@ -114,127 +117,145 @@ class BboardTileState extends State<BoardTile> {
           // print('length of box ========  ${boxofImages}');
           m.Images previousImagePaths;
           // for (previousImagePaths in boxofImages.toMap().values) {
-          for (var index = 0; index < boxofImages.length; index++) {
-            // print(boxofImages.getAt(index)!.imagesource!);
+          // if (boxofImages.length > 1) {
+          //   for (var index = 0; index < boxofImages.length - 1; index++) {
+          //     print(imagePath[0].trim());
+          //     print((boxofImages.getAt(index)!.imagesource!.trim()));
+          //     print(boxofImages.getAt(index)!.imagesource!.split('/')[6]);
+          //     print((imagePath[0].trim()).contains(
+          //         boxofImages.getAt(index)!.imagesource!.split('/')[6]));
 
-            if (identical(imagePath[0].trim(),
-                boxofImages.getAt(index)!.imagesource!.trim())) {
-              print(
-                  '${imagePath[0]} == ${boxofImages.getAt(index)!.imagesource}');
-              setState(() {
-                _repeated = true;
-              });
-            }
-          }
-          print('_repeated = $_repeated');
+          // boxofImages.getAt(index)!.imagesource!.trim()));
 
-          if (!_repeated) {
-            File? finalImage = File(imagePath[0]);
-            // var decodedImage =
-            //     await decodeImageFromList(finalImage.readAsBytesSync());
-            // double width = decodedImage.width.toDouble();
-            // double height = decodedImage.height.toDouble();
-            // return StaggeredGridTile.count(
-            //   // crossAxisCellCount: width > height ? 3 : 2,
-            //   // mainAxisCellCount: width < height ? 3 : 2,
-            //   crossAxisCellCount: 2,
-            //   mainAxisCellCount: 2,
-            return GestureDetector(
-              child: Container(
-                // height: finalImage.readAsBytesSync(). > myimage.width!.toInt() ? 120 : 90,
-                // width: myimage.height! > myimage.width!.toInt() ? 70 : 100,
-                height: 160,
-                width: 70,
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
-                  color: Colors.transparent,
-                  // boxShadow: [
-                  //   BoxShadow(
-                  //     blurRadius: 3.0,
-                  //     spreadRadius: 0.5,
-                  //     offset: Offset(1, 1),
-                  //   ),
-                  // ],
-                ),
-                child: Stack(
-                  alignment: Alignment.topCenter,
-                  children: [
-                    Container(
-                      child: Image.file(finalImage),
-                      decoration: BoxDecoration(boxShadow: [
-                        // BoxShadow(
-                        //   blurRadius: 3.0,
-                        //   spreadRadius: 0.5,
-                        //   offset: Offset(1, 1),
-                        // ),
-                      ]),
-                    ),
-                    Image.asset(
-                      'assets/images/pin.png',
-                      width: 13,
-                      height: 13,
-                    ),
-                  ],
-                ),
+          //     if ((imagePath[0].trim()).contains(
+          //         boxofImages.getAt(index)!.imagesource!.split('/')[6])) {
+          //       print(
+          //           '${imagePath[0]} == ${boxofImages.getAt(index)!.imagesource}');
+          //       setState(() {
+          //         _repeated = true;
+          //       });
+          //     }
+          //   }
+          // }
+          // print('_repeated = $_repeated');
+
+          // if (!_repeated) {
+          File? finalImage = File(imagePath[0]);
+          // var decodedImage =
+          //     await decodeImageFromList(finalImage.readAsBytesSync());
+          // double width = decodedImage.width.toDouble();
+          // double height = decodedImage.height.toDouble();
+          // return StaggeredGridTile.count(
+          //   // crossAxisCellCount: width > height ? 3 : 2,
+          //   // mainAxisCellCount: width < height ? 3 : 2,
+          //   crossAxisCellCount: 2,
+          //   mainAxisCellCount: 2,
+          // setState(() {
+          //   _repeated = false;
+          // });
+          var imageProvider = Image.file(finalImage).image;
+          return GestureDetector(
+            child: Container(
+              // height: finalImage.readAsBytesSync(). > myimage.width!.toInt() ? 120 : 90,
+              // width: myimage.height! > myimage.width!.toInt() ? 70 : 100,
+              height: 160,
+              width: 70,
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                color: Colors.transparent,
+                // boxShadow: [
+                //   BoxShadow(
+                //     blurRadius: 3.0,
+                //     spreadRadius: 0.5,
+                //     offset: Offset(1, 1),
+                //   ),
+                // ],
               ),
-              onLongPress: () {
-                var alert = AlertDialog(
-                  title: Text("Do you want really want to delete it?"),
-                  //content: Text("You won't be able to "),
-                  actions: [
-                    TextButton(
-                      child: Text("Cancel"),
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                    ),
-                    TextButton(
-                      child: Text("Delete"),
-                      onPressed: () {
-                        var boardcontroller = Provider.of<BoardStateController>(
-                          context,
-                          listen: false,
-                        );
-                        var imageController = Provider.of<ImageController>(
-                          context,
-                          listen: false,
-                        );
-                        boardcontroller.removeBoardData(widget.boarddata!.key);
-                        imageController.removeImage(imagePath[1]);
+              child: Stack(
+                alignment: Alignment.topCenter,
+                children: [
+                  Container(
+                    // child: PhotoView(
+                    //   imageProvider: FileImage(finalImage),
+                    //   heroAttributes:
+                    //       PhotoViewHeroAttributes(tag: ),
+                    //       maxScale: 50.0,
+                    // ),
+                    child: Image.file(finalImage),
+                    decoration: BoxDecoration(boxShadow: [
+                      // BoxShadow(
+                      //   blurRadius: 3.0,
+                      //   spreadRadius: 0.5,
+                      //   offset: Offset(1, 1),
+                      // ),
+                    ]),
+                  ),
+                  Image.asset(
+                    'assets/images/pin.png',
+                    width: 13,
+                    height: 13,
+                  ),
+                ],
+              ),
+            ),
+            onLongPress: () {
+              var alert = AlertDialog(
+                title: Text("Do you want really want to delete it?"),
+                //content: Text("You won't be able to "),
+                actions: [
+                  TextButton(
+                    child: Text("Cancel"),
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                  ),
+                  TextButton(
+                    child: Text("Delete"),
+                    onPressed: () {
+                      var boardcontroller = Provider.of<BoardStateController>(
+                        context,
+                        listen: false,
+                      );
+                      var imageController = Provider.of<ImageController>(
+                        context,
+                        listen: false,
+                      );
+                      boardcontroller.removeBoardData(widget.boarddata!.key);
+                      imageController.removeImage(imagePath[1]);
 
-                        setState(() {});
-                        Navigator.pop(context);
-                      },
-                    ),
-                  ],
-                );
-                showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return alert;
-                  },
-                );
-              },
-            );
-          } else {
-            // var snackBar = SnackBar(
-            //   content: Text('Image already on board'),
-            // );
-            // ScaffoldMessenger.of(context).showSnackBar(snackBar);
-            // // showDialog(
-            //     context: context,
-            //     builder: (context) {
-            //       return Dialog(
-            //           shape: RoundedRectangleBorder(
-            //               borderRadius: BorderRadius.circular(40)),
-            //           elevation: 16,
-            //           child: Text('ALready on board'));
-            //     });
-            return SizedBox(
-              width: .1,
-              height: .1,
-            );
-          }
+                      setState(() {});
+                      Navigator.pop(context);
+                    },
+                  ),
+                ],
+              );
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return alert;
+                },
+              );
+            },
+          );
+          // } else {
+          // var snackBar = SnackBar(
+          //   content: Text('Image already on board'),
+          // );
+          // ScaffoldMessenger.of(context).showSnackBar(snackBar);
+          // // showDialog(
+          //     context: context,
+          //     builder: (context) {
+          //       return Dialog(
+          //           shape: RoundedRectangleBorder(
+          //               borderRadius: BorderRadius.circular(40)),
+          //           elevation: 16,
+          //           child: Text('ALready on board'));
+          //     });
+          //   return SizedBox(
+          //     width: .1,
+          //     height: .1,
+          //   );
+          // }
 
           // );
         }
@@ -418,7 +439,9 @@ class BboardTileState extends State<BoardTile> {
               ],
               // ),
             ),
-            onTap: () {},
+            onTap: () {
+              
+            },
             onLongPress: () {
               // var boxofboarddata = BoxOfBoardData.getBoardData();
               // setState(() {
