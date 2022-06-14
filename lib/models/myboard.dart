@@ -185,3 +185,11 @@ class BoardData extends HiveObject with ChangeNotifier {
     isDone = isDone;
   }
 }
+
+@HiveType(typeId: 11)
+class Documents extends HiveObject with ChangeNotifier {
+  @HiveField(0)
+  late String? path;
+
+  Documents({this.path});
+}

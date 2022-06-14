@@ -9,6 +9,7 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:video_player/video_player.dart';
 import 'controller/task_controller.dart';
 import 'data/entity/task.dart';
 import 'service/notify_service.dart';
@@ -35,6 +36,7 @@ class _ReminderState extends State<Reminder> {
   }
 
   // final TaskController _taskController = Get.put(TaskController());
+  var _controller = VideoPlayerController.asset('assets/images/hi.mp4');
 
   @override
   void initState() {
@@ -43,6 +45,13 @@ class _ReminderState extends State<Reminder> {
     // notifyService.initializeNotification();
     // notifyService.requestIOSPermissions();
     // // _taskController.getAllTask();
+    _controller = VideoPlayerController.asset('assets/images/hi.mp4')
+      ..initialize().then((_) {
+        // Ensure the first frame is shown after the video is initialized, even before the play button has been pressed
+        setState(() {});
+      });
+    _controller.play();
+    _controller.setLooping(true);
   }
 
   @override
@@ -151,12 +160,27 @@ class _ReminderState extends State<Reminder> {
   Widget _allTask() {
     return boxofreminders.length == 0
         ? Center(
-            child: Text(
-            'Add your first reminder',
-            style: TextStyle(
-              fontSize: 20,
-              color: Colors.grey,
-            ),
+            child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                height: 90,
+                width: 90,
+                child: VideoPlayer(
+                  _controller,
+                ),
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              Text(
+                'Add your first reminder',
+                style: TextStyle(
+                  fontSize: 20,
+                  color: Colors.grey,
+                ),
+              ),
+            ],
           ))
         : Consumer<ReminderController>(builder: (context, reminderData, child) {
             return ListView.builder(

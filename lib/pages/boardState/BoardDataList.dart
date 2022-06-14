@@ -9,15 +9,18 @@ import 'package:audio_waveforms/audio_waveforms.dart';
 import 'package:audioplayers/audioplayers.dart' as audi;
 // import 'package:easy_image_viewer/easy_image_viewer.dart';
 import 'package:expandable/expandable.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 // import 'package:flutter/rendering.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:myboardapp/boxes.dart';
+import 'package:myboardapp/pages/Documents/documents.dart';
 import 'package:myboardapp/pages/imageControlller.dart';
 import 'package:myboardapp/pages/remind/controller/task_controller.dart';
 import 'package:myboardapp/pages/todo.dart';
+import 'package:open_file/open_file.dart';
 import 'package:pinch_zoom/pinch_zoom.dart';
 import 'package:provider/provider.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
@@ -565,6 +568,97 @@ class BboardTileState extends State<BoardTile> {
               );
             },
           );
+        }
+        break;
+      case 'document':
+        {
+          var allData = widget.boarddata!.data!.split('*');
+          return InkWell(
+            child: Container(
+              color: Colors.transparent,
+              child: Stack(
+                alignment: Alignment.topLeft,
+                children: [
+                  Stack(
+                    alignment: Alignment.bottomRight,
+                    children: [
+                      Icon(
+                        Icons.file_copy_rounded,
+                        color: Colors.white,
+                        size: 85,
+                      ),
+                      Wrap(
+                        children: [
+                          Container(
+                            padding: EdgeInsets.only(right: 10, bottom: 6),
+                            width: 60,
+                            child: Text(
+                              allData[0].split('/').last,
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 7.4,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 23, top: 20),
+                    child: Image.asset(
+                      'assets/images/pin.png',
+                      width: 13,
+                      height: 13,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            onTap: () {
+              if (Platform.isAndroid || Platform.isIOS) {
+                OpenFile.open(allData[0]);
+              }
+            },
+            onLongPress: () {
+              var alert = AlertDialog(
+                title: Text("Do you want really want to delete it?"),
+                actions: [
+                  TextButton(
+                    child: Text("Cancel"),
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                  ),
+                  TextButton(
+                    child: Text("Yes, delete"),
+                    onPressed: () {
+                      var boardcontroller = Provider.of<BoardStateController>(
+                        context,
+                        listen: false,
+                      );
+                      boardcontroller.removeBoardData(widget.boarddata!.key);
+                      var documentController = Provider.of<DocumentsController>(
+                        context,
+                        listen: false,
+                      );
+                      documentController.removeDocument(int.parse(allData[1]));
+                      setState(() {});
+                      Navigator.pop(context);
+                    },
+                  ),
+                ],
+              );
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return alert;
+                },
+              );
+            },
+          );
+          // );
         }
         break;
       case 'text':
@@ -1336,11 +1430,6 @@ PinnedText(String? mytext, int index, int pinnedWidgetIndex) => InkWell(
                 ),
               ],
             ),
-          ),
-          Image.asset(
-            'assets/images/pin.png',
-            width: 13,
-            height: 13,
           ),
         ],
       ),

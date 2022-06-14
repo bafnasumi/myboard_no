@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:myboardapp/pages/homepage.dart';
+import 'package:myboardapp/pages/voicetotext.dart';
 import 'package:provider/provider.dart';
 import '../boxes.dart';
 import 'package:myboardapp/models/myboard.dart' as m;
@@ -185,6 +186,7 @@ class _TextPageState extends State<TextPage> {
                   ),
                 ),
               ),
+              SpeechScreen(),
             ],
           ),
         ),

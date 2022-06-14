@@ -11,27 +11,27 @@ import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'package:myboardapp/models/myboard.dart' as m;
 import 'homepage.dart';
 
-class VoiceToText extends StatefulWidget {
-  const VoiceToText({Key? key}) : super(key: key);
+// class VoiceToText extends StatefulWidget {
+//   const VoiceToText({Key? key}) : super(key: key);
 
-  @override
-  State<VoiceToText> createState() => _VoiceToTextState();
-}
+//   @override
+//   State<VoiceToText> createState() => _VoiceToTextState();
+// }
 
-class _VoiceToTextState extends State<VoiceToText> {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Voice to Text',
-      theme: ThemeData(
-        primarySwatch: Colors.blueGrey,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
-      ),
-      home: SpeechScreen(),
-    );
-  }
-}
+// class _VoiceToTextState extends State<VoiceToText> {
+//   @override
+//   Widget build(BuildContext context) {
+//     return MaterialApp(
+//       debugShowCheckedModeBanner: false,
+//       title: 'Voice to Text',
+//       theme: ThemeData(
+//         primarySwatch: Colors.blueGrey,
+//         visualDensity: VisualDensity.adaptivePlatformDensity,
+//       ),
+//       home: SpeechScreen(),
+//     );
+//   }
+// }
 
 class SpeechScreen extends StatefulWidget {
   @override

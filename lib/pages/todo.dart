@@ -8,6 +8,7 @@ import 'package:provider/provider.dart';
 import 'package:myboardapp/models/myboard.dart' as m;
 import 'package:myboardapp/boxes.dart';
 import 'package:hive/hive.dart';
+import 'package:video_player/video_player.dart';
 
 import 'boardState.dart';
 
@@ -119,16 +120,54 @@ class TasksList extends StatefulWidget {
 }
 
 class _TasksListState extends State<TasksList> {
+  var _controller = VideoPlayerController.asset('assets/images/hi.mp4');
+
+  @override
+  void dispose() {
+    super.dispose();
+    _controller.dispose();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = VideoPlayerController.asset('assets/images/hi.mp4')
+      ..initialize().then((_) {
+        // Ensure the first frame is shown after the video is initialized, even before the play button has been pressed
+        setState(() {});
+      });
+    _controller.play();
+    _controller.setLooping(true);
+  }
+
   @override
   Widget build(BuildContext context) {
+    // _controller.play();
+
     return boxoftodos.length == 0
         ? Center(
-            child: Text(
-            'Add your first todo',
-            style: TextStyle(
-              fontSize: 20,
-              color: Colors.grey,
-            ),
+            child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              // Image.asset('assets/images/hi.mp4'),
+              Container(
+                height: 90,
+                width: 90,
+                child: VideoPlayer(
+                  _controller,
+                ),
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              Text(
+                'Add your first todo',
+                style: TextStyle(
+                  fontSize: 20,
+                  color: Colors.grey,
+                ),
+              ),
+            ],
           ))
         : Consumer<TaskController>(
             builder: (context, taskData, child) {

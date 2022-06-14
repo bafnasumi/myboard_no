@@ -121,6 +121,9 @@ dependencies:
   share_plus: ^4.0.7
   scribble: ^0.4.0
 
+  #documents
+  open_file: ^3.2.1
+
 
 
 

@@ -43,3 +43,7 @@ class BoxOfBackgroundImage {
   static Box<BackgroundImage> getBgImage() =>
       Hive.box<BackgroundImage>('backgroundimage');
 }
+
+class BoxOfDocuments {
+  static Box<Documents> getDocuments() => Hive.box<Documents>('document');
+}

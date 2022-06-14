@@ -10,6 +10,7 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:myboardapp/boxes.dart';
 import 'package:myboardapp/pages/boardState.dart';
+import 'package:myboardapp/pages/Documents/documents.dart';
 import 'package:myboardapp/pages/imageControlller.dart';
 import 'package:myboardapp/pages/recorder/audio/audio.dart';
 import 'package:myboardapp/pages/recorder/audiorecorder.dart';
@@ -68,6 +69,7 @@ Future main() async {
   Hive.registerAdapter(m.TextAdapter());
   Hive.registerAdapter(m.BoardDataAdapter());
   Hive.registerAdapter(m.BackgroundImageAdapter());
+  Hive.registerAdapter(m.DocumentsAdapter());
 
   await Hive.openBox<m.Images>('images');
   await Hive.openBox<m.Link>('links');
@@ -79,6 +81,7 @@ Future main() async {
   await Hive.openBox<m.Text>('text');
   await Hive.openBox<m.BoardData>('boarddata');
   await Hive.openBox<m.BackgroundImage>('backgroundimage');
+  await Hive.openBox<m.Documents>('document');
 
   await Firebase.initializeApp();
   // await AndroidAlarmManager.initialize();
@@ -706,6 +709,9 @@ class _MyAppState extends State<MyApp> {
         ChangeNotifierProvider(
           create: (context) => AudioController(),
         ),
+        ChangeNotifierProvider(
+          create: (context) => DocumentsController(),
+        ),
       ],
       child: GetMaterialApp(
         debugShowCheckedModeBanner: false,
@@ -719,7 +725,7 @@ class _MyAppState extends State<MyApp> {
           '/login': (context) => const LogInPage(),
           '/register': (context) => const RegisterPage(),
           '/reminder': (context) => const Reminder(),
-          '/voicetotext': (context) => const VoiceToText(),
+          // '/voicetotext': (context) => const VoiceToText(),
           '/text': (context) => const TextPage(),
           '/todo': (context) => ToDo(),
           '/memories': (context) => const Memories(),

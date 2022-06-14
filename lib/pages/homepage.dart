@@ -43,6 +43,7 @@ import 'package:myboardapp/models/myboard.dart' as m;
 import 'audio.dart';
 import 'boardState.dart';
 import 'boardState/BoardDataList.dart';
+import 'Documents/documents.dart';
 import 'todo.dart';
 import 'background.dart';
 import 'dart:math' as math;
@@ -454,15 +455,28 @@ class _HomePageState extends State<HomePage> {
                             crossAxisSpacing: 3,
                             controller: gridviewcontroller,
                             children: [
+                              // buildCircleButton(
+                              //   context,
+                              //   'Voice to Text',
+                              //   'assets/images/voicetotext_new.jpg',
+                              //   () {
+                              //     Navigator.push(
+                              //       context,
+                              //       MaterialPageRoute(
+                              //         builder: ((context) => VoiceToText()),
+                              //       ),
+                              //     );
+                              //   },
+                              // ),
                               buildCircleButton(
                                 context,
-                                'Voice to Text',
+                                'Document',
                                 'assets/images/voicetotext_new.jpg',
                                 () {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: ((context) => VoiceToText()),
+                                      builder: ((context) => Documents()),
                                     ),
                                   );
                                 },
