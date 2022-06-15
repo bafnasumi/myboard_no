@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors, prefer_typing_uninitialized_variables, prefer_const_literals_to_create_immutables, avoid_print
+// ignore_for_file: prefer_const_constructors, prefer_typing_uninitialized_variables, prefer_const_literals_to_create_immutables, avoid_print, unused_import
 
 //import 'dart:html';
 import 'dart:math';
@@ -605,7 +605,7 @@ class _HomePageState extends State<HomePage> {
                               buildCircleButton(
                                 context,
                                 'Document',
-                                'assets/images/voicetotext_new.jpg',
+                                'assets/images/docfinal.jpg',
                                 () {
                                   Navigator.push(
                                     context,
@@ -628,7 +628,7 @@ class _HomePageState extends State<HomePage> {
                               buildCircleButton(
                                 context,
                                 'ToDo',
-                                'assets/images/todo_new.jpg',
+                                'assets/images/todo_final.jpg',
                                 () async {
                                   await Navigator.push(
                                       context,
@@ -657,7 +657,7 @@ class _HomePageState extends State<HomePage> {
                               buildCircleButton(
                                 context,
                                 'Reminders',
-                                'assets/images/reminder.jpg',
+                                'assets/images/remindersfinal.jpg',
                                 () {
                                   Navigator.push(
                                       context,
@@ -668,7 +668,7 @@ class _HomePageState extends State<HomePage> {
                               buildCircleButton(
                                 context,
                                 'Photo',
-                                'assets/images/photos_new.jpg',
+                                'assets/images/photosfinal.jpg',
                                 () async {
                                   // selectPhotoOrVideo();
                                   // uploadPhotoOrVideo();
@@ -904,7 +904,7 @@ class _HomePageState extends State<HomePage> {
                               buildCircleButton(
                                 context,
                                 'Links',
-                                'assets/images/links.png',
+                                'assets/images/linksfinal.jpg',
                                 () {
                                   Navigator.push(
                                       context,
@@ -924,7 +924,7 @@ class _HomePageState extends State<HomePage> {
                               buildCircleButton(
                                 context,
                                 'Scribble',
-                                'assets/images/scribble.jpg',
+                                'assets/images/scribblefinal.jpg',
                                 () {
                                   _boardController.add(
                                     const StackDrawing(
