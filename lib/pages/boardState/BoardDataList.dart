@@ -23,6 +23,7 @@ import 'package:myboardapp/pages/todo.dart';
 import 'package:open_file/open_file.dart';
 import 'package:pinch_zoom/pinch_zoom.dart';
 import 'package:provider/provider.dart';
+import 'package:video_player/video_player.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
 import '../../components/audio_widgets.dart';
 import '../boardState.dart';
@@ -32,7 +33,7 @@ import 'package:myboardapp/models/myboard.dart' as m;
 import 'dart:math' as math;
 
 class BoardDataList extends StatefulWidget {
-  const BoardDataList({Key? key}) : super(key: key);
+  BoardDataList({Key? key}) : super(key: key);
 
   @override
   State<BoardDataList> createState() => _BoardDataListState();
@@ -48,19 +49,62 @@ class _BoardDataListState extends State<BoardDataList> {
 // );
 // return uint8list;
 //   }
+
+  var _controller = VideoPlayerController.asset('assets/images/giphy.gif');
+
   late Future<int> dataFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = VideoPlayerController.asset('assets/images/giphy.gif')
+      // _controller = VideoPlayerController.network(
+      //     "https://giphy.com/stickers/aesthetic-emmakateacton-emmakateactondesign-4Z4FRLEzoSwivZP1SI")
+      ..initialize().then((_) {
+        // Ensure the first frame is shown after the video is initialized, even before the play button has been pressed
+        setState(() {});
+      });
+    _controller.play();
+    _controller.setLooping(true);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _controller.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return boxofboarddata.length == 0
-        ? Center(
-            child: Text(
-            'Add your first item',
-            style: TextStyle(
-              fontSize: 20,
-              color: Colors.grey,
-            ),
-          ))
+        ? Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              // Container(
+              //   height: 90,
+              //   width: 90,
+              //   child: VideoPlayer(
+              //     _controller,
+              //   ),
+              // ),
+              Image.asset(
+                'assets/images/giphy.gif',
+                height: 90,
+                width: 90,
+              ),
+              // SizedBox(
+              //   height: 10,
+              // ),
+              Center(
+                  child: Text(
+                'Add your first item...',
+                style: TextStyle(
+                  fontSize: 20,
+                  color: Colors.white70,
+                ),
+              )),
+            ],
+          )
         : Consumer<BoardStateController>(
             builder: (context, boarddata, child) {
               int crossAxisCount = 2;
@@ -103,6 +147,48 @@ class BboardTileState extends State<BoardTile> {
   bool startonce = false;
   bool _repeated = false;
   bool isStop = false;
+
+  Widget imageDialog(text, path, context) {
+    return Dialog(
+      // backgroundColor: Colors.transparent,
+      // elevation: 0,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(left: 8.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  '$text',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                IconButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  icon: Icon(Icons.close_rounded),
+                  color: Colors.redAccent,
+                ),
+              ],
+            ),
+          ),
+          InteractiveViewer(
+            child: Container(
+              width: 300,
+              height: 500,
+              child: Image.file(
+                path,
+                fit: BoxFit.contain,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -202,6 +288,11 @@ class BboardTileState extends State<BoardTile> {
                 ],
               ),
             ),
+            onTap: () async {
+              await showDialog(
+                  context: context,
+                  builder: (_) => imageDialog('My Image', finalImage, context));
+            },
             onLongPress: () {
               var alert = AlertDialog(
                 title: Text("Do you want really want to delete it?"),

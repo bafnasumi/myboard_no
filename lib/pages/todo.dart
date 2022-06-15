@@ -173,6 +173,7 @@ class _TasksListState extends State<TasksList> {
             builder: (context, taskData, child) {
               return ListView.builder(
                 reverse: true,
+                shrinkWrap: true,
                 itemCount: boxoftodos.length,
                 itemBuilder: (context, index) {
                   final task = boxoftodos.getAt(index);

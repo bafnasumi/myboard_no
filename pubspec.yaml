@@ -40,7 +40,7 @@ dependencies:
   firebase_auth: ^3.3.17
   google_sign_in: ^5.3.1
 
-  # stack_board: ^0.1.2
+  stack_board: ^0.1.0
 
   google_fonts: ^2.3.2
   provider: ^6.0.2
@@ -120,6 +120,7 @@ dependencies:
   wallpaper_manager_flutter: ^0.0.2
   share_plus: ^4.0.7
   scribble: ^0.4.0
+  extended_image: ^6.2.1
 
   #documents
   open_file: ^3.2.1
