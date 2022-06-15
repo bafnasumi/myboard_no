@@ -125,8 +125,8 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
     if (newtime != null) {
       setState(() => _selectstarttime = newtime);
       print(newtime);
-      final AMorPM = newtime.hour > 12 ? 'PM' : 'AM';
-      final hourIn12 = newtime.hour > 12 ? newtime.hour - 12 : newtime.hour;
+      final AMorPM = newtime.hour > 11 ? 'PM' : 'AM';
+      final hourIn12 = newtime.hour > 12 ? newtime.hour - 11 : newtime.hour;
       setState(() {
         hintText_startTime = '${pad(hourIn12)}:${pad(newtime.minute)} $AMorPM';
       });
@@ -317,6 +317,8 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
               CustomButton(
                   label: 'Create Task',
                   onTap: () async {
+                    print(
+                        'selectdate +++++++++++++++++++++++++++++++++++++++++++++');
                     print(_selectDate);
                     DateTime? combinedDate = DateTime(
                       _selectDate!.year,
@@ -328,8 +330,10 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                       0,
                     );
 
-                    if (_validateInput(_selectstarttime)) {
+                    if (_validateInput()) {
                       if (combinedDate.isAfter(DateTime.now())) {
+                        print('combineddateeeeeeeeeeeeeeeeeeeeeeeeeeeeee');
+                        print(combinedDate);
                         //_validateInput();
                         // _validateDateTime(combinedDate);
                         //print(_selectDate);
@@ -469,16 +473,17 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                                 latestreminder!.title);
                             print('Alarm Enabled');
                           });
-                          //   Future.delayed(
-                          //       Duration(
-                          //         days: daysBetween(
-                          //             DateTime.now().add(Duration(minutes: 5)),
-                          //             combinedDate),
-                          //       ), () {
-                          //     callback_for_alarm(
-                          //         combinedDate, latestreminder!.title);
-                          //     print('Alarm Enabled');
-                          //   });
+                          Future.delayed(
+                              Duration(
+                                days: daysBetween(
+                                    // DateTime.now().add(Duration(minutes: 5)),
+                                    DateTime.now(),
+                                    combinedDate),
+                              ), () {
+                            callback_for_alarm(
+                                combinedDate, latestreminder!.title);
+                            print('Alarm Enabled');
+                          });
                           // } else {
                           //   print('Alarm no unabled');
                           // }
@@ -488,14 +493,17 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                                 days: daysBetween(
                                     DateTime.now().add(Duration(minutes: 5)),
                                     combinedDate),
-                                hours: combinedDate.hour,
-                                minutes: combinedDate.minute,
-                                seconds: combinedDate.second,
+                                hours: combinedDate.hour - DateTime.now().hour,
+                                minutes:
+                                    combinedDate.minute - DateTime.now().minute,
+                                seconds: 0,
                               ), () {
                             print('inside future.delayed');
-
                             print(
-                                'BoxOfBoardData.getBoardData().length - 1 = ${BoxOfBoardData.getBoardData().length - 1}-----------Before');
+                                '${daysBetween(DateTime.now().add(Duration(minutes: 5)), combinedDate)}');
+
+                            // print(
+                            //     'BoxOfBoardData.getBoardData().length - 1 = ${BoxOfBoardData.getBoardData().length - 1}-----------Before');
                             Provider.of<BoardStateController>(context,
                                     listen: false)
                                 .removeBoardData(
@@ -769,10 +777,10 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
     );
   }
 
-  bool _validateInput(_selectstarttime) {
-    if (titleController.text.isNotEmpty &&
-        noteController.text.isNotEmpty &&
-        (_selectstarttime != null)) {
+  bool _validateInput() {
+    if (titleController.text.isNotEmpty && noteController.text.isNotEmpty) {
+      // (_selectstarttime != null)) {
+
       _addTaskToDb();
       //Get.back();
       return true;

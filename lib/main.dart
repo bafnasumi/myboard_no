@@ -691,9 +691,9 @@ class _MyAppState extends State<MyApp> {
         ChangeNotifierProvider(
           create: (context) => ReminderController(),
         ),
-        ChangeNotifierProvider(
-          create: (context) => VoiceToTextController(),
-        ),
+        // ChangeNotifierProvider(
+        //   create: (context) => VoiceToTextController(),
+        // ),
         ChangeNotifierProvider(
           create: (context) => TextPageController(),
         ),

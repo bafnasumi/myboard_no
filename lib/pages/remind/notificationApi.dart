@@ -62,6 +62,9 @@ class NotificationApi {
         var minute =
             int.parse(latestreminder!.startTime!.split(':')[1].substring(0, 2));
         hour = hour + 12;
+        if (hour == 24) {
+          hour = 12;
+        }
         print('hour from notification API');
         print(hour.toString());
         print('minute from notification API');
@@ -116,6 +119,7 @@ class NotificationApi {
         var minute =
             int.parse(latestreminder!.startTime!.split(':')[1].substring(0, 2));
         hour = hour + 12;
+        if (hour == 24) hour = 12;
         print('hour from notification API');
         print(hour.toString());
         print('minute from notification API');

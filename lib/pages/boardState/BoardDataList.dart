@@ -271,7 +271,16 @@ class BboardTileState extends State<BoardTile> {
                     //       PhotoViewHeroAttributes(tag: ),
                     //       maxScale: 50.0,
                     // ),
-                    child: Image.file(finalImage),
+                    child: Container(
+                      child: Image.file(finalImage),
+                      decoration: BoxDecoration(boxShadow: [
+                        BoxShadow(
+                          blurRadius: 1.0,
+                          spreadRadius: 0.5,
+                          offset: Offset(-1, 1),
+                        ),
+                      ]),
+                    ),
                     decoration: BoxDecoration(boxShadow: [
                       // BoxShadow(
                       //   blurRadius: 3.0,
@@ -390,13 +399,14 @@ class BboardTileState extends State<BoardTile> {
                     ),
                     // child: Image.file(
                     //     File(videopath.toString())),
-                    decoration: BoxDecoration(boxShadow: [
-                      BoxShadow(
-                        blurRadius: 3.0,
-                        spreadRadius: 0.5,
-                        offset: Offset(1, 1),
-                      ),
-                    ]),
+                    // decoration: BoxDecoration(boxShadow: [
+                    //   BoxShadow(
+                    //     blurRadius: 1.0,
+                    //     spreadRadius: 0.5,
+                    //     offset: Offset(-1, 1),
+                    //   ),
+                    // ]),
+                    color: Colors.black.withOpacity(0.7),
                   ),
                   Image.asset(
                     'assets/images/pin.png',
@@ -1134,6 +1144,32 @@ class BboardTileState extends State<BoardTile> {
               ],
               // ),
             ),
+            onTap: () {
+              Dialog(
+                child: Text(
+                  widget.boarddata!.data!,
+                  style: GoogleFonts.caveatBrush(
+                    color: Colors.black,
+                    fontSize: 10.5,
+                  ),
+                ),
+              );
+              showDialog(
+                  context: context,
+                  builder: (context) => Dialog(
+                        backgroundColor: Colors.greenAccent,
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text(
+                            widget.boarddata!.data!,
+                            style: GoogleFonts.caveatBrush(
+                              color: Colors.black,
+                              fontSize: 30.5,
+                            ),
+                          ),
+                        ),
+                      ));
+            },
             onLongPress: () {
               // var boxofboarddata = BoxOfBoardData.getBoardData();
               // setState(() {
@@ -1328,6 +1364,13 @@ PinnedToDo(String? todotext, int index, int pinnedWidgetIndex) => Stack(
               fit: BoxFit.cover,
             ),
             borderRadius: BorderRadius.circular(10.0),
+            boxShadow: [
+              BoxShadow(
+                blurRadius: 1.0,
+                spreadRadius: 0.5,
+                offset: Offset(-1, 1),
+              ),
+            ],
             // border: Border.all(
             //   color: Colors.black,
             //   width: 2.0,
@@ -1432,16 +1475,16 @@ PinnedLink(String? url, String? description, int index, int pinnedWidgetIndex,
         // ignore: prefer_const_literals_to_create_immutables
         boxShadow: [
           BoxShadow(
-            blurRadius: 3.0,
+            blurRadius: 1.0,
             spreadRadius: 0.5,
-            offset: Offset(1, 1),
+            offset: Offset(-1, 1),
           ),
         ],
         image: DecorationImage(
           image: AssetImage('assets/images/www.png'),
           fit: BoxFit.cover,
         ),
-        borderRadius: BorderRadius.circular(10.0),
+        // borderRadius: BorderRadius.circular(10.0),
         // border: Border.all(
         //   color: Colors.black,
         //   width: 2.0,
@@ -1487,15 +1530,15 @@ PinnedText(String? mytext, int index, int pinnedWidgetIndex) => InkWell(
             decoration: BoxDecoration(
               color: Colors.yellow[200],
               borderRadius: BorderRadius.circular(10.0),
-              border: Border.all(
-                color: Colors.black,
-                width: 2.0,
-              ),
+              // border: Border.all(
+              //   color: Colors.black,
+              //   width: 2.0,
+              // ),
               boxShadow: [
                 BoxShadow(
-                  blurRadius: 3.0,
+                  blurRadius: 1.0,
                   spreadRadius: 0.5,
-                  offset: Offset(1, 1),
+                  offset: Offset(-1, 1),
                 ),
               ],
             ),
@@ -1521,6 +1564,11 @@ PinnedText(String? mytext, int index, int pinnedWidgetIndex) => InkWell(
                 ),
               ],
             ),
+          ),
+          Image.asset(
+            'assets/images/pin.png',
+            width: 13,
+            height: 13,
           ),
         ],
       ),

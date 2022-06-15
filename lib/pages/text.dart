@@ -1,11 +1,13 @@
 // ignore_for_file: prefer_const_constructors, unused_local_variable, non_constant_identifier_names, prefer_final_fields, prefer_const_literals_to_create_immutables
 
+import 'package:avatar_glow/avatar_glow.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:myboardapp/pages/homepage.dart';
 import 'package:myboardapp/pages/voicetotext.dart';
 import 'package:provider/provider.dart';
+import 'package:timezone/timezone.dart';
 import '../boxes.dart';
 import 'package:myboardapp/models/myboard.dart' as m;
 import 'package:speech_to_text/speech_to_text.dart' as stt;
@@ -31,12 +33,56 @@ class _TextPageState extends State<TextPage> {
     return MediaQuery.of(context).size.width;
   }
 
+  late stt.SpeechToText _speech;
+  bool _isListening = false;
+  late bool _isEnabled;
+
+  String localtext = 'Press the button and start speaking';
+  double _confidence = 1.0;
+
   @override
   void initState() {
     _textController.addListener(() {
       setState(() {});
     });
     super.initState();
+    _isEnabled = false;
+    _speech = stt.SpeechToText();
+  }
+
+  void _listen() async {
+    setState(
+      () {
+        _isEnabled = false;
+      },
+    );
+    if (!_isListening) {
+      bool available = await _speech.initialize(
+        onStatus: (val) => print('onStatus: $val'),
+        onError: (val) => print('onError: $val'),
+      );
+      if (available) {
+        setState(() => _isListening = true);
+        _speech.listen(
+          onResult: (val) => setState(() {
+            localtext = val.recognizedWords;
+            if (val.hasConfidenceRating && val.confidence > 0) {
+              _confidence = val.confidence;
+            }
+            _isEnabled = true;
+          }),
+        );
+      }
+    } else {
+      setState(() {
+        _isListening = false;
+        _textController.text = localtext;
+      });
+      _speech.stop();
+      setState(() {
+        _isEnabled = true;
+      });
+    }
   }
 
   // @override
@@ -44,8 +90,8 @@ class _TextPageState extends State<TextPage> {
   //   Hive.close();
   //   super.dispose();
   // }
-  late stt.SpeechToText _speech;
-  bool _isListening = false;
+  // late stt.SpeechToText _speech;
+  // bool _isListening = false;
   String textSpeech = 'Press the button and start speaking';
 
   @override
@@ -92,103 +138,145 @@ class _TextPageState extends State<TextPage> {
         iconTheme: IconThemeData(color: Colors.black),
       ),
       backgroundColor: Colors.white,
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.max,
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              SizedBox(height: 110),
-              Text(
-                'Enter your Text!',
-                style: GoogleFonts.reenieBeanie(
-                  fontSize: 36,
-                ),
+      body: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.max,
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            SizedBox(height: 110),
+            Text(
+              'Enter your Text!',
+              style: GoogleFonts.reenieBeanie(
+                fontSize: 36,
               ),
-              SizedBox(
-                height: 5,
-              ),
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Container(
-                  height: 100,
-                  decoration: BoxDecoration(
-                    color: Colors.grey[200],
-                    border: Border.all(
-                      color: Color.fromARGB(255, 10, 75, 107),
-                    ),
-                    borderRadius: BorderRadius.circular(10),
+            ),
+            SizedBox(
+              height: 5,
+            ),
+            Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.grey[200],
+                  border: Border.all(
+                    color: Color.fromARGB(255, 10, 75, 107),
                   ),
-                  child: Padding(
-                    padding: const EdgeInsets.only(left: 20.0),
-                    child: TextField(
-                      maxLines: 2,
-                      controller: _textController,
-                      onSubmitted: (value) => setState(() {
-                        thisText = value;
-                      }),
-                      decoration: InputDecoration(
-                          border: InputBorder.none,
-                          hintText: 'Enter Text here'),
-                    ),
-                  ),
+                  borderRadius: BorderRadius.circular(10),
                 ),
-              ),
-              SizedBox(
-                height: 5,
-              ),
-              TextButton(
-                style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all(Colors.blue),
-                ),
-                onPressed: () {
-                  Provider.of<TextPageController>(context, listen: false)
-                      .addText(
-                    m.Text(
-                      text: _textController.text,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    Container(
+                      height: 100,
+                      width: MediaQuery.of(context).size.width * 0.7,
+                      // decoration: BoxDecoration(
+                      //   color: Colors.grey[200],
+                      //   border: Border.all(
+                      //     color: Color.fromARGB(255, 10, 75, 107),
+                      //   ),
+                      //   borderRadius: BorderRadius.circular(10),
+                      // ),
+                      child: Padding(
+                        padding: const EdgeInsets.only(
+                          left: 10.0,
+                        ),
+                        child: SizedBox(
+                          width: 180,
+                          height: 100,
+                          child: TextField(
+                            maxLines: 3,
+                            controller: _textController,
+                            onSubmitted: (value) => setState(() {
+                              thisText = value;
+                            }),
+                            decoration: InputDecoration(
+                                border: InputBorder.none,
+                                hintText: 'Enter Text here'),
+                          ),
+                        ),
+                      ),
                     ),
-                  );
-                  final box = BoxOfText.getText();
-                  final latestText = box.getAt(box.length - 1);
-                  var index = box.length - 1;
-                  //print('pinnedwidget length: ${pinnedWidgets!.length}');
-                  //int pinnedWidgetIndex = pinnedWidgets!.length;
+                    AvatarGlow(
+                      animate: _isListening,
+                      glowColor: Theme.of(context).primaryColor,
+                      endRadius: 25.0,
+                      duration: const Duration(milliseconds: 2000),
+                      repeatPauseDuration: const Duration(milliseconds: 100),
+                      repeat: true,
+                      child: IconButton(
+                        // backgroundColor: Colors.red,
 
-                  // StaggeredGridTile.count(
-                  //   crossAxisCellCount: 2,
-                  //   mainAxisCellCount: (latestText!.text!.length > 10
-                  //       ? (latestText!.text!.length > 20 ? 3 : 2)
-                  //       : 1),
-                  //   child:
-                  //       PinnedText(latestText!.text, index, pinnedWidgetIndex),
-                  // );
-
-                  Provider.of<BoardStateController>(context, listen: false)
-                      .addBoardData(
-                    m.BoardData(
-                      position: BoxOfBoardData.getBoardData().length,
-                      data: latestText!.text,
-                      isDone: false,
-                      type: 'text',
+                        onPressed: _listen,
+                        icon: Icon(_isListening ? Icons.mic : Icons.mic_none),
+                      ),
                     ),
-                  );
-                  setState(() {});
-                  Navigator.pushNamed(context, '/homepage');
-                },
-                child: Padding(
-                  padding: EdgeInsets.symmetric(
-                      horizontal: screenWidth() * 0.22,
-                      vertical: screenHeight() * 0.01),
-                  child: Text(
-                    'Add Text',
-                    style: TextStyle(color: Colors.black),
-                  ),
+                  ],
                 ),
               ),
-              SpeechScreen(),
-            ],
-          ),
+            ),
+            SizedBox(
+              height: 5,
+            ),
+            // Center(
+            //   child: Text(
+            //     localtext,
+            //     style: const TextStyle(
+            //       fontSize: 32.0,
+            //       color: Colors.black,
+            //       fontWeight: FontWeight.w400,
+            //     ),
+            //   ),
+            // ),
+            TextButton(
+              style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.all(Colors.blue),
+              ),
+              onPressed: () {
+                Provider.of<TextPageController>(context, listen: false).addText(
+                  m.Text(
+                    text: _textController.text,
+                  ),
+                );
+                final box = BoxOfText.getText();
+                final latestText = box.getAt(box.length - 1);
+                var index = box.length - 1;
+                //print('pinnedwidget length: ${pinnedWidgets!.length}');
+                //int pinnedWidgetIndex = pinnedWidgets!.length;
+
+                // StaggeredGridTile.count(
+                //   crossAxisCellCount: 2,
+                //   mainAxisCellCount: (latestText!.text!.length > 10
+                //       ? (latestText!.text!.length > 20 ? 3 : 2)
+                //       : 1),
+                //   child:
+                //       PinnedText(latestText!.text, index, pinnedWidgetIndex),
+                // );
+
+                Provider.of<BoardStateController>(context, listen: false)
+                    .addBoardData(
+                  m.BoardData(
+                    position: BoxOfBoardData.getBoardData().length,
+                    data: latestText!.text,
+                    isDone: false,
+                    type: 'text',
+                  ),
+                );
+                setState(() {});
+                Navigator.pushNamed(context, '/homepage');
+              },
+              child: Padding(
+                padding: EdgeInsets.symmetric(
+                    horizontal: screenWidth() * 0.22,
+                    vertical: screenHeight() * 0.01),
+                child: Text(
+                  'Add Text',
+                  style: TextStyle(color: Colors.black),
+                ),
+              ),
+            ),
+            // SpeechScreen(),
+          ],
         ),
       ),
     );

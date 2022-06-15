@@ -226,8 +226,8 @@ class _HomePageState extends State<HomePage> {
                 width: 10.0,
               ),
               Text(
-                'MYBOARD',
-                style: GoogleFonts.italiana(
+                'MyBoard',
+                style: GoogleFonts.montserratAlternates(
                   color: Colors.black87,
                   fontSize: screenHeight() * 0.055,
                 ),
@@ -320,8 +320,8 @@ class _HomePageState extends State<HomePage> {
                         .emptyLink();
                     Provider.of<AudioController>(context, listen: false)
                         .emptyAudio();
-                    Provider.of<VoiceToTextController>(context, listen: false)
-                        .emptyVoiceToText();
+                    // Provider.of<VoiceToTextController>(context, listen: false)
+                    //     .emptyVoiceToText();
                     Provider.of<TextPageController>(context, listen: false)
                         .emptyText();
                     Provider.of<DocumentsController>(context, listen: false)
@@ -935,8 +935,8 @@ class _HomePageState extends State<HomePage> {
                                       ),
                                     ),
                                   );
-                                  height_multiplier = 0.65;
-                                  width_multiplier = .9;
+                                  height_multiplier = 0.75;
+                                  width_multiplier = .93;
                                   // bin_color = Colors.white;
                                   should_be_visible = true;
 
@@ -1280,8 +1280,8 @@ class _boardState extends State<board> {
             fit: BoxFit.cover,
           ),
         ),
-        height: widget.height! * 0.65,
-        width: widget.width! * 0.9,
+        height: widget.height! * 0.75,
+        width: widget.width! * 0.93,
         child:
             BoardDataList(), ////******************************************************** */
       ),

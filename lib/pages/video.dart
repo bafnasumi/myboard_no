@@ -50,11 +50,11 @@ class _VideoState extends State<Video> {
                 ? controller!.pause()
                 : controller!.play(),
             child: Stack(
-              alignment: Alignment.topCenter,
+              alignment: Alignment.center,
               children: [
                 VideoPlayerWidget(controller: controller!),
                 Container(
-                  alignment: Alignment.topRight,
+                  alignment: Alignment.centerRight,
                   child: IconButton(
                     icon: Icon(
                       isMuted ? Icons.volume_off : Icons.volume_up,
@@ -104,7 +104,7 @@ class VideoPlayerWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) => controller.value.isInitialized
       ? Container(
-          alignment: Alignment.topCenter,
+          alignment: Alignment.center,
           child: buildVideo(),
         )
       // ignore: sized_box_for_whitespace
@@ -115,7 +115,7 @@ class VideoPlayerWidget extends StatelessWidget {
 
   Widget buildVideo() => AspectRatio(
       aspectRatio: controller.value.aspectRatio,
-      child: VideoPlayer(controller));
+      child: InteractiveViewer(child: VideoPlayer(controller)));
 
   Future<File> pickVideoFile() async {
     final result = await FilePicker.platform.pickFiles(
