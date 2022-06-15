@@ -447,6 +447,8 @@ class _HomePageState extends State<HomePage> {
                       Screenshot(
                         controller: screenshotController,
                         child: Container(
+                          clipBehavior: Clip.hardEdge,
+
                           // key: containerKey,
                           // decoration: imglink.isNotEmpty ? networkimg : localimg,
                           decoration: BoxDecoration(

@@ -172,16 +172,33 @@ class _TasksListState extends State<TasksList> {
         : Consumer<TaskController>(
             builder: (context, taskData, child) {
               return ListView.builder(
-                reverse: true,
-                shrinkWrap: true,
                 itemCount: boxoftodos.length,
                 itemBuilder: (context, index) {
+                  int itemCount = boxoftodos.length ?? 0;
+                  int reversedIndex = itemCount - 1 - index;
+
                   final task = boxoftodos.getAt(index);
+
                   return TaskTile(
                     taskTitle: task!.todo,
                     isChecked: task.isDone,
                     checkboxCallback: (checkboxState) {
+                      for (int index = 0;
+                          index < boxofboarddata.length;
+                          index++) {
+                        if (boxofboarddata
+                            .getAt(index)!
+                            .data!
+                            .contains(task!.todo!)) {
+                          Provider.of<BoardStateController>(context,
+                                  listen: false)
+                              .removeBoardData(index);
+                          setState(() {});
+                        }
+                      }
+
                       taskData.removeToDo(task.key);
+
                       setState(() {});
                       const snackBar = SnackBar(
                         content: Text('Todo deleted'),

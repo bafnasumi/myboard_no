@@ -50,13 +50,14 @@ class _VideoState extends State<Video> {
                 ? controller!.pause()
                 : controller!.play(),
             child: Stack(
+              alignment: Alignment.topCenter,
               children: [
                 VideoPlayerWidget(controller: controller!),
                 Container(
                   alignment: Alignment.topRight,
                   child: IconButton(
                     icon: Icon(
-                      isMuted ? Icons.volume_mute : Icons.volume_up,
+                      isMuted ? Icons.volume_off : Icons.volume_up,
                       color: Colors.white,
                     ),
                     onPressed: () => controller!.setVolume(isMuted ? 1 : 0),

@@ -8,8 +8,10 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:myboardapp/boxes.dart';
 import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
+import '../boardState.dart';
 import 'controller/task_controller.dart';
 import 'data/entity/task.dart';
 import 'service/notify_service.dart';
@@ -184,14 +186,15 @@ class _ReminderState extends State<Reminder> {
           ))
         : Consumer<ReminderController>(builder: (context, reminderData, child) {
             return ListView.builder(
-              reverse: true,
-              shrinkWrap: true,
+              // reverse: true,
               padding: EdgeInsets.all(8),
               itemCount: boxofreminders.length,
               itemBuilder: (BuildContext context, int index) {
+                int itemCount = boxofreminders.length ?? 0;
+                int reversedIndex = itemCount - 1 - index;
                 print(
                     'Boxofreminder length::::::::::  ${boxofreminders.length}');
-                var task = boxofreminders.getAt(index);
+                var task = boxofreminders.getAt(reversedIndex);
                 // if (task.repeat!.toLowerCase() == 'daily' ||
                 //     task.date == DateFormat.yMd().format(currentDate))
                 {
@@ -239,8 +242,10 @@ class _ReminderState extends State<Reminder> {
               ),
             ),
             const Spacer(),
-            if (task.isCompleted == 0) _completedButtonBottomSheet(task),
-            _deleteButtonBottomSheet(task),
+            if (task.isCompleted == 0)
+              // _completedButtonBottomSheet(task),
+
+              _deleteButtonBottomSheet(task),
             const SizedBox(
               height: 20,
             ),
@@ -251,16 +256,16 @@ class _ReminderState extends State<Reminder> {
     );
   }
 
-  _completedButtonBottomSheet(m.ReminderTask task) {
-    return _buttonBottomSheet(
-        //color: ColorPalette.primaryClr,
-        color: Colors.red[100]!,
-        label: 'Task Completed',
-        onTap: () async {
-          // await _taskController.completedTask(id: task.id!);
-          Get.back();
-        });
-  }
+  // _completedButtonBottomSheet(m.ReminderTask task) {
+  //   return _buttonBottomSheet(
+  //       //color: ColorPalette.primaryClr,
+  //       color: Colors.red[100]!,
+  //       label: 'Task Completed',
+  //       onTap: () async {
+  //         // await _taskController.completedTask(id: task.id!);
+  //         Get.back();
+  //       });
+  // }
 
   _deleteButtonBottomSheet(m.ReminderTask task) {
     return _buttonBottomSheet(
@@ -268,6 +273,20 @@ class _ReminderState extends State<Reminder> {
         label: 'Delete Task',
         onTap: () async {
           // await _taskController.deleteTask(task: task);
+          var boxofboarddata = BoxOfBoardData.getBoardData();
+          for (int index = 0; index < boxofboarddata.length; index++) {
+            if (boxofboarddata.getAt(index)!.data!.split('*')[0] ==
+                    task!.title &&
+                boxofboarddata.getAt(index)!.data!.split('*')[1] ==
+                    task!.note) {
+              Provider.of<BoardStateController>(context, listen: false)
+                  .removeBoardData(index);
+              setState(() {});
+            }
+          }
+          Provider.of<ReminderController>(context, listen: false)
+              .removeReminder(task.key);
+
           Navigator.of(context).pop();
         });
   }

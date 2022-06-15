@@ -176,7 +176,7 @@ class BboardTileState extends State<BoardTile> {
             ),
           ),
           InteractiveViewer(
-            child: Container(
+            child: SizedBox(
               width: 300,
               height: 500,
               child: Image.file(

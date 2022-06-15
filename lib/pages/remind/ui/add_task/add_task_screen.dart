@@ -378,7 +378,8 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                           case "None":
                             {
                               //Notification 1
-                              NotificationApi.showScheduledNotification_beforetime(
+                              NotificationApi
+                                  .showScheduledNotification_beforetime(
                                 latestreminder: latestreminder,
                                 title: latestreminder!.title,
                                 body: latestreminder!.note,
@@ -466,87 +467,89 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                                   ),
                                 ),
                                 latestreminder!.title);
-                            print('Alarm unabled');
+                            print('Alarm Enabled');
                           });
+                          //   Future.delayed(
+                          //       Duration(
+                          //         days: daysBetween(
+                          //             DateTime.now().add(Duration(minutes: 5)),
+                          //             combinedDate),
+                          //       ), () {
+                          //     callback_for_alarm(
+                          //         combinedDate, latestreminder!.title);
+                          //     print('Alarm Enabled');
+                          //   });
+                          // } else {
+                          //   print('Alarm no unabled');
+                          // }
+                          print('outside future.delayed');
                           Future.delayed(
                               Duration(
                                 days: daysBetween(
                                     DateTime.now().add(Duration(minutes: 5)),
                                     combinedDate),
+                                hours: combinedDate.hour,
+                                minutes: combinedDate.minute,
+                                seconds: combinedDate.second,
                               ), () {
-                            callback_for_alarm(
-                                combinedDate, latestreminder!.title);
-                            print('Alarm unabled');
+                            print('inside future.delayed');
+
+                            print(
+                                'BoxOfBoardData.getBoardData().length - 1 = ${BoxOfBoardData.getBoardData().length - 1}-----------Before');
+                            Provider.of<BoardStateController>(context,
+                                    listen: false)
+                                .removeBoardData(
+                                    BoxOfBoardData.getBoardData().length - 1);
+                            print(
+                                'BoxOfBoardData.getBoardData().length - 1 = ${BoxOfBoardData.getBoardData().length - 1} -------- After');
+                            print(
+                                'reminder index before ============   $index');
+                            Provider.of<ReminderController>(context,
+                                    listen: false)
+                                .removeReminder(index);
+                            print('reminder index after ============   $index');
                           });
+
+                          // await AndroidAlarmManager.oneShotAt(
+                          //     // combinedDate.subtract(
+                          //     //   Duration(minutes: 5),
+                          //     combinedDate,
+                          //     // ),
+                          //     _alarmId!,
+                          //     callback_for_alarm(
+                          //         combinedDate, latestreminder.title));
+                          // setState(() {
+                          //   _alarmId = _alarmId! + 1;
+                          // });
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: ((context) => HomePage()),
+                            ),
+                          );
                         } else {
-                          print('Alarm no unabled');
+                          Get.snackbar('Oops',
+                              'Cannot choose a time that has already passed',
+                              icon: const Icon(
+                                Icons.warning_amber_rounded,
+                                color: Colors.white,
+                              ),
+                              shouldIconPulse: true,
+                              colorText: Colors.white,
+                              backgroundColor: Colors.grey,
+                              snackPosition: SnackPosition.TOP);
                         }
-                        print('outside future.delayed');
-                        Future.delayed(
-                            Duration(
-                              days: daysBetween(
-                                  DateTime.now().add(Duration(minutes: 5)),
-                                  combinedDate),
-                              hours: combinedDate.hour,
-                              minutes: combinedDate.minute,
-                              seconds: combinedDate.second,
-                            ), () {
-                          print('inside future.delayed');
-
-                          print(
-                              'BoxOfBoardData.getBoardData().length - 1 = ${BoxOfBoardData.getBoardData().length - 1}-----------Before');
-                          Provider.of<BoardStateController>(context,
-                                  listen: false)
-                              .removeBoardData(
-                                  BoxOfBoardData.getBoardData().length - 1);
-                          print(
-                              'BoxOfBoardData.getBoardData().length - 1 = ${BoxOfBoardData.getBoardData().length - 1} -------- After');
-                          print('reminder index before ============   $index');
-                          Provider.of<ReminderController>(context,
-                                  listen: false)
-                              .removeReminder(index);
-                          print('reminder index after ============   $index');
-                        });
-
-                        // await AndroidAlarmManager.oneShotAt(
-                        //     // combinedDate.subtract(
-                        //     //   Duration(minutes: 5),
-                        //     combinedDate,
-                        //     // ),
-                        //     _alarmId!,
-                        //     callback_for_alarm(
-                        //         combinedDate, latestreminder.title));
-                        // setState(() {
-                        //   _alarmId = _alarmId! + 1;
-                        // });
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: ((context) => HomePage()),
-                          ),
-                        );
+                        // } else {}
                       } else {
-                        Get.snackbar('Oops',
-                            'Cannot choose a time that has already passed',
+                        Get.snackbar('Required', 'All Fields are required !',
                             icon: const Icon(
                               Icons.warning_amber_rounded,
                               color: Colors.white,
                             ),
-                            shouldIconPulse: true,
                             colorText: Colors.white,
                             backgroundColor: Colors.grey,
                             snackPosition: SnackPosition.TOP);
                       }
-                      // } else {}
-                    } else {
-                      Get.snackbar('Required', 'All Fields are required !',
-                          icon: const Icon(
-                            Icons.warning_amber_rounded,
-                            color: Colors.white,
-                          ),
-                          colorText: Colors.white,
-                          backgroundColor: Colors.grey,
-                          snackPosition: SnackPosition.TOP);
                     }
                   }),
               SizedBox(

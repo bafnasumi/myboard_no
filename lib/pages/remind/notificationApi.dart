@@ -60,7 +60,7 @@ class NotificationApi {
         //var var_substring = latestreminder!.startTime!.substring(0)
         var hour = int.parse(latestreminder!.startTime!.split(':')[0]);
         var minute =
-        int.parse(latestreminder!.startTime!.split(':')[1].substring(0, 2));
+            int.parse(latestreminder!.startTime!.split(':')[1].substring(0, 2));
         hour = hour + 12;
         print('hour from notification API');
         print(hour.toString());
@@ -94,7 +94,7 @@ class NotificationApi {
       payload: payload,
       androidAllowWhileIdle: true,
       uiLocalNotificationDateInterpretation:
-      UILocalNotificationDateInterpretation.absoluteTime,
+          UILocalNotificationDateInterpretation.absoluteTime,
     );
   }
 
