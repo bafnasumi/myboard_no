@@ -6,7 +6,10 @@ import 'dart:typed_data';
 
 // import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:colorful_safe_area/colorful_safe_area.dart';
+import 'package:extended_image/extended_image.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:myboardapp/boxes.dart';
@@ -15,6 +18,7 @@ import 'package:myboardapp/pages/imageControlller.dart';
 import 'package:myboardapp/pages/links.dart';
 import 'package:myboardapp/pages/myvideo.dart' as vid;
 import 'package:myboardapp/pages/quotes/quotes.dart';
+import 'package:myboardapp/pages/remind/controller/task_controller.dart';
 import 'package:myboardapp/pages/remind/notificationAPI2.dart';
 import 'package:myboardapp/pages/remind/notificationApi.dart';
 import 'package:myboardapp/pages/remind/reminder.dart';
@@ -32,7 +36,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:screenshot/screenshot.dart';
-import 'package:pinningtrialpackage/pinningtrialpackage.dart';
+// import 'package:pinningtrialpackage/pinningtrialpackage.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wallpaper_manager_flutter/wallpaper_manager_flutter.dart';
@@ -47,6 +51,7 @@ import 'Documents/documents.dart';
 import 'todo.dart';
 import 'background.dart';
 import 'dart:math' as math;
+import 'package:stack_board/stack_board.dart';
 
 // List<Widget>? pinnedWidgets;
 
@@ -60,8 +65,13 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   static const batteryChannel = MethodChannel('com.example.myboardapp/method');
   int newbatterylevel = 0;
-  late final StackBoardController _boardController;
+  StackBoardController _boardController = StackBoardController();
   Color trialcolor = Colors.lightGreenAccent;
+
+  // List<Widget> scribble_list =
+  var height_multiplier = 0.0001;
+
+  var width_multiplier = 0.0001;
 
   //list of widgets
 
@@ -171,6 +181,8 @@ class _HomePageState extends State<HomePage> {
     // var boardprovider = Provider.of<BoardStateController>(context);
     var boxofboarddata = BoxOfBoardData.getBoardData();
     Key containerKey;
+    bool should_be_visible = false;
+
     return ColorfulSafeArea(
       overflowRules: OverflowRules.all(true),
       child: Scaffold(
@@ -224,14 +236,24 @@ class _HomePageState extends State<HomePage> {
                 width: 5.0,
               ),
               IconButton(
-                icon: Icon(Icons.delete),
-                onPressed: () {
-                  setState(() {
-                    Provider.of<BoardStateController>(context, listen: false)
-                        .emptyBoardData();
-                    Provider.of<ImageController>(context, listen: false)
-                        .emptyImage();
-                  });
+                icon: Icon(Icons.ios_share_sharp),
+                onPressed: () async {
+                  // final image = screenshotController
+                  //     .captureFromWidget(board(
+                  //   imageController: imageController,
+                  //   height: MediaQuery.of(context).size.height,
+                  //   width: MediaQuery.of(context).size.width,
+                  // ));
+                  final image = await screenshotController.capture(
+                      // pixelRatio: 1000,
+                      delay: Duration(
+                    microseconds: 100,
+                  ));
+                  final imagepath = await saveAndShare(image!);
+                  // int location = WallpaperManager.HOME_SCREEN;
+                  // var result =
+                  //     await WallpaperManager.setWallpaperFromAsset(
+                  //         imagepath, location);
                 },
               ),
             ],
@@ -282,6 +304,53 @@ class _HomePageState extends State<HomePage> {
                 },
               ),
               ListTile(
+                leading: Icon(Icons.delete_forever),
+                title: Text("Reset Board"),
+                onTap: () {
+                  setState(() {
+                    Provider.of<BoardStateController>(context, listen: false)
+                        .emptyBoardData();
+                    Provider.of<ImageController>(context, listen: false)
+                        .emptyImage();
+                    Provider.of<TaskController>(context, listen: false)
+                        .emptyToDo();
+                    Provider.of<ReminderController>(context, listen: false)
+                        .emptyReminder();
+                    Provider.of<LinksController>(context, listen: false)
+                        .emptyLink();
+                    Provider.of<AudioController>(context, listen: false)
+                        .emptyAudio();
+                    Provider.of<VoiceToTextController>(context, listen: false)
+                        .emptyVoiceToText();
+                    Provider.of<TextPageController>(context, listen: false)
+                        .emptyText();
+                    Provider.of<DocumentsController>(context, listen: false)
+                        .emptyDocument();
+                  });
+                  Navigator.pop(context);
+                },
+              ),
+              // ListTile(
+              //   leading: Icon(Icons.delete_forever),
+              //   title: Text("Wipe all data"),
+              //   onTap: () {
+              //     setState(() {
+              //       Provider.of<BoardStateController>(context, listen: false)
+              //           .emptyBoardData();
+              //       Provider.of<ImageController>(context, listen: false)
+              //           .emptyImage();
+              //       Provider.of<TaskController>(context, listen: false)
+              //           .emptyToDo();
+              //       Provider.of<ReminderController>(context, listen: false)
+              //           .emptyReminder();
+              //       Provider.of<LinksController>(context, listen: false)
+              //           .emptyLink();
+              //       Provider.of<AudioController>(context, listen: false)
+              //           .emptyAudio();
+              //     });
+              //   },
+              // ),
+              ListTile(
                 leading: Icon(Icons.tag_faces_rounded),
                 title: Text("Contact us"),
                 onTap: () {},
@@ -302,32 +371,54 @@ class _HomePageState extends State<HomePage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              (boxofboarddata.length == 1000)
-                  ? GestureDetector(
-                      onTap: () async {
-                        final image =
-                            await screenshotController.captureFromWidget(board(
-                          imageController: imageController,
-                          height: MediaQuery.of(context).size.height,
-                          width: MediaQuery.of(context).size.width,
-                        ));
-                        final imagepath = await saveAndShare(image);
-                        // int location = WallpaperManager.HOME_SCREEN;
-                        // var result =
-                        //     await WallpaperManager.setWallpaperFromAsset(
-                        //         imagepath, location);
-                        int location = WallpaperManagerFlutter.HOME_SCREEN;
-                        print(imagepath);
-                        var result = WallpaperManagerFlutter()
-                            .setwallpaperfromFile(File(imagepath), location);
-                      },
-                      child: Container(
-                        child: Text('Set as home screen wallpaper'),
-                      ),
-                    )
-                  : SizedBox(
-                      height: 1,
-                    ),
+              // boxofboarddata.isNotEmpty
+              //     ? (boxofboarddata.length > 0)
+              //         ? GestureDetector(
+              //             onTap: () async {
+              //               // final image = await screenshotController
+              //               //     .captureFromWidget(board(
+              //               //   imageController: imageController,
+              //               //   height: MediaQuery.of(context).size.height,
+              //               //   width: MediaQuery.of(context).size.width,
+              //               // ));
+              //               final image = await screenshotController.capture(
+              //                   // pixelRatio: 1000,
+              //                   delay: Duration(
+              //                 microseconds: 100,
+              //               ));
+              //               final imagepath = await saveAndShare(image!);
+              //               // int location = WallpaperManager.HOME_SCREEN;
+              //               // var result =
+              //               //     await WallpaperManager.setWallpaperFromAsset(
+              //               //         imagepath, location);
+              //               var extendedfile = ExtendedImage.file(
+              //                 File(imagepath),
+              //                 width: MediaQuery.of(context).size.width,
+              //                 height: MediaQuery.of(context).size.height,
+              //                 fit: BoxFit.scaleDown,
+              //               );
+              //               int location = WallpaperManagerFlutter.HOME_SCREEN;
+              //               print(imagepath);
+              //               var result =
+              //                   WallpaperManagerFlutter().setwallpaperfromFile(
+              //                       // File(imagepath), location);
+              //                       extendedfile,
+              //                       location);
+              //             },
+              //             child: Container(
+              //               color: Colors.amber,
+              //               child: Padding(
+              //                 padding: const EdgeInsets.all(8.0),
+              //                 child: Text('Set as home screen wallpaper'),
+              //               ),
+              //             ),
+              //           )
+              //         : SizedBox(
+              //             height: 0.000001,
+              //           )
+              //     : SizedBox(
+              //         height: 0.000001,
+              //       ),
               Stack(
                 children: [
                   Center(
@@ -351,39 +442,80 @@ class _HomePageState extends State<HomePage> {
               // ),
               Consumer<BackgroundController>(
                 builder: ((context, value, child) {
-                  return Container(
-                    // key: containerKey,
-                    // decoration: imglink.isNotEmpty ? networkimg : localimg,
-                    decoration: BoxDecoration(
-                      boxShadow: [
-                        // BoxShadow(
-                        //   color: your_shadow_color,
-                        // ),
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.5),
-                          spreadRadius: 3.0,
-                          blurRadius: 3.0,
-                          offset: Offset(
-                            2.0,
-                            2.0,
+                  return Stack(
+                    children: [
+                      Screenshot(
+                        controller: screenshotController,
+                        child: Container(
+                          // key: containerKey,
+                          // decoration: imglink.isNotEmpty ? networkimg : localimg,
+                          decoration: BoxDecoration(
+                            boxShadow: [
+                              // BoxShadow(
+                              //   color: your_shadow_color,
+                              // ),
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.5),
+                                spreadRadius: 3.0,
+                                blurRadius: 3.0,
+                                offset: Offset(
+                                  2.0,
+                                  2.0,
+                                ),
+                              ),
+                            ],
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(
+                              color: Colors.black.withOpacity(0.5),
+                              width: 8.0,
+                            ),
+                            image: DecorationImage(
+                              image: NetworkImage(value.imgLink.imgurl ??
+                                  'https://media.navyasfashion.com/catalog/product/cache/184a226590f48e7f268fa34c124ed9e1/_/d/_dsc0087.jpg'),
+                              fit: BoxFit.cover,
+                            ),
                           ),
+                          height: MediaQuery.of(context).size.height * 0.75,
+                          width: MediaQuery.of(context).size.width * 0.93,
+                          child:
+                              BoardDataList(), ////****************************************************BOARD DATA LIST**** */
                         ),
-                      ],
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(
-                        color: Colors.black.withOpacity(0.5),
-                        width: 8.0,
                       ),
-                      image: DecorationImage(
-                        image: NetworkImage(value.imgLink.imgurl ??
-                            'https://media.navyasfashion.com/catalog/product/cache/184a226590f48e7f268fa34c124ed9e1/_/d/_dsc0087.jpg'),
-                        fit: BoxFit.cover,
+                      Stack(
+                        children: [
+                          SizedBox(
+                            height: MediaQuery.of(context).size.height *
+                                height_multiplier,
+                            width: MediaQuery.of(context).size.width *
+                                width_multiplier,
+                            child: StackBoard(
+                              controller: _boardController,
+                              background:
+                                  const ColoredBox(color: Colors.transparent),
+                            ),
+                          ),
+                          GestureDetector(
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Icon(
+                                Icons.delete,
+                                color: should_be_visible
+                                    ? Colors.white
+                                    : Colors.transparent,
+                              ),
+                            ),
+                            onTap: () {
+                              height_multiplier = 0.0001;
+                              width_multiplier = 0.0001;
+                              // bin_color = Colors.transparent;
+                              should_be_visible = false;
+                              setState(() {});
+                              print('ontap of delete icon');
+                            },
+                          ),
+                        ],
                       ),
-                    ),
-                    height: MediaQuery.of(context).size.height * 0.65,
-                    width: MediaQuery.of(context).size.width * 0.9,
-                    child:
-                        BoardDataList(), ////****************************************************BOARD DATA LIST**** */
+                    ],
                   );
                 }),
               ),
@@ -793,15 +925,21 @@ class _HomePageState extends State<HomePage> {
                                 'assets/images/scribble.jpg',
                                 () {
                                   _boardController.add(
-                                    StackBoardItem(
-                                      child: const Text(
-                                        'Custom Widget',
-                                        style: TextStyle(color: Colors.black),
+                                    const StackDrawing(
+                                      caseStyle: CaseStyle(
+                                        borderColor: Colors.grey,
+                                        iconColor: Colors.white,
+                                        boxAspectRatio: 1,
                                       ),
-                                      //onDel: _onDel,
-                                      // caseStyle: const CaseStyle(initOffset: Offset(100, 100)),
                                     ),
                                   );
+                                  height_multiplier = 0.65;
+                                  width_multiplier = .9;
+                                  // bin_color = Colors.white;
+                                  should_be_visible = true;
+
+                                  setState(() {});
+                                  Navigator.pop(context);
                                 },
                               ),
                               // buildCircleButton(context, 'Video',
@@ -1154,7 +1292,7 @@ Future<String> saveAndShare(Uint8List bytes) async {
   final image = File('${directory.path}/flutter.png');
   image.writeAsBytesSync(bytes);
 
-  final text = 'Shared From Facebook';
+  final text = 'Shared From MyBoard';
   await Share.shareFiles([image.path], text: text);
   return '${directory.path}/flutter.png';
 }
@@ -1207,7 +1345,7 @@ void openFile(File file) {
 // var networkimg = BoxDecoration(
 //   image: DecorationImage(
 //       image: NetworkImage(
-        
+
 //       ),
 //       fit: BoxFit.cover),
 //   boxShadow: [
