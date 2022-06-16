@@ -93,7 +93,12 @@ class _TextPageState extends State<TextPage> {
   // late stt.SpeechToText _speech;
   // bool _isListening = false;
   String textSpeech = 'Press the button and start speaking';
-
+  var snackBar = SnackBar(
+    content: Text(
+      'Enter text to pin data!',
+      style: TextStyle(fontSize: 18),
+    ),
+  );
   @override
   Widget build(BuildContext context) {
     var TextPageprovider = Provider.of<TextPageController>(context);
@@ -230,40 +235,48 @@ class _TextPageState extends State<TextPage> {
             // ),
             TextButton(
               style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.all(Colors.blue),
+                backgroundColor: MaterialStateProperty.all(
+                  Color.fromARGB(255, 10, 75, 107),
+                ),
               ),
               onPressed: () {
-                Provider.of<TextPageController>(context, listen: false).addText(
-                  m.Text(
-                    text: _textController.text,
-                  ),
-                );
-                final box = BoxOfText.getText();
-                final latestText = box.getAt(box.length - 1);
-                var index = box.length - 1;
-                //print('pinnedwidget length: ${pinnedWidgets!.length}');
-                //int pinnedWidgetIndex = pinnedWidgets!.length;
+                if (_textController.text.isNotEmpty) {
+                  Provider.of<TextPageController>(context, listen: false)
+                      .addText(
+                    m.Text(
+                      text: _textController.text,
+                    ),
+                  );
+                  final box = BoxOfText.getText();
+                  final latestText = box.getAt(box.length - 1);
+                  var index = box.length - 1;
+                  //print('pinnedwidget length: ${pinnedWidgets!.length}');
+                  //int pinnedWidgetIndex = pinnedWidgets!.length;
 
-                // StaggeredGridTile.count(
-                //   crossAxisCellCount: 2,
-                //   mainAxisCellCount: (latestText!.text!.length > 10
-                //       ? (latestText!.text!.length > 20 ? 3 : 2)
-                //       : 1),
-                //   child:
-                //       PinnedText(latestText!.text, index, pinnedWidgetIndex),
-                // );
+                  // StaggeredGridTile.count(
+                  //   crossAxisCellCount: 2,
+                  //   mainAxisCellCount: (latestText!.text!.length > 10
+                  //       ? (latestText!.text!.length > 20 ? 3 : 2)
+                  //       : 1),
+                  //   child:
+                  //       PinnedText(latestText!.text, index, pinnedWidgetIndex),
+                  // );
 
-                Provider.of<BoardStateController>(context, listen: false)
-                    .addBoardData(
-                  m.BoardData(
-                    position: BoxOfBoardData.getBoardData().length,
-                    data: latestText!.text,
-                    isDone: false,
-                    type: 'text',
-                  ),
-                );
-                setState(() {});
-                Navigator.pushNamed(context, '/homepage');
+                  Provider.of<BoardStateController>(context, listen: false)
+                      .addBoardData(
+                    m.BoardData(
+                      position: BoxOfBoardData.getBoardData().length,
+                      data: latestText!.text,
+                      isDone: false,
+                      type: 'text',
+                    ),
+                  );
+                  setState(() {});
+                  Navigator.pushNamed(context, '/homepage');
+                } else {
+                  // Get.snackbar('Oops', 'Item already on board');
+                  ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                }
               },
               child: Padding(
                 padding: EdgeInsets.symmetric(
@@ -271,7 +284,7 @@ class _TextPageState extends State<TextPage> {
                     vertical: screenHeight() * 0.01),
                 child: Text(
                   'Add Text',
-                  style: TextStyle(color: Colors.black),
+                  style: TextStyle(color: Colors.white),
                 ),
               ),
             ),
