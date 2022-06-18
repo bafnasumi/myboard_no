@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors, prefer_typing_uninitialized_variables, prefer_const_literals_to_create_immutables, avoid_print, unused_import
+// ignore_for_file: prefer_const_constructors, prefer_typing_uninitialized_variables, prefer_const_literals_to_create_immutables, avoid_print, unused_import, avoid_unnecessary_containers
 
 //import 'dart:html';
 import 'dart:math';
@@ -52,7 +52,7 @@ import 'todo.dart';
 import 'background.dart';
 import 'dart:math' as math;
 import 'package:stack_board/stack_board.dart';
-
+import 'package:solid_bottom_sheet/solid_bottom_sheet.dart';
 // List<Widget>? pinnedWidgets;
 
 class HomePage extends StatefulWidget {
@@ -63,6 +63,8 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  SolidController _controller = SolidController();
+
   static const batteryChannel = MethodChannel('com.example.myboardapp/method');
   int newbatterylevel = 0;
   StackBoardController _boardController = StackBoardController();
@@ -185,811 +187,709 @@ class _HomePageState extends State<HomePage> {
 
     return ColorfulSafeArea(
       overflowRules: OverflowRules.all(true),
-      child: Scaffold(
-        backgroundColor: Colors.white,
-        resizeToAvoidBottomInset: false,
-        key: scaffoldKey,
-        // appBar: AppBar(
-        //   toolbarHeight: 80.0,
-        //   actions: [
-        //     IconButton(
-        //       icon: Icon(Icons.delete),
-        //       onPressed: () {
-        //         setState(() {
-        //           pinnedWidgets.clear();
-        //         });
-        //       },
-        //     ),
-        //   ],
-        //   centerTitle: true,
-        //   title: Padding(
-        //     padding: const EdgeInsets.only(top: 35.0),
-        //     child: Text(
-        //       'MYBOARD',
-        //       style: GoogleFonts.italiana(
-        //         color: Colors.black87,
-        //         fontSize: screenHeight() * 0.05,
-        //       ),
-        //     ),
-        //   ),
-        //   backgroundColor: Color.fromARGB(255, 255, 255, 255),
-        //   elevation: 0.0,
-        //   iconTheme: IconThemeData(color: Colors.black),
-        // ),
-        appBar: AppBar(
-          toolbarHeight: 80.0,
-          title: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              SizedBox(
-                width: 10.0,
-              ),
-              Text(
-                'MyBoard',
-                style: GoogleFonts.montserratAlternates(
-                  color: Colors.black87,
-                  fontSize: screenHeight() * 0.055,
-                ),
-              ),
-              SizedBox(
-                width: 5.0,
-              ),
-              IconButton(
-                icon: Icon(Icons.ios_share_sharp),
-                onPressed: () async {
-                  // final image = screenshotController
-                  //     .captureFromWidget(board(
-                  //   imageController: imageController,
-                  //   height: MediaQuery.of(context).size.height,
-                  //   width: MediaQuery.of(context).size.width,
-                  // ));
-                  final image = await screenshotController.capture(
-                      // pixelRatio: 1000,
-                      delay: Duration(
-                    microseconds: 100,
-                  ));
-                  final imagepath = await saveAndShare(image!);
-                  // int location = WallpaperManager.HOME_SCREEN;
-                  // var result =
-                  //     await WallpaperManager.setWallpaperFromAsset(
-                  //         imagepath, location);
-                },
-              ),
-            ],
-          ),
-          backgroundColor: Color.fromARGB(255, 255, 255, 255),
-          elevation: 0.0,
-          iconTheme: IconThemeData(color: Colors.black),
-        ),
-        drawer: Drawer(
-          child: ListView(
-            padding: EdgeInsets.zero,
-            children: [
-              DrawerHeader(
-                child: Container(
-                  color: Colors.blueGrey,
-                  alignment: Alignment.bottomLeft,
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          "MYBOARD",
-                          style: GoogleFonts.italiana(
-                            color: Colors.white,
-                            fontSize: 35.0,
-                          ),
-                        ),
-                        Text(
-                          "Extras",
-                          style: TextStyle(
-                            fontSize: 25,
-                            color: Colors.black45,
-                          ),
-                        ),
-                      ],
+      child: Theme(
+        data: Theme.of(context).copyWith(canvasColor: Colors.transparent),
+        child: Scaffold(
+            backgroundColor: Colors.white,
+            resizeToAvoidBottomInset: false,
+            key: scaffoldKey,
+            // appBar: AppBar(
+            //   toolbarHeight: 80.0,
+            //   actions: [
+            //     IconButton(
+            //       icon: Icon(Icons.delete),
+            //       onPressed: () {
+            //         setState(() {
+            //           pinnedWidgets.clear();
+            //         });
+            //       },
+            //     ),
+            //   ],
+            //   centerTitle: true,
+            //   title: Padding(
+            //     padding: const EdgeInsets.only(top: 35.0),
+            //     child: Text(
+            //       'MYBOARD',
+            //       style: GoogleFonts.italiana(
+            //         color: Colors.black87,
+            //         fontSize: screenHeight() * 0.05,
+            //       ),
+            //     ),
+            //   ),
+            //   backgroundColor: Color.fromARGB(255, 255, 255, 255),
+            //   elevation: 0.0,
+            //   iconTheme: IconThemeData(color: Colors.black),
+            // ),
+            appBar: AppBar(
+              toolbarHeight: 80.0,
+              title: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  SizedBox(
+                    width: 10.0,
+                  ),
+                  Text(
+                    'MyBoard',
+                    style: GoogleFonts.montserratAlternates(
+                      color: Colors.black87,
+                      fontSize: screenHeight() * 0.055,
                     ),
                   ),
-                ),
-              ),
-              ListTile(
-                leading: Icon(Icons.change_circle_sharp),
-                title: Text("Change Background"),
-                onTap: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => Background()));
-                },
-              ),
-              ListTile(
-                leading: Icon(Icons.delete_forever),
-                title: Text("Reset Board"),
-                onTap: () {
-                  setState(() {
-                    Provider.of<BoardStateController>(context, listen: false)
-                        .emptyBoardData();
-                    Provider.of<ImageController>(context, listen: false)
-                        .emptyImage();
-                    Provider.of<TaskController>(context, listen: false)
-                        .emptyToDo();
-                    Provider.of<ReminderController>(context, listen: false)
-                        .emptyReminder();
-                    Provider.of<LinksController>(context, listen: false)
-                        .emptyLink();
-                    Provider.of<AudioController>(context, listen: false)
-                        .emptyAudio();
-                    // Provider.of<VoiceToTextController>(context, listen: false)
-                    //     .emptyVoiceToText();
-                    Provider.of<TextPageController>(context, listen: false)
-                        .emptyText();
-                    Provider.of<DocumentsController>(context, listen: false)
-                        .emptyDocument();
-                  });
-                  Navigator.pop(context);
-                },
-              ),
-              // ListTile(
-              //   leading: Icon(Icons.delete_forever),
-              //   title: Text("Wipe all data"),
-              //   onTap: () {
-              //     setState(() {
-              //       Provider.of<BoardStateController>(context, listen: false)
-              //           .emptyBoardData();
-              //       Provider.of<ImageController>(context, listen: false)
-              //           .emptyImage();
-              //       Provider.of<TaskController>(context, listen: false)
-              //           .emptyToDo();
-              //       Provider.of<ReminderController>(context, listen: false)
-              //           .emptyReminder();
-              //       Provider.of<LinksController>(context, listen: false)
-              //           .emptyLink();
-              //       Provider.of<AudioController>(context, listen: false)
-              //           .emptyAudio();
-              //     });
-              //   },
-              // ),
-              ListTile(
-                leading: Icon(Icons.tag_faces_rounded),
-                title: Text("Contact us"),
-                onTap: () {},
-              ),
-              // ListTile(
-              //   leading: Icon(Icons.logout),
-              //   title: Text("Logout"),
-              //   onTap: () async {
-              //     await GSI.GoogleSignInProvider().LogOut();
-              //     await FirebaseAuth.instance.signOut();
-              //     Get.off(loginpage.LogInPage());
-              //   },
-              // ),
-            ],
-          ),
-        ),
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              // boxofboarddata.isNotEmpty
-              //     ? (boxofboarddata.length > 0)
-              //         ? GestureDetector(
-              //             onTap: () async {
-              //               // final image = await screenshotController
-              //               //     .captureFromWidget(board(
-              //               //   imageController: imageController,
-              //               //   height: MediaQuery.of(context).size.height,
-              //               //   width: MediaQuery.of(context).size.width,
-              //               // ));
-              //               final image = await screenshotController.capture(
-              //                   // pixelRatio: 1000,
-              //                   delay: Duration(
-              //                 microseconds: 100,
-              //               ));
-              //               final imagepath = await saveAndShare(image!);
-              //               // int location = WallpaperManager.HOME_SCREEN;
-              //               // var result =
-              //               //     await WallpaperManager.setWallpaperFromAsset(
-              //               //         imagepath, location);
-              //               var extendedfile = ExtendedImage.file(
-              //                 File(imagepath),
-              //                 width: MediaQuery.of(context).size.width,
-              //                 height: MediaQuery.of(context).size.height,
-              //                 fit: BoxFit.scaleDown,
-              //               );
-              //               int location = WallpaperManagerFlutter.HOME_SCREEN;
-              //               print(imagepath);
-              //               var result =
-              //                   WallpaperManagerFlutter().setwallpaperfromFile(
-              //                       // File(imagepath), location);
-              //                       extendedfile,
-              //                       location);
-              //             },
-              //             child: Container(
-              //               color: Colors.amber,
-              //               child: Padding(
-              //                 padding: const EdgeInsets.all(8.0),
-              //                 child: Text('Set as home screen wallpaper'),
-              //               ),
-              //             ),
-              //           )
-              //         : SizedBox(
-              //             height: 0.000001,
-              //           )
-              //     : SizedBox(
-              //         height: 0.000001,
-              //       ),
-              Stack(
-                children: [
-                  Center(
-                      child: Column(
-                    children: <Widget>[],
-                  )),
-                  Positioned(
-                    left: 10,
-                    top: 20,
-                    child: IconButton(
-                      icon: Icon(Icons.menu),
-                      onPressed: () => scaffoldKey.currentState.openDrawer(),
-                    ),
+                  SizedBox(
+                    width: 5.0,
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.ios_share_sharp),
+                    onPressed: () async {
+                      // final image = screenshotController
+                      //     .captureFromWidget(board(
+                      //   imageController: imageController,
+                      //   height: MediaQuery.of(context).size.height,
+                      //   width: MediaQuery.of(context).size.width,
+                      // ));
+                      final image = await screenshotController.capture(
+                          // pixelRatio: 1000,
+                          delay: Duration(
+                        microseconds: 100,
+                      ));
+                      final imagepath = await saveAndShare(image!);
+                      // int location = WallpaperManager.HOME_SCREEN;
+                      // var result =
+                      //     await WallpaperManager.setWallpaperFromAsset(
+                      //         imagepath, location);
+                    },
                   ),
                 ],
               ),
-              // board(
-              //   imageController: imageController,
-              //   height: MediaQuery.of(context).size.height,
-              //   width: MediaQuery.of(context).size.width,
-              // ),
-              Consumer<BackgroundController>(
-                builder: ((context, value, child) {
-                  return Stack(
-                    children: [
-                      Screenshot(
-                        controller: screenshotController,
-                        child: Container(
-                          clipBehavior: Clip.hardEdge,
-
-                          // key: containerKey,
-                          // decoration: imglink.isNotEmpty ? networkimg : localimg,
-                          decoration: BoxDecoration(
-                            boxShadow: [
-                              // BoxShadow(
-                              //   color: your_shadow_color,
-                              // ),
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.5),
-                                spreadRadius: 3.0,
-                                blurRadius: 3.0,
-                                offset: Offset(
-                                  2.0,
-                                  2.0,
-                                ),
-                              ),
-                            ],
-                            borderRadius: BorderRadius.circular(10),
-                            border: Border.all(
-                              color: Colors.black.withOpacity(0.5),
-                              width: 8.0,
-                            ),
-                            image: DecorationImage(
-                              image: NetworkImage(value.imgLink.imgurl ??
-                                  'https://media.navyasfashion.com/catalog/product/cache/184a226590f48e7f268fa34c124ed9e1/_/d/_dsc0087.jpg'),
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                          height: MediaQuery.of(context).size.height * 0.75,
-                          width: MediaQuery.of(context).size.width * 0.93,
-                          child:
-                              BoardDataList(), ////****************************************************BOARD DATA LIST**** */
-                        ),
-                      ),
-                      Stack(
-                        children: [
-                          SizedBox(
-                            height: MediaQuery.of(context).size.height *
-                                height_multiplier,
-                            width: MediaQuery.of(context).size.width *
-                                width_multiplier,
-                            child: StackBoard(
-                              controller: _boardController,
-                              background:
-                                  const ColoredBox(color: Colors.transparent),
-                            ),
-                          ),
-                          GestureDetector(
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Icon(
-                                Icons.delete,
-                                color: should_be_visible
-                                    ? Colors.white
-                                    : Colors.transparent,
-                              ),
-                            ),
-                            onTap: () {
-                              height_multiplier = 0.0001;
-                              width_multiplier = 0.0001;
-                              // bin_color = Colors.transparent;
-                              should_be_visible = false;
-                              setState(() {});
-                              print('ontap of delete icon');
-                            },
-                          ),
-                        ],
-                      ),
-                    ],
-                  );
-                }),
-              ),
-
-// StaggeredGrid.count(
-//                         //staggeredTileBuilder: (index) => StaggeredTile.fit(2),
-//                         mainAxisSpacing: 2,
-//                         //crossAxisSpacing: 3,
-//                         crossAxisCount: 6,
-//                         children: (for(var i = 0; i < boxofboardData.length; i++) {
-//                         boarddataController.addThings(boxofboardData.getAt(i)!, context);
-//                         print(boxofboardData.getAt(i)!.data);
-//                         }),
-//                       ),
-
-// <---
-// Consumer<TaskController>(
-//             builder: (context, taskData, child) {
-//               return ListView.builder(
-//                 reverse: true,
-//                 itemCount: boxoftodos.length,
-//                 itemBuilder: (context, index) {
-//                   final task = boxoftodos.getAt(index);
-//                   return TaskTile(
-//                     taskTitle: task!.todo,
-//                     isChecked: task.isDone,
-//                     checkboxCallback: (checkboxState) {
-//                       taskData.removeToDo(task.key);
-//                       setState(() {});
-//                       const snackBar = SnackBar(
-//                         content: Text('Todo deleted'),
-//                       );
-
-//                       ScaffoldMessenger.of(context).showSnackBar(snackBar);
-//                     },
-//                     // longPressCallback: () {
-//                     //   taskData.removeToDo(task);
-//                     //   setState(() {});
-//                     // },//TODO: on longpress: delete the todo
-//                   );
-//                 },
-//                 // itemCount: taskData.taskCount,
-//               );
-//             },
-//           );
-
-              const SizedBox(
-                height: 10.0,
-              ),
-              GestureDetector(
-                onTap: () async {
-                  showModalBottomSheet(
-                      constraints: BoxConstraints(
-                        maxHeight: screenHeight() * .8,
-                      ),
-                      backgroundColor: Colors.transparent,
-                      isScrollControlled: true,
-                      context: context,
-                      builder: (context) {
-                        return Container(
-                          decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.8),
-                            borderRadius: BorderRadius.circular(30),
-                          ),
-                          child: GridView.count(
-                            padding: EdgeInsets.fromLTRB(0.0, 22.0, 0.0, 0.0),
-                            crossAxisCount: 2,
-                            mainAxisSpacing: 2,
-                            crossAxisSpacing: 3,
-                            controller: gridviewcontroller,
-                            children: [
-                              // buildCircleButton(
-                              //   context,
-                              //   'Voice to Text',
-                              //   'assets/images/voicetotext_new.jpg',
-                              //   () {
-                              //     Navigator.push(
-                              //       context,
-                              //       MaterialPageRoute(
-                              //         builder: ((context) => VoiceToText()),
-                              //       ),
-                              //     );
-                              //   },
-                              // ),
-                              buildCircleButton(
-                                context,
-                                'Document',
-                                'assets/images/docfinal.jpg',
-                                () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: ((context) => Documents()),
-                                    ),
-                                  );
-                                },
-                              ),
-                              buildCircleButton(
-                                  context, 'Text', 'assets/images/text.png',
-                                  () {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: ((context) => TextPage())));
-                                setState(() {});
-                              }),
-
-                              buildCircleButton(
-                                context,
-                                'ToDo',
-                                'assets/images/todo_final.jpg',
-                                () async {
-                                  await Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => ToDo()));
-                                  // if (ifVisited) {
-                                  //   final box = BoxOfToDos.getToDos();
-                                  //   final latesttodo =
-                                  //       box.getAt(box.length - 1);
-
-                                  //   pinnedWidgets.add(
-                                  //     StaggeredGridTile.count(
-                                  //       crossAxisCellCount: 2,
-                                  //       mainAxisCellCount: 1,
-                                  //       child: Text(
-                                  //         latesttodo.toString(),
-                                  //         style: TextStyle(
-                                  //             fontSize: 10.0,
-                                  //             color: Colors.white),
-                                  //       ),
-                                  //     ),
-                                  //   );
-                                  // }
-                                },
-                              ),
-                              buildCircleButton(
-                                context,
-                                'Reminders',
-                                'assets/images/remindersfinal.jpg',
-                                () {
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => Reminder()));
-                                },
-                              ),
-                              buildCircleButton(
-                                context,
-                                'Photo',
-                                'assets/images/photosfinal.jpg',
-                                () async {
-                                  // selectPhotoOrVideo();
-                                  // uploadPhotoOrVideo();
-                                  final result = await FilePicker.platform
-                                      .pickFiles(
-                                          type: FileType.custom,
-                                          allowMultiple: false,
-                                          allowedExtensions: [
-                                        'jpeg',
-                                        'png',
-                                        'gif'
-                                      ]);
-                                  final oneFile = result?.files.first;
-
-                                  final legitfile =
-                                      File(oneFile!.path.toString());
-                                  print(oneFile.name);
-                                  print(oneFile.extension);
-                                  print(oneFile.path);
-                                  print(oneFile.size);
-                                  //Navigator.pushNamed(context, '/memories');
-                                  // ImageProvider gotFile = Get.arguments();
-                                  var finalImage =
-                                      await saveFilePermanently(oneFile);
-                                  print('from ' + oneFile.path.toString());
-                                  print('to ' + finalImage[1]);
-
-                                  // var decodedImage = await decodeImageFromList(
-                                  //     finalImage[0].readAsBytesSync());
-                                  // double width = decodedImage.width.toDouble();
-                                  // double height =
-                                  //     decodedImage.height.toDouble();
-                                  // pinnedWidgets!.add(
-                                  //   StaggeredGridTile.count(
-                                  //     crossAxisCellCount:
-                                  //         width > height ? 3 : 2,
-                                  //     mainAxisCellCount: width < height ? 3 : 2,
-                                  //     child: Stack(
-                                  //       alignment: Alignment.topCenter,
-                                  //       children: [
-                                  //         Container(
-                                  //           child: Image.file(finalImage),
-                                  //           decoration:
-                                  //               BoxDecoration(boxShadow: [
-                                  //             BoxShadow(
-                                  //               blurRadius: 3.0,
-                                  //               spreadRadius: 0.5,
-                                  //               offset: Offset(1, 1),
-                                  //             ),
-                                  //           ]),
-                                  //         ),
-                                  //         Image.asset(
-                                  //           'assets/images/pin.png',
-                                  //           width: 13,
-                                  //           height: 13,
-                                  //         ),
-                                  //       ],
-                                  //     ),
-                                  //   ),
-                                  // );
-                                  m.Images previousImagePaths;
-                                  var _repeated = false;
-                                  // for (previousImagePaths in boxofImages.toMap().values) {
-                                  if (boxofImages.length > 0) {
-                                    for (var index = 0;
-                                        index < boxofImages.length;
-                                        index++) {
-                                      print(finalImage[1].trim());
-                                      print((boxofImages
-                                          .getAt(index)!
-                                          .imagesource!
-                                          .trim()));
-                                      print(boxofImages
-                                          .getAt(index)!
-                                          .imagesource!
-                                          .split('/')[6]);
-                                      print((finalImage[1].trim()).contains(
-                                          boxofImages
-                                              .getAt(index)!
-                                              .imagesource!
-                                              .split('/')[6]));
-
-                                      // boxofImages.getAt(index)!.imagesource!.trim()));
-
-                                      if ((finalImage[1].trim()).contains(
-                                          boxofImages
-                                              .getAt(index)!
-                                              .imagesource!
-                                              .split('/')[6])) {
-                                        print(
-                                            '${finalImage[1]} == ${boxofImages.getAt(index)!.imagesource}');
-                                        setState(() {
-                                          _repeated = true;
-                                        });
-                                      }
-                                    }
-                                  }
-                                  print('_repeated = $_repeated');
-                                  if (!_repeated) {
-                                    Provider.of<ImageController>(context,
-                                            listen: false)
-                                        .addImage(
-                                      m.Images(
-                                        imagesource: finalImage[1],
-                                      ),
-                                    );
-
-                                    var latestImage = boxofImages
-                                        .getAt(boxofImages.length - 1);
-                                    Provider.of<BoardStateController>(context,
-                                            listen: false)
-                                        .addBoardData(
-                                      m.BoardData(
-                                        position: BoxOfBoardData.getBoardData()
-                                            .length,
-                                        data:
-                                            '${finalImage[1]}*${latestImage!.key}',
-                                        isDone: false,
-                                        type: 'image',
-                                      ),
-                                    );
-                                    //positioningCoordinates(true, width, height);
-                                    setState(
-                                      () {},
-                                    );
-                                  } else {
-                                    Get.snackbar(
-                                        'Oops', 'Item already on board');
-                                  }
-
-                                  Navigator.pop(context);
-
-                                  // print(pinnedWidgets!);
-                                  // print(pinnedWidgets![0]);
-                                },
-                              ),
-                              buildCircleButton(
-                                context,
-                                'Video',
-                                'assets/images/video_new.jpg',
-                                () async {
-                                  //Navigator.pushNamed(context, '/video');
-
-                                  PlatformFile localfile =
-                                      await vid.pickVideoFile();
-                                  var videopath = localfile.path;
-                                  print('Video picked path: $videopath');
-                                  var videobox = BoxOfVideos.getVideos();
-                                  videobox.add(m.Video(
-                                    videosource: videopath,
-                                  ));
-                                  print(videobox.keys);
-                                  // pinnedWidgets!.add(
-                                  //   StaggeredGridTile.count(
-                                  //     crossAxisCellCount: 2,
-                                  //     mainAxisCellCount: 2,
-                                  //     child: InkWell(
-                                  //       onTap: (() {
-                                  //         print('tap on video catched');
-                                  //         print(localfile.path.toString());
-                                  //         Navigator.push(
-                                  //           context,
-                                  //           MaterialPageRoute(
-                                  //             builder: ((context) => Video(
-                                  //                 localfile_path:
-                                  //                     localfile.path)),
-                                  //           ),
-                                  //         );
-                                  //       }),
-                                  //       child: Padding(
-                                  //         padding: const EdgeInsets.all(8.0),
-                                  //         child: Stack(
-                                  //           alignment: Alignment.topCenter,
-                                  //           children: [
-                                  //             Container(
-                                  //               child: Text(
-                                  //                 'video link; ${videopath.toString()}',
-                                  //                 style: TextStyle(
-                                  //                   color: Colors.white,
-                                  //                 ),
-                                  //               ),
-                                  //               // child: Image.file(
-                                  //               //     File(videopath.toString())),
-                                  //               decoration:
-                                  //                   BoxDecoration(boxShadow: [
-                                  //                 BoxShadow(
-                                  //                   blurRadius: 3.0,
-                                  //                   spreadRadius: 0.5,
-                                  //                   offset: Offset(1, 1),
-                                  //                 ),
-                                  //               ]),
-                                  //             ),
-                                  //             Image.asset(
-                                  //               'assets/images/pin.png',
-                                  //               width: 13,
-                                  //               height: 13,
-                                  //             ),
-                                  //           ],
-                                  //         ),
-                                  //       ),
-                                  //     ),
-                                  //   ),
-                                  // );
-                                  Provider.of<BoardStateController>(context,
-                                          listen: false)
-                                      .addBoardData(
-                                    m.BoardData(
-                                      position:
-                                          BoxOfBoardData.getBoardData().length,
-                                      data: videopath.toString(),
-                                      isDone: false,
-                                      type: 'video',
-                                    ),
-                                  );
-                                  setState(
-                                    () {},
-                                  );
-                                },
-                              ),
-
-                              buildCircleButton(
-                                context,
-                                'Audio',
-                                'assets/images/audio_new.png',
-                                () {
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => MyAudio()));
-                                },
-                              ),
-
-                              buildCircleButton(
-                                context,
-                                'Links',
-                                'assets/images/linksfinal.jpg',
-                                () {
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => Links()));
-                                },
-                              ),
-                              buildCircleButton(context, 'Quotes',
-                                  'assets/images/quotes_new.png', () {
-                                print(DateTime.now().toString());
-
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => Quotes()));
-                              }),
-                              buildCircleButton(
-                                context,
-                                'Scribble',
-                                'assets/images/scribblefinal.jpg',
-                                () {
-                                  _boardController.add(
-                                    const StackDrawing(
-                                      caseStyle: CaseStyle(
-                                        borderColor: Colors.grey,
-                                        iconColor: Colors.white,
-                                        boxAspectRatio: 1,
-                                      ),
-                                    ),
-                                  );
-                                  height_multiplier = 0.75;
-                                  width_multiplier = .93;
-                                  // bin_color = Colors.white;
-                                  should_be_visible = true;
-
-                                  setState(() {});
-                                  Navigator.pop(context);
-                                },
-                              ),
-                              // buildCircleButton(context, 'Video',
-                              // 'assets/images/video.jpg', () {}),
-                            ],
-                          ),
-                        );
-                      });
-                },
-                child: Align(
-                  alignment: Alignment.bottomCenter,
-                  child: Stack(
-                    alignment: AlignmentDirectional.center,
-                    children: [
-                      Container(
-                        width: screenWidth(),
-                        height: screenHeight() * .07,
-                        decoration: const BoxDecoration(
-                          borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(10.0),
-                            topRight: Radius.circular(10.0),
-                          ),
-                          color: Color.fromARGB(255, 161, 160, 160),
-                        ),
-                      ),
-                      Container(
+              backgroundColor: Color.fromARGB(255, 255, 255, 255),
+              elevation: 0.0,
+              iconTheme: IconThemeData(color: Colors.black),
+            ),
+            drawer: Drawer(
+              backgroundColor: Colors.grey.shade300,
+              child: ListView(
+                padding: EdgeInsets.zero,
+                children: [
+                  DrawerHeader(
+                    // decoration: BoxDecoration(color: Colors.grey.shade300),
+                    child: Container(
+                      color: Colors.blueGrey,
+                      alignment: Alignment.bottomLeft,
+                      child: Padding(
                         padding: const EdgeInsets.all(8.0),
-                        width: screenWidth() * 0.88,
-                        height: screenHeight() * .042,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(15.0),
-                          color: const Color.fromARGB(255, 197, 197, 197),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "MYBOARD",
+                              style: GoogleFonts.italiana(
+                                color: Colors.white,
+                                fontSize: 35.0,
+                              ),
+                            ),
+                            Text(
+                              "Extras",
+                              style: TextStyle(
+                                fontSize: 25,
+                                color: Colors.black45,
+                              ),
+                            ),
+                          ],
                         ),
-                        child: const Text(
-                          'Add Photo, Video, Link..',
-                          style: TextStyle(
-                            color: Colors.white70,
-                            fontSize: 15.0,
-                          ),
+                      ),
+                    ),
+                  ),
+                  ListTile(
+                    leading: Icon(Icons.change_circle_sharp),
+                    title: Text("Change Background"),
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => Background()));
+                    },
+                  ),
+                  ListTile(
+                    leading: Icon(Icons.delete_forever),
+                    title: Text("Reset Board"),
+                    onTap: () {
+                      setState(() {
+                        Provider.of<BoardStateController>(context,
+                                listen: false)
+                            .emptyBoardData();
+                        Provider.of<ImageController>(context, listen: false)
+                            .emptyImage();
+                        Provider.of<TaskController>(context, listen: false)
+                            .emptyToDo();
+                        Provider.of<ReminderController>(context, listen: false)
+                            .emptyReminder();
+                        Provider.of<LinksController>(context, listen: false)
+                            .emptyLink();
+                        Provider.of<AudioController>(context, listen: false)
+                            .emptyAudio();
+                        // Provider.of<VoiceToTextController>(context, listen: false)
+                        //     .emptyVoiceToText();
+                        Provider.of<TextPageController>(context, listen: false)
+                            .emptyText();
+                        Provider.of<DocumentsController>(context, listen: false)
+                            .emptyDocument();
+                      });
+                      Navigator.pop(context);
+                    },
+                  ),
+                  // ListTile(
+                  //   leading: Icon(Icons.delete_forever),
+                  //   title: Text("Wipe all data"),
+                  //   onTap: () {
+                  //     setState(() {
+                  //       Provider.of<BoardStateController>(context, listen: false)
+                  //           .emptyBoardData();
+                  //       Provider.of<ImageController>(context, listen: false)
+                  //           .emptyImage();
+                  //       Provider.of<TaskController>(context, listen: false)
+                  //           .emptyToDo();
+                  //       Provider.of<ReminderController>(context, listen: false)
+                  //           .emptyReminder();
+                  //       Provider.of<LinksController>(context, listen: false)
+                  //           .emptyLink();
+                  //       Provider.of<AudioController>(context, listen: false)
+                  //           .emptyAudio();
+                  //     });
+                  //   },
+                  // ),
+                  ListTile(
+                    leading: Icon(Icons.tag_faces_rounded),
+                    title: Text("Contact us"),
+                    onTap: () {},
+                  ),
+                  // ListTile(
+                  //   leading: Icon(Icons.logout),
+                  //   title: Text("Logout"),
+                  //   onTap: () async {
+                  //     await GSI.GoogleSignInProvider().LogOut();
+                  //     await FirebaseAuth.instance.signOut();
+                  //     Get.off(loginpage.LogInPage());
+                  //   },
+                  // ),
+                ],
+              ),
+            ),
+            body: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  // boxofboarddata.isNotEmpty
+                  //     ? (boxofboarddata.length > 0)
+                  //         ? GestureDetector(
+                  //             onTap: () async {
+                  //               // final image = await screenshotController
+                  //               //     .captureFromWidget(board(
+                  //               //   imageController: imageController,
+                  //               //   height: MediaQuery.of(context).size.height,
+                  //               //   width: MediaQuery.of(context).size.width,
+                  //               // ));
+                  //               final image = await screenshotController.capture(
+                  //                   // pixelRatio: 1000,
+                  //                   delay: Duration(
+                  //                 microseconds: 100,
+                  //               ));
+                  //               final imagepath = await saveAndShare(image!);
+                  //               // int location = WallpaperManager.HOME_SCREEN;
+                  //               // var result =
+                  //               //     await WallpaperManager.setWallpaperFromAsset(
+                  //               //         imagepath, location);
+                  //               var extendedfile = ExtendedImage.file(
+                  //                 File(imagepath),
+                  //                 width: MediaQuery.of(context).size.width,
+                  //                 height: MediaQuery.of(context).size.height,
+                  //                 fit: BoxFit.scaleDown,
+                  //               );
+                  //               int location = WallpaperManagerFlutter.HOME_SCREEN;
+                  //               print(imagepath);
+                  //               var result =
+                  //                   WallpaperManagerFlutter().setwallpaperfromFile(
+                  //                       // File(imagepath), location);
+                  //                       extendedfile,
+                  //                       location);
+                  //             },
+                  //             child: Container(
+                  //               color: Colors.amber,
+                  //               child: Padding(
+                  //                 padding: const EdgeInsets.all(8.0),
+                  //                 child: Text('Set as home screen wallpaper'),
+                  //               ),
+                  //             ),
+                  //           )
+                  //         : SizedBox(
+                  //             height: 0.000001,
+                  //           )
+                  //     : SizedBox(
+                  //         height: 0.000001,
+                  //       ),
+                  Stack(
+                    children: [
+                      Center(
+                          child: Column(
+                        children: <Widget>[],
+                      )),
+                      Positioned(
+                        left: 10,
+                        top: 20,
+                        child: IconButton(
+                          icon: Icon(Icons.menu),
+                          onPressed: () =>
+                              scaffoldKey.currentState.openDrawer(),
                         ),
                       ),
                     ],
                   ),
+                  // board(
+                  //   imageController: imageController,
+                  //   height: MediaQuery.of(context).size.height,
+                  //   width: MediaQuery.of(context).size.width,
+                  // ),
+                  Consumer<BackgroundController>(
+                    builder: ((context, value, child) {
+                      return Stack(
+                        children: [
+                          Screenshot(
+                            controller: screenshotController,
+                            child: Container(
+                              clipBehavior: Clip.hardEdge,
+
+                              // key: containerKey,
+                              // decoration: imglink.isNotEmpty ? networkimg : localimg,
+                              decoration: BoxDecoration(
+                                boxShadow: [
+                                  // BoxShadow(
+                                  //   color: your_shadow_color,
+                                  // ),
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.5),
+                                    spreadRadius: 3.0,
+                                    blurRadius: 3.0,
+                                    offset: Offset(
+                                      2.0,
+                                      2.0,
+                                    ),
+                                  ),
+                                ],
+                                borderRadius: BorderRadius.circular(10),
+                                border: Border.all(
+                                  color: Colors.black.withOpacity(0.5),
+                                  width: 8.0,
+                                ),
+                                image: DecorationImage(
+                                  image: NetworkImage(value.imgLink.imgurl ??
+                                      'https://media.navyasfashion.com/catalog/product/cache/184a226590f48e7f268fa34c124ed9e1/_/d/_dsc0087.jpg'),
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                              height: MediaQuery.of(context).size.height * 0.75,
+                              width: MediaQuery.of(context).size.width * 0.93,
+                              child:
+                                  BoardDataList(), ////****************************************************BOARD DATA LIST**** */
+                            ),
+                          ),
+                          Stack(
+                            children: [
+                              SizedBox(
+                                height: MediaQuery.of(context).size.height *
+                                    height_multiplier,
+                                width: MediaQuery.of(context).size.width *
+                                    width_multiplier,
+                                child: StackBoard(
+                                  controller: _boardController,
+                                  background: const ColoredBox(
+                                      color: Colors.transparent),
+                                ),
+                              ),
+                              GestureDetector(
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Icon(
+                                    Icons.delete,
+                                    color: should_be_visible
+                                        ? Colors.white
+                                        : Colors.transparent,
+                                  ),
+                                ),
+                                onTap: () {
+                                  height_multiplier = 0.0001;
+                                  width_multiplier = 0.0001;
+                                  // bin_color = Colors.transparent;
+                                  should_be_visible = false;
+                                  setState(() {});
+                                  print('ontap of delete icon');
+                                },
+                              ),
+                            ],
+                          ),
+                        ],
+                      );
+                    }),
+                  ),
+                  const SizedBox(
+                    height: 10.0,
+                  ),
+                ],
+              ),
+            ),
+            bottomSheet: SolidBottomSheet(
+              // draggableBody: true,
+              controller: _controller,
+              maxHeight: screenHeight() * .65,
+              headerBar: Container(
+                // color: Colors.grey,
+                child: Center(
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: 12.0),
+                    child: Text(
+                      "Swipe me",
+                      style: TextStyle(
+                        // backgroundColor: Colors.grey.shade100,
+                        fontWeight: FontWeight.w300,
+                        color: Colors.grey.shade400,
+                        fontSize: 28,
+                      ),
+                    ),
+                  ),
                 ),
               ),
-            ],
-          ),
-        ),
+              body: Container(
+                child: GridView.count(
+                  padding: EdgeInsets.fromLTRB(0.0, 22.0, 0.0, 0.0),
+                  crossAxisCount: 2,
+                  mainAxisSpacing: 2,
+                  crossAxisSpacing: 3,
+                  controller: gridviewcontroller,
+                  children: [
+                    buildCircleButton(
+                      context,
+                      'Document',
+                      'assets/images/docfinal.jpg',
+                      () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: ((context) => Documents()),
+                          ),
+                        );
+                      },
+                    ),
+                    buildCircleButton(context, 'Text', 'assets/images/text.png',
+                        () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: ((context) => TextPage())));
+                      setState(() {});
+                    }),
+
+                    buildCircleButton(
+                      context,
+                      'ToDo',
+                      'assets/images/todo_final.jpg',
+                      () async {
+                        await Navigator.push(context,
+                            MaterialPageRoute(builder: (context) => ToDo()));
+                        // if (ifVisited) {
+                        //   final box = BoxOfToDos.getToDos();
+                        //   final latesttodo =
+                        //       box.getAt(box.length - 1);
+
+                        //   pinnedWidgets.add(
+                        //     StaggeredGridTile.count(
+                        //       crossAxisCellCount: 2,
+                        //       mainAxisCellCount: 1,
+                        //       child: Text(
+                        //         latesttodo.toString(),
+                        //         style: TextStyle(
+                        //             fontSize: 10.0,
+                        //             color: Colors.white),
+                        //       ),
+                        //     ),
+                        //   );
+                        // }
+                      },
+                    ),
+                    buildCircleButton(
+                      context,
+                      'Reminders',
+                      'assets/images/remindersfinal.jpg',
+                      () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => Reminder()));
+                      },
+                    ),
+                    buildCircleButton(
+                      context,
+                      'Photo',
+                      'assets/images/photosfinal.jpg',
+                      () async {
+                        // selectPhotoOrVideo();
+                        // uploadPhotoOrVideo();
+                        final result = await FilePicker.platform.pickFiles(
+                            type: FileType.custom,
+                            allowMultiple: false,
+                            allowedExtensions: ['jpeg', 'png', 'gif']);
+                        final oneFile = result?.files.first;
+
+                        final legitfile = File(oneFile!.path.toString());
+                        print(oneFile.name);
+                        print(oneFile.extension);
+                        print(oneFile.path);
+                        print(oneFile.size);
+                        //Navigator.pushNamed(context, '/memories');
+                        // ImageProvider gotFile = Get.arguments();
+                        var finalImage = await saveFilePermanently(oneFile);
+                        print('from ' + oneFile.path.toString());
+                        print('to ' + finalImage[1]);
+
+                        // var decodedImage = await decodeImageFromList(
+                        //     finalImage[0].readAsBytesSync());
+                        // double width = decodedImage.width.toDouble();
+                        // double height =
+                        //     decodedImage.height.toDouble();
+                        // pinnedWidgets!.add(
+                        //   StaggeredGridTile.count(
+                        //     crossAxisCellCount:
+                        //         width > height ? 3 : 2,
+                        //     mainAxisCellCount: width < height ? 3 : 2,
+                        //     child: Stack(
+                        //       alignment: Alignment.topCenter,
+                        //       children: [
+                        //         Container(
+                        //           child: Image.file(finalImage),
+                        //           decoration:
+                        //               BoxDecoration(boxShadow: [
+                        //             BoxShadow(
+                        //               blurRadius: 3.0,
+                        //               spreadRadius: 0.5,
+                        //               offset: Offset(1, 1),
+                        //             ),
+                        //           ]),
+                        //         ),
+                        //         Image.asset(
+                        //           'assets/images/pin.png',
+                        //           width: 13,
+                        //           height: 13,
+                        //         ),
+                        //       ],
+                        //     ),
+                        //   ),
+                        // );
+                        m.Images previousImagePaths;
+                        var _repeated = false;
+                        // for (previousImagePaths in boxofImages.toMap().values) {
+                        if (boxofImages.length > 0) {
+                          for (var index = 0;
+                              index < boxofImages.length;
+                              index++) {
+                            print(finalImage[1].trim());
+                            print((boxofImages
+                                .getAt(index)!
+                                .imagesource!
+                                .trim()));
+                            print(boxofImages
+                                .getAt(index)!
+                                .imagesource!
+                                .split('/')[6]);
+                            print((finalImage[1].trim()).contains(boxofImages
+                                .getAt(index)!
+                                .imagesource!
+                                .split('/')[6]));
+
+                            // boxofImages.getAt(index)!.imagesource!.trim()));
+
+                            if ((finalImage[1].trim()).contains(boxofImages
+                                .getAt(index)!
+                                .imagesource!
+                                .split('/')[6])) {
+                              print(
+                                  '${finalImage[1]} == ${boxofImages.getAt(index)!.imagesource}');
+                              setState(() {
+                                _repeated = true;
+                              });
+                            }
+                          }
+                        }
+                        print('_repeated = $_repeated');
+                        if (!_repeated) {
+                          Provider.of<ImageController>(context, listen: false)
+                              .addImage(
+                            m.Images(
+                              imagesource: finalImage[1],
+                            ),
+                          );
+
+                          var latestImage =
+                              boxofImages.getAt(boxofImages.length - 1);
+                          Provider.of<BoardStateController>(context,
+                                  listen: false)
+                              .addBoardData(
+                            m.BoardData(
+                              position: BoxOfBoardData.getBoardData().length,
+                              data: '${finalImage[1]}*${latestImage!.key}',
+                              isDone: false,
+                              type: 'image',
+                            ),
+                          );
+                          //positioningCoordinates(true, width, height);
+                          setState(
+                            () {},
+                          );
+                        } else {
+                          Get.snackbar('Oops', 'Item already on board');
+                        }
+
+                        Navigator.pop(context);
+
+                        // print(pinnedWidgets!);
+                        // print(pinnedWidgets![0]);
+                      },
+                    ),
+                    buildCircleButton(
+                      context,
+                      'Video',
+                      'assets/images/video_new.jpg',
+                      () async {
+                        //Navigator.pushNamed(context, '/video');
+
+                        PlatformFile localfile = await vid.pickVideoFile();
+                        var videopath = localfile.path;
+                        print('Video picked path: $videopath');
+                        var videobox = BoxOfVideos.getVideos();
+                        videobox.add(m.Video(
+                          videosource: videopath,
+                        ));
+                        print(videobox.keys);
+                        // pinnedWidgets!.add(
+                        //   StaggeredGridTile.count(
+                        //     crossAxisCellCount: 2,
+                        //     mainAxisCellCount: 2,
+                        //     child: InkWell(
+                        //       onTap: (() {
+                        //         print('tap on video catched');
+                        //         print(localfile.path.toString());
+                        //         Navigator.push(
+                        //           context,
+                        //           MaterialPageRoute(
+                        //             builder: ((context) => Video(
+                        //                 localfile_path:
+                        //                     localfile.path)),
+                        //           ),
+                        //         );
+                        //       }),
+                        //       child: Padding(
+                        //         padding: const EdgeInsets.all(8.0),
+                        //         child: Stack(
+                        //           alignment: Alignment.topCenter,
+                        //           children: [
+                        //             Container(
+                        //               child: Text(
+                        //                 'video link; ${videopath.toString()}',
+                        //                 style: TextStyle(
+                        //                   color: Colors.white,
+                        //                 ),
+                        //               ),
+                        //               // child: Image.file(
+                        //               //     File(videopath.toString())),
+                        //               decoration:
+                        //                   BoxDecoration(boxShadow: [
+                        //                 BoxShadow(
+                        //                   blurRadius: 3.0,
+                        //                   spreadRadius: 0.5,
+                        //                   offset: Offset(1, 1),
+                        //                 ),
+                        //               ]),
+                        //             ),
+                        //             Image.asset(
+                        //               'assets/images/pin.png',
+                        //               width: 13,
+                        //               height: 13,
+                        //             ),
+                        //           ],
+                        //         ),
+                        //       ),
+                        //     ),
+                        //   ),
+                        // );
+                        Provider.of<BoardStateController>(context,
+                                listen: false)
+                            .addBoardData(
+                          m.BoardData(
+                            position: BoxOfBoardData.getBoardData().length,
+                            data: videopath.toString(),
+                            isDone: false,
+                            type: 'video',
+                          ),
+                        );
+                        setState(
+                          () {},
+                        );
+                      },
+                    ),
+
+                    buildCircleButton(
+                      context,
+                      'Audio',
+                      'assets/images/audio_new.png',
+                      () {
+                        Navigator.push(context,
+                            MaterialPageRoute(builder: (context) => MyAudio()));
+                      },
+                    ),
+
+                    buildCircleButton(
+                      context,
+                      'Links',
+                      'assets/images/linksfinal.jpg',
+                      () {
+                        Navigator.push(context,
+                            MaterialPageRoute(builder: (context) => Links()));
+                      },
+                    ),
+                    buildCircleButton(
+                        context, 'Quotes', 'assets/images/quotes_new.png', () {
+                      print(DateTime.now().toString());
+
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) => Quotes()));
+                    }),
+                    buildCircleButton(
+                      context,
+                      'Scribble',
+                      'assets/images/scribblefinal.jpg',
+                      () {
+                        _boardController.add(
+                          const StackDrawing(
+                            caseStyle: CaseStyle(
+                              borderColor: Colors.grey,
+                              iconColor: Colors.white,
+                              boxAspectRatio: 1,
+                            ),
+                          ),
+                        );
+                        height_multiplier = 0.75;
+                        width_multiplier = .93;
+                        // bin_color = Colors.white;
+                        should_be_visible = true;
+
+                        setState(() {});
+                        Navigator.pop(context);
+                      },
+                    ),
+                    // buildCircleButton(context, 'Video',
+                    // 'assets/images/video.jpg', () {}),
+                  ],
+                ),
+              ),
+            )),
       ),
     );
   }
